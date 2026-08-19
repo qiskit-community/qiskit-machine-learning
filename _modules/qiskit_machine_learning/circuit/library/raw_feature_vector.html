@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.circuit.library.raw_feature_vector - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.circuit.library.raw_feature_vector - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.circuit.library.raw_feature_vector</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2020, 2025</span>
+<span class="c1"># (C) Copyright IBM 2020, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,7 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;The raw feature vector circuit.&quot;&quot;&quot;</span>
+<span class="sd">"""The raw feature vector circuit."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">QiskitError</span>
@@ -485,17 +491,17 @@
 <div class="viewcode-block" id="raw_feature_vector">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.circuit.library.raw_feature_vector.html#qiskit_machine_learning.circuit.library.raw_feature_vector">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">raw_feature_vector</span><span class="p">(</span><span class="n">feature_dimension</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantumCircuit</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The raw feature vector circuit.</span>
+<span class="w">    </span><span class="sd">"""The raw feature vector circuit.</span>
 
 <span class="sd">    This circuit acts as parameterized initialization for statevectors with ``feature_dimension``</span>
 <span class="sd">    dimensions, thus with ``log2(feature_dimension)`` qubits. The circuit contains a</span>
 <span class="sd">    placeholder instruction that can only be synthesized/defined when all parameters are bound.</span>
 
 <span class="sd">    In ML, this circuit can be used to load the training data into qubit amplitudes. It does not</span>
-<span class="sd">    apply an kernel transformation (therefore, it is a &quot;raw&quot; feature vector).</span>
+<span class="sd">    apply an kernel transformation (therefore, it is a "raw" feature vector).</span>
 
 <span class="sd">    Since initialization is implemented via a ``QuantumCircuit.initialize()`` call, this circuit</span>
-<span class="sd">    can&#39;t be used with gradient based optimizers, one can see a warning that gradients can&#39;t be</span>
+<span class="sd">    can't be used with gradient based optimizers, one can see a warning that gradients can't be</span>
 <span class="sd">    computed.</span>
 
 <span class="sd">    Examples:</span>
@@ -507,7 +513,7 @@
 <span class="sd">        print(circuit.num_qubits)</span>
 <span class="sd">        # prints: 2</span>
 
-<span class="sd">        print(circuit.draw(output=&#39;text&#39;))</span>
+<span class="sd">        print(circuit.draw(output='text'))</span>
 <span class="sd">        # prints:</span>
 <span class="sd">        #      ┌───────────────────────────────────────────────┐</span>
 <span class="sd">        # q_0: ┤0                                              ├</span>
@@ -538,12 +544,12 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The raw feature</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">num_qubits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">feature_dimension</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">)</span> <span class="o">!=</span> <span class="n">num_qubits</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;feature_dimension must be a power of 2!&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"feature_dimension must be a power of 2!"</span><span class="p">)</span>
 
-    <span class="n">ordered_parameters</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">feature_dimension</span><span class="p">)</span>
+    <span class="n">ordered_parameters</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">feature_dimension</span><span class="p">)</span>
     <span class="n">placeholder</span> <span class="o">=</span> <span class="n">ParameterizedInitialize</span><span class="p">(</span><span class="n">ordered_parameters</span><span class="p">[:])</span>
     <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">)</span>
     <span class="n">qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">qc</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span>
@@ -552,14 +558,14 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ParameterizedInitialize</span><span class="p">(</span><span class="n">Instruction</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A normalized parameterized initialize instruction.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A normalized parameterized initialize instruction."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">):</span>
         <span class="n">num_qubits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">)</span> <span class="o">!=</span> <span class="n">num_qubits</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;feature_dimension must be a power of 2!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"feature_dimension must be a power of 2!"</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;ParameterizedInitialize&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"ParameterizedInitialize"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_define</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># cast ParameterExpressions that are fully bound to numbers</span>
@@ -568,7 +574,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">ParameterExpression</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">cleaned_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Cannot define a ParameterizedInitialize with unbound parameters&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">"Cannot define a ParameterizedInitialize with unbound parameters"</span><span class="p">)</span>
 
         <span class="c1"># normalize</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">cleaned_params</span><span class="p">)</span>
@@ -601,7 +607,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -623,7 +629,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

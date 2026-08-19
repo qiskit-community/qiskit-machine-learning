@@ -1,0 +1,8 @@
+﻿
+
+phase_of_matter_data
+=====================================================
+
+.. currentmodule:: qiskit_machine_learning.datasets
+
+.. autofunction:: phase_of_matter_data

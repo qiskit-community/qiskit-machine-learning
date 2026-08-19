@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.state_fidelities.base_state_fidelity - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.state_fidelities.base_state_fidelity - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.state_fidelities.base_state_fidelity</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -469,9 +475,9 @@
 <span class="c1"># Any modifications or derivative works of this code must retain this</span>
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Base state fidelity interface</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -490,7 +496,7 @@
 <div class="viewcode-block" id="BaseStateFidelity">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.state_fidelities.BaseStateFidelity.html#qiskit_machine_learning.state_fidelities.BaseStateFidelity">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseStateFidelity</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    An interface to calculate state fidelities (state overlaps) for pairs of</span>
 <span class="sd">    (parametrized) quantum circuits. The calculation depends on the particular</span>
 <span class="sd">    fidelity method implementation, but can be always defined as the state overlap:</span>
@@ -503,7 +509,7 @@
 <span class="sd">    states :math:`\psi` and :math:`\phi` prepared by the circuits</span>
 <span class="sd">    ``circuit_1`` and ``circuit_2``, respectively.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># use cache for preventing unnecessary circuit compositions</span>
@@ -514,7 +520,7 @@
         <span class="n">circuits</span><span class="p">:</span> <span class="n">QuantumCircuit</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">QuantumCircuit</span><span class="p">],</span>
         <span class="n">values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks whether the passed values match the shape of the parameters</span>
 <span class="sd">        of the corresponding circuits and formats values to 2D list.</span>
 
@@ -527,10 +533,10 @@
 <span class="sd">            if values is None.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: if the number of parameter values doesn&#39;t match the number of</span>
+<span class="sd">            ValueError: if the number of parameter values doesn't match the number of</span>
 <span class="sd">                        circuit parameters</span>
 <span class="sd">            TypeError: if the input values are not a sequence.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">):</span>
             <span class="n">circuits</span> <span class="o">=</span> <span class="p">[</span><span class="n">circuits</span><span class="p">]</span>
@@ -539,8 +545,8 @@
             <span class="k">for</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">circuits</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_parameters</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;`values` cannot be `None` because circuit &lt;</span><span class="si">{</span><span class="n">circuit</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt; has &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_parameters</span><span class="si">}</span><span class="s2"> free parameters.&quot;</span>
+                        <span class="sa">f</span><span class="s2">"`values` cannot be `None` because circuit &lt;</span><span class="si">{</span><span class="n">circuit</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt; has "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_parameters</span><span class="si">}</span><span class="s2"> free parameters."</span>
                     <span class="p">)</span>
             <span class="k">return</span> <span class="p">[[]]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -552,8 +558,8 @@
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected a sequence of numerical parameter values, &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;but got input type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Expected a sequence of numerical parameter values, "</span>
+                    <span class="sa">f</span><span class="s2">"but got input type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead."</span>
                 <span class="p">)</span>
 
             <span class="c1"># ensure 2d</span>
@@ -565,21 +571,21 @@
             <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">values</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_qubits_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit_1</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">circuit_2</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks that the number of qubits of 2 circuits matches.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            circuit_1: (Parametrized) quantum circuit.</span>
 <span class="sd">            circuit_2: (Parametrized) quantum circuit.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: when ``circuit_1`` and ``circuit_2`` don&#39;t have the</span>
+<span class="sd">            ValueError: when ``circuit_1`` and ``circuit_2`` don't have the</span>
 <span class="sd">            same number of qubits.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">circuit_1</span><span class="o">.</span><span class="n">num_qubits</span> <span class="o">!=</span> <span class="n">circuit_2</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The number of qubits for the first circuit (</span><span class="si">{</span><span class="n">circuit_1</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">) &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;and second circuit (</span><span class="si">{</span><span class="n">circuit_2</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">) are not the same.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The number of qubits for the first circuit (</span><span class="si">{</span><span class="n">circuit_1</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">) "</span>
+                <span class="sa">f</span><span class="s2">"and second circuit (</span><span class="si">{</span><span class="n">circuit_2</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">) are not the same."</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="BaseStateFidelity.create_fidelity_circuit">
@@ -588,7 +594,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">create_fidelity_circuit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">circuit_1</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">circuit_2</span><span class="p">:</span> <span class="n">QuantumCircuit</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantumCircuit</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Implementation-dependent method to create a fidelity circuit</span>
 <span class="sd">        from 2 circuit inputs.</span>
 
@@ -598,7 +604,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The fidelity quantum circuit corresponding to ``circuit_1`` and ``circuit_2``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -607,7 +613,7 @@
         <span class="n">circuits_1</span><span class="p">:</span> <span class="n">QuantumCircuit</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">QuantumCircuit</span><span class="p">],</span>
         <span class="n">circuits_2</span><span class="p">:</span> <span class="n">QuantumCircuit</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">QuantumCircuit</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">QuantumCircuit</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructs the list of fidelity circuits to be evaluated.</span>
 <span class="sd">        These circuits represent the state overlap between pairs of input circuits,</span>
 <span class="sd">        and their construction depends on the fidelity method implementations.</span>
@@ -620,8 +626,8 @@
 <span class="sd">            List of constructed fidelity circuits.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: if the length of the input circuit lists doesn&#39;t match.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            ValueError: if the length of the input circuit lists doesn't match.</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuits_1</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">):</span>
             <span class="n">circuits_1</span> <span class="o">=</span> <span class="p">[</span><span class="n">circuits_1</span><span class="p">]</span>
@@ -630,8 +636,8 @@
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">circuits_1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">circuits_2</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The length of the first circuit list(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits_1</span><span class="p">)</span><span class="si">}</span><span class="s2">) &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;and second circuit list (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits_2</span><span class="p">)</span><span class="si">}</span><span class="s2">) is not the same.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The length of the first circuit list(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits_1</span><span class="p">)</span><span class="si">}</span><span class="s2">) "</span>
+                <span class="sa">f</span><span class="s2">"and second circuit list (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits_2</span><span class="p">)</span><span class="si">}</span><span class="s2">) is not the same."</span>
             <span class="p">)</span>
 
         <span class="n">circuits</span> <span class="o">=</span> <span class="p">[]</span>
@@ -648,9 +654,9 @@
 
                 <span class="c1"># re-parametrize input circuits</span>
                 <span class="c1"># TODO: make smarter checks to avoid unnecessary re-parametrizations</span>
-                <span class="n">parameters_1</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">circuit_1</span><span class="o">.</span><span class="n">num_parameters</span><span class="p">)</span>
+                <span class="n">parameters_1</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">circuit_1</span><span class="o">.</span><span class="n">num_parameters</span><span class="p">)</span>
                 <span class="n">parametrized_circuit_1</span> <span class="o">=</span> <span class="n">circuit_1</span><span class="o">.</span><span class="n">assign_parameters</span><span class="p">(</span><span class="n">parameters_1</span><span class="p">)</span>
-                <span class="n">parameters_2</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">circuit_2</span><span class="o">.</span><span class="n">num_parameters</span><span class="p">)</span>
+                <span class="n">parameters_2</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">"y"</span><span class="p">,</span> <span class="n">circuit_2</span><span class="o">.</span><span class="n">num_parameters</span><span class="p">)</span>
                 <span class="n">parametrized_circuit_2</span> <span class="o">=</span> <span class="n">circuit_2</span><span class="o">.</span><span class="n">assign_parameters</span><span class="p">(</span><span class="n">parameters_2</span><span class="p">)</span>
 
                 <span class="n">circuit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_fidelity_circuit</span><span class="p">(</span>
@@ -671,7 +677,7 @@
         <span class="n">values_1</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">values_2</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Preprocesses input parameter values to match the fidelity</span>
 <span class="sd">        circuit parametrization, and return in list format.</span>
 
@@ -686,7 +692,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">             List of lists of parameter values for fidelity circuit.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">values_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_values</span><span class="p">(</span><span class="n">circuits_1</span><span class="p">,</span> <span class="n">values_1</span><span class="p">)</span>
         <span class="n">values_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_values</span><span class="p">(</span><span class="n">circuits_2</span><span class="p">,</span> <span class="n">values_2</span><span class="p">)</span>
         <span class="c1"># now, values_1 and values_2 are explicitly made 2d lists</span>
@@ -714,7 +720,7 @@
         <span class="n">values_2</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">options</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AlgorithmJob</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Computes the state overlap (fidelity) calculation between two</span>
 <span class="sd">        (parametrized) circuits (first and second) for a specific set of parameter</span>
 <span class="sd">        values (first and second).</span>
@@ -725,13 +731,13 @@
 <span class="sd">            values_1: Numerical parameters to be bound to the first set of circuits</span>
 <span class="sd">            values_2: Numerical parameters to be bound to the second set of circuits.</span>
 <span class="sd">            options: Primitive backend runtime options used for circuit execution. The order</span>
-<span class="sd">                of priority is\: options in ``run`` method &gt; fidelity&#39;s default</span>
-<span class="sd">                options &gt; primitive&#39;s default setting.</span>
+<span class="sd">                of priority is\: options in ``run`` method &gt; fidelity's default</span>
+<span class="sd">                options &gt; primitive's default setting.</span>
 <span class="sd">                Higher priority setting overrides lower priority setting.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A newly constructed algorithm job instance to get the fidelity result.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="BaseStateFidelity.run">
@@ -744,7 +750,7 @@
         <span class="n">values_2</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">options</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AlgorithmJob</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Runs asynchronously the state overlap (fidelity) calculation between two</span>
 <span class="sd">        (parametrized) circuits (first and second) for a specific set of parameter</span>
 <span class="sd">        values (first and second). This calculation depends on the particular</span>
@@ -756,14 +762,14 @@
 <span class="sd">            values_1: Numerical parameters to be bound to the first set of circuits.</span>
 <span class="sd">            values_2: Numerical parameters to be bound to the second set of circuits.</span>
 <span class="sd">            options: Primitive backend runtime options used for circuit execution. The order</span>
-<span class="sd">                of priority is\: options in ``run`` method &gt; fidelity&#39;s default</span>
-<span class="sd">                options &gt; primitive&#39;s default setting.</span>
+<span class="sd">                of priority is\: options in ``run`` method &gt; fidelity's default</span>
+<span class="sd">                options &gt; primitive's default setting.</span>
 <span class="sd">                Higher priority setting overrides lower priority setting.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Primitive job for the fidelity calculation.</span>
-<span class="sd">            The job&#39;s result is an instance of :class:`.StateFidelityResult`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            The job's result is an instance of :class:`.StateFidelityResult`.</span>
+<span class="sd">        """</span>
         <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">(</span><span class="n">circuits_1</span><span class="p">,</span> <span class="n">circuits_2</span><span class="p">,</span> <span class="n">values_1</span><span class="p">,</span> <span class="n">values_2</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
         <span class="n">job</span><span class="o">.</span><span class="n">submit</span><span class="p">()</span>
@@ -772,7 +778,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_truncate_fidelities</span><span class="p">(</span><span class="n">fidelities</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Ensures fidelity result in [0,1].</span>
 
 <span class="sd">        Args:</span>
@@ -781,7 +787,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">             List of truncated fidelities.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">fidelities</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
 </pre></div>
@@ -808,7 +814,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -830,7 +836,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

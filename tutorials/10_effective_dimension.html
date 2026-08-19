@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="The Quantum Convolution Neural Network" href="11_quantum_convolutional_neural_networks.html" /><link rel="prev" title="Saving, Loading Qiskit Machine Learning Models and Continuous Training" href="09_saving_and_loading_models.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Effective Dimension of Qiskit Neural Networks - Qiskit Machine Learning 0.9.0</title>
+        <title>Effective Dimension of Qiskit Neural Networks - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -203,7 +203,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -230,7 +230,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -292,6 +292,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -387,6 +388,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -532,7 +537,7 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
     <span class="n">feature_map</span><span class="o">=</span><span class="n">z_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
     <span class="n">ansatz</span><span class="o">=</span><span class="n">real_amplitudes</span><span class="p">(</span><span class="n">num_qubits</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
 <span class="p">)</span>
-<span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;clifford&quot;</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">"clifford"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -551,14 +556,14 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># parity maps bitstrings to 0 or 1</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{:b}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="si">{:b}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"1"</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
 
 
 <span class="n">output_shape</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># corresponds to the number of classes, possible outcomes of the (parity) mapping.</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -574,14 +579,6 @@ generalize to new data, and how <strong>expressive</strong> it can be. Therefore
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Sampler requires transpilation, please provide a pass manager.
-</pre></div></div>
 </div>
 </section>
 <section id="3.2-Set-up-Effective-Dimension-calculation">
@@ -644,9 +641,9 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">qnn</span><span class="o">.</span><span class="n">num_weights</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data size: </span><span class="si">{}</span><span class="s2">, global effective dimension: </span><span class="si">{:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">global_eff_dim_0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Data size: </span><span class="si">{}</span><span class="s2">, global effective dimension: </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">global_eff_dim_0</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;Number of weights: </span><span class="si">{}</span><span class="s2">, normalized effective dimension: </span><span class="si">{:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">global_eff_dim_0</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span>
+    <span class="s2">"Number of weights: </span><span class="si">{}</span><span class="s2">, normalized effective dimension: </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">global_eff_dim_0</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -656,8 +653,8 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Data size: 5000, global effective dimension: 4.6597
-Number of weights: 6, normalized effective dimension: 0.7766
+Data size: 5000, global effective dimension: 4.6890
+Number of weights: 6, normalized effective dimension: 0.7815
 </pre></div></div>
 </div>
 <p>By calling the <code class="docutils literal notranslate"><span class="pre">EffectiveDimension</span></code> class with an array if input sizes <code class="docutils literal notranslate"><span class="pre">n</span></code>, we can monitor how the effective dimension changes with the dataset size.</p>
@@ -673,8 +670,8 @@ Number of weights: 6, normalized effective dimension: 0.7766
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Effective dimension: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">global_eff_dim_1</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of weights: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Effective dimension: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">global_eff_dim_1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Number of weights: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -683,8 +680,8 @@ Number of weights: 6, normalized effective dimension: 0.7766
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Effective dimension: [4.67251085 4.72134519 4.74629715 4.91027373 4.95726479 5.01394383
- 5.05648904 5.08524448 5.16871264 5.22395324]
+Effective dimension: [4.69475264 4.74522215 4.77086276 4.93721267 4.98423071 5.04058326
+ 5.08264506 5.11096917 5.19278536 5.24668202]
 Number of weights: 6
 </pre></div></div>
 </div>
@@ -694,8 +691,8 @@ Number of weights: 6
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot the normalized effective dimension for the model</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">global_eff_dim_1</span><span class="p">)</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Number of data&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Normalized GLOBAL effective dimension&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Number of data"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Normalized GLOBAL effective dimension"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -737,7 +734,7 @@ Number of weights: 6
 </div>
 </div>
 <p>The next step is to create a QNN, an instance of <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> in our case in the same fashion we created an instance of <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code>.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
@@ -746,14 +743,6 @@ Number of weights: 6
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
-</pre></div></div>
 </div>
 </section>
 <section id="4.2-Train-QNN">
@@ -767,9 +756,9 @@ No gradient function provided, creating a gradient function. If your Estimator r
 <span class="k">def</span><span class="w"> </span><span class="nf">callback_graph</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">obj_func_eval</span><span class="p">):</span>
     <span class="n">clear_output</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">objective_func_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj_func_eval</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Objective function value against iteration&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Iteration&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Objective function value&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Objective function value against iteration"</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Iteration"</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Objective function value"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objective_func_vals</span><span class="p">)),</span> <span class="n">objective_func_vals</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -797,13 +786,13 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create empty array for callback to store evaluations of the objective function (callback)</span>
 <span class="n">objective_func_vals</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 
 <span class="c1"># fit classifier to data</span>
 <span class="n">estimator_classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
 <span class="c1"># return to default figsize</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -851,7 +840,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 <span class="n">local_eff_dim_trained</span> <span class="o">=</span> <span class="n">local_ed_trained</span><span class="o">.</span><span class="n">get_effective_dimension</span><span class="p">(</span><span class="n">dataset_size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;normalized local effective dimensions for trained QNN: &quot;</span><span class="p">,</span>
+    <span class="s2">"normalized local effective dimensions for trained QNN: "</span><span class="p">,</span>
     <span class="n">local_eff_dim_trained</span> <span class="o">/</span> <span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -862,8 +851,8 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normalized local effective dimensions for trained QNN:  [0.48371015 0.498389   0.50562962 0.55278718 0.56692932 0.58476495
- 0.59884961 0.60875745 0.639439   0.66127159]
+normalized local effective dimensions for trained QNN:  [0.55885072 0.56814183 0.57299102 0.60679477 0.61719401 0.63028476
+ 0.64060793 0.64789045 0.67090408 0.68810471]
 </pre></div></div>
 </div>
 </section>
@@ -882,7 +871,7 @@ normalized local effective dimensions for trained QNN:  [0.48371015 0.498389   0
 <span class="n">local_eff_dim_untrained</span> <span class="o">=</span> <span class="n">local_ed_untrained</span><span class="o">.</span><span class="n">get_effective_dimension</span><span class="p">(</span><span class="n">dataset_size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;normalized local effective dimensions for untrained QNN: &quot;</span><span class="p">,</span>
+    <span class="s2">"normalized local effective dimensions for untrained QNN: "</span><span class="p">,</span>
     <span class="n">local_eff_dim_untrained</span> <span class="o">/</span> <span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -893,8 +882,8 @@ normalized local effective dimensions for trained QNN:  [0.48371015 0.498389   0
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normalized local effective dimensions for untrained QNN:  [0.73190006 0.742821   0.74814637 0.78165747 0.7911264  0.80254182
- 0.81110743 0.81689376 0.83366829 0.84475014]
+normalized local effective dimensions for untrained QNN:  [0.72832117 0.73997741 0.74577658 0.78220764 0.79222878 0.80411418
+ 0.81290719 0.81879528 0.83568103 0.84672914]
 </pre></div></div>
 </div>
 </section>
@@ -906,13 +895,13 @@ normalized local effective dimensions for untrained QNN:  [0.73190006 0.742821  
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot the normalized effective dimension for the model</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">local_eff_dim_trained</span><span class="p">)</span> <span class="o">/</span> <span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;trained weights&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">local_eff_dim_trained</span><span class="p">)</span> <span class="o">/</span> <span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"trained weights"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">local_eff_dim_untrained</span><span class="p">)</span> <span class="o">/</span> <span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;untrained weights&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">local_eff_dim_untrained</span><span class="p">)</span> <span class="o">/</span> <span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"untrained weights"</span>
 <span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Number of data&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Normalized LOCAL effective dimension&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Number of data"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Normalized LOCAL effective dimension"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -944,13 +933,13 @@ implicit regularization), a trained model will not need to use so many parameter
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.2.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.19</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Dec 24 14:02:36 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.5.2</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.1</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.20</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Aug 19 21:32:58 2026 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of a Qiskit project</h3><p>&copy; Copyright IBM 2017, 2025.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
+<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of a Qiskit project</h3><p>&copy; Copyright IBM 2017, 2026.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
 </div>
 </section>
 </section>
@@ -997,7 +986,7 @@ implicit regularization), a trained model will not need to use so many parameter
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1053,7 +1042,7 @@ implicit regularization), a trained model will not need to use so many parameter
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

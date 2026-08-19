@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="L1Loss" href="qiskit_machine_learning.utils.loss_functions.L1Loss.html" /><link rel="prev" title="Loss" href="qiskit_machine_learning.utils.loss_functions.Loss.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>KernelLoss - Qiskit Machine Learning 0.9.0</title>
+        <title>KernelLoss - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -478,9 +483,9 @@ quantities that are generated during training.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parameter_values</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.14)"><em>Sequence</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – An array of values to assign to the user params</p></li>
 <li><p><strong>quantum_kernel</strong> (<a class="reference internal" href="qiskit_machine_learning.kernels.TrainableKernel.html#qiskit_machine_learning.kernels.TrainableKernel" title="qiskit_machine_learning.kernels.trainable_kernel.TrainableKernel"><em>TrainableKernel</em></a>) – A trainable quantum kernel object to evaluate</p></li>
-<li><p><strong>data</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – An <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">M)</span></code> matrix containing the data
+<li><p><strong>data</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>) – An <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">M)</span></code> matrix containing the data
 <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">#</span> <span class="pre">samples,</span> <span class="pre">M</span> <span class="pre">=</span> <span class="pre">dimension</span> <span class="pre">of</span> <span class="pre">data</span></code></p></li>
-<li><p><strong>labels</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>ndarray</em></a>) – A length-N array containing the truth labels</p></li>
+<li><p><strong>labels</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><em>ndarray</em></a>) – A length-N array containing the truth labels</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -537,7 +542,7 @@ quantities that are generated during training.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -581,7 +586,7 @@ quantities that are generated during training.</p>
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

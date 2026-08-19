@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Pegasos Quantum Support Vector Classifier" href="07_pegasos_qsvc.html" /><link rel="prev" title="PyTorch qGAN Implementation" href="04_torch_qgan.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Torch Connector and Hybrid QNNs - Qiskit Machine Learning 0.9.0</title>
+        <title>Torch Connector and Hybrid QNNs - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -203,7 +203,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -230,7 +230,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -292,6 +292,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -387,6 +388,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -541,10 +546,10 @@ quantum-classical</strong> machine learning architectures.</p>
 <span class="c1"># Plot dataset</span>
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_target</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">y_target</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"bo"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;go&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"go"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -569,7 +574,7 @@ quantum-classical</strong> machine learning architectures.</p>
 <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
 <span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">qc</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">ansatz</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;clifford&quot;</span><span class="p">)</span>
+<span class="n">qc</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">"clifford"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -597,21 +602,13 @@ quantum-classical</strong> machine learning architectures.</p>
 <span class="p">)</span>
 
 <span class="c1"># Set up PyTorch module</span>
-<span class="c1"># Note: If we don&#39;t explicitly declare the initial weights</span>
+<span class="c1"># Note: If we don't explicitly declare the initial weights</span>
 <span class="c1"># they are chosen uniformly at random from [-1, 1].</span>
 <span class="n">initial_weights</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">qnn1</span><span class="o">.</span><span class="n">num_weights</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">model1</span> <span class="o">=</span> <span class="n">TorchConnector</span><span class="p">(</span><span class="n">qnn1</span><span class="p">,</span> <span class="n">initial_weights</span><span class="o">=</span><span class="n">initial_weights</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial weights: &quot;</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Initial weights: "</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -637,7 +634,7 @@ Initial weights:  [-0.01256962  0.06653564  0.04005302 -0.03752667  0.06645196  
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor([-0.3229], grad_fn=&lt;_TorchNNFunctionBackward&gt;)
+tensor([-0.3317], grad_fn=&lt;_TorchNNFunctionBackward&gt;)
 </pre></div></div>
 </div>
 <section id="Optimizer">
@@ -656,7 +653,7 @@ the output (the following section shows an example of application of parity mapp
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define optimizer and loss</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">LBFGS</span><span class="p">(</span><span class="n">model1</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
-<span class="n">f_loss</span> <span class="o">=</span> <span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+<span class="n">f_loss</span> <span class="o">=</span> <span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">"sum"</span><span class="p">)</span>
 
 <span class="c1"># Start training</span>
 <span class="n">model1</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># set model to training mode</span>
@@ -686,26 +683,26 @@ the output (the following section shows an example of application of parity mapp
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-25.77946662902832
-22.66957664489746
-19.844186782836914
-19.63212013244629
-19.547407150268555
-18.827491760253906
-18.091184616088867
-17.075820922851562
-15.973246574401855
-28.598085403442383
-30.449331283569336
-28.151674270629883
-27.028690338134766
-26.105300903320312
-21.617237091064453
-23.019241333007812
-25.887853622436523
-27.415618896484375
-26.54096221923828
-15.604915618896484
+25.67205047607422
+22.720216751098633
+20.137807846069336
+19.873899459838867
+19.544631958007812
+18.941835403442383
+18.52117347717285
+17.7016544342041
+26.169845581054688
+21.977556228637695
+23.480350494384766
+19.680219650268555
+18.369321823120117
+29.324810028076172
+30.85232925415039
+21.479612350463867
+30.625608444213867
+25.768291473388672
+27.12105941772461
+25.947837829589844
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -714,7 +711,7 @@ the output (the following section shows an example of application of parity mapp
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor(25.7795, grad_fn=&lt;MseLossBackward0&gt;)
+tensor(25.6721, grad_fn=&lt;MseLossBackward0&gt;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -728,18 +725,18 @@ tensor(25.7795, grad_fn=&lt;MseLossBackward0&gt;)
     <span class="n">output</span> <span class="o">=</span> <span class="n">model1</span><span class="p">(</span><span class="n">Tensor</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
     <span class="n">y_predict</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy:&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y_predict</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Accuracy:"</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y_predict</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
 
 <span class="c1"># Plot results</span>
 <span class="c1"># red == wrongly classified</span>
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_target</span><span class="p">,</span> <span class="n">y_p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">y_target</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"bo"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;go&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"go"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">y_target</span> <span class="o">!=</span> <span class="n">y_p</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">"r"</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -749,7 +746,7 @@ tensor(25.7795, grad_fn=&lt;MseLossBackward0&gt;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Accuracy: 0.35
+Accuracy: 0.55
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -773,7 +770,7 @@ Accuracy: 0.35
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define feature map and ansatz</span>
 <span class="n">feature_map</span> <span class="o">=</span> <span class="n">zz_feature_map</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">)</span>
-<span class="n">ansatz</span> <span class="o">=</span> <span class="n">real_amplitudes</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">real_amplitudes</span><span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># Define quantum circuit of num_qubits = input dim</span>
 <span class="c1"># Append feature map and ansatz</span>
@@ -786,7 +783,7 @@ Accuracy: 0.35
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
 
 <span class="c1"># Define SamplerQNN and initial setup</span>
-<span class="n">parity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{:b}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>  <span class="c1"># optional interpret function</span>
+<span class="n">parity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">"</span><span class="si">{:b}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"1"</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>  <span class="c1"># optional interpret function</span>
 <span class="n">output_shape</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># parity = 0, 1</span>
 <span class="n">qnn2</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
     <span class="n">circuit</span><span class="o">=</span><span class="n">qc</span><span class="p">,</span>
@@ -798,21 +795,13 @@ Accuracy: 0.35
 <span class="p">)</span>
 
 <span class="c1"># Set up PyTorch module</span>
-<span class="c1"># Reminder: If we don&#39;t explicitly declare the initial weights</span>
+<span class="c1"># Reminder: If we don't explicitly declare the initial weights</span>
 <span class="c1"># they are chosen uniformly at random from [-1, 1].</span>
 <span class="n">initial_weights</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">qnn2</span><span class="o">.</span><span class="n">num_weights</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial weights: &quot;</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Initial weights: "</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
 <span class="n">model2</span> <span class="o">=</span> <span class="n">TorchConnector</span><span class="p">(</span><span class="n">qnn2</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Sampler requires transpilation, please provide a pass manager.
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -855,26 +844,26 @@ Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.6909252405166626
-0.6852445006370544
-0.6635377407073975
-0.6569868922233582
-0.6528955698013306
-0.6395989060401917
-0.7259945273399353
-0.6574572324752808
-0.6681171655654907
-0.797985851764679
-0.7328065633773804
-0.7375633120536804
-0.7106356620788574
-0.672947883605957
-0.6482071876525879
-0.7614311575889587
-0.7623289823532104
-0.6698791980743408
-0.7101041674613953
-0.6818603277206421
+0.6854816675186157
+0.6879637837409973
+0.6965739727020264
+0.6586071252822876
+0.6514801383018494
+0.6520846486091614
+0.6445209383964539
+0.6551432609558105
+0.6393994092941284
+0.6341919302940369
+0.7670071721076965
+0.6358897686004639
+0.7283385992050171
+0.8030790090560913
+0.7016396522521973
+0.7341200709342957
+0.7665800452232361
+0.6978639364242554
+0.7411047220230103
+0.7377618551254272
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -888,18 +877,18 @@ Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
     <span class="n">output</span> <span class="o">=</span> <span class="n">model2</span><span class="p">(</span><span class="n">Tensor</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
     <span class="n">y_predict</span> <span class="o">+=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())]</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy:&quot;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y_predict</span> <span class="o">==</span> <span class="n">y01</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y01</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Accuracy:"</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y_predict</span> <span class="o">==</span> <span class="n">y01</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y01</span><span class="p">))</span>
 
 <span class="c1"># plot results</span>
 <span class="c1"># red == wrongly classified</span>
 <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y_target</span><span class="p">,</span> <span class="n">y_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y01</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">y_target</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"bo"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;go&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"go"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">y_target</span> <span class="o">!=</span> <span class="n">y_</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">"r"</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -909,7 +898,7 @@ Initial weights:  [ 0.0364991  -0.0720495  -0.06001836 -0.09852755]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Accuracy: 0.65
+Accuracy: 0.35
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -938,8 +927,8 @@ Accuracy: 0.65
 
 <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">ub</span> <span class="o">-</span> <span class="n">lb</span><span class="p">)</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">lb</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">)),</span> <span class="s2">&quot;r--&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">)),</span> <span class="s2">"r--"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">"bo"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -954,18 +943,18 @@ Accuracy: 0.65
 <section id="A.-Regression-with-PyTorch-and-EstimatorQNN">
 <h4>A. Regression with PyTorch and <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code><a class="headerlink" href="#A.-Regression-with-PyTorch-and-EstimatorQNN" title="Link to this heading">¶</a></h4>
 <p>The network definition and training loop will be analogous to those of the classification task using <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>. In this case, we define our own feature map and ansatz, but let’s do it a little different.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Construct simple feature map</span>
-<span class="n">param_x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
-<span class="n">feature_map</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fm&quot;</span><span class="p">)</span>
+<span class="n">param_x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">"x"</span><span class="p">)</span>
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"fm"</span><span class="p">)</span>
 <span class="n">feature_map</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">param_x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># Construct simple parameterized ansatz</span>
-<span class="n">param_y</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
-<span class="n">ansatz</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vf&quot;</span><span class="p">)</span>
+<span class="n">param_y</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">"y"</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"vf"</span><span class="p">)</span>
 <span class="n">ansatz</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">param_y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
 <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -978,20 +967,12 @@ Accuracy: 0.65
 <span class="p">)</span>
 
 <span class="c1"># Set up PyTorch module</span>
-<span class="c1"># Reminder: If we don&#39;t explicitly declare the initial weights</span>
+<span class="c1"># Reminder: If we don't explicitly declare the initial weights</span>
 <span class="c1"># they are chosen uniformly at random from [-1, 1].</span>
 <span class="n">initial_weights</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">qnn3</span><span class="o">.</span><span class="n">num_weights</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">model3</span> <span class="o">=</span> <span class="n">TorchConnector</span><span class="p">(</span><span class="n">qnn3</span><span class="p">,</span> <span class="n">initial_weights</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
-</pre></div></div>
 </div>
 <p>For a reminder on optimizer and loss function choices, you can go back to <a class="reference internal" href="#Optimizer"><span class="std std-ref">this section</span></a>.</p>
 <div class="nbinput docutils container">
@@ -1000,7 +981,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define optimizer and loss function</span>
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">LBFGS</span><span class="p">(</span><span class="n">model3</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
-<span class="n">f_loss</span> <span class="o">=</span> <span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+<span class="n">f_loss</span> <span class="o">=</span> <span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">"sum"</span><span class="p">)</span>
 
 <span class="c1"># Start training</span>
 <span class="n">model3</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>  <span class="c1"># set model to training mode</span>
@@ -1025,26 +1006,26 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-14.989795684814453
-2.905945301055908
-8.198637962341309
-0.39626067876815796
-0.23738709092140198
-0.24010822176933289
-0.24904222786426544
-0.2317599505186081
-0.24555973708629608
-0.21544601023197174
-0.2746534049510956
-0.2471752017736435
-0.25860095024108887
-0.24897757172584534
-0.2518843710422516
-0.2753368616104126
-0.23190762102603912
-0.24379082024097443
-0.24841748178005219
-0.26305755972862244
+15.016261100769043
+2.935256004333496
+8.594487190246582
+0.35983896255493164
+0.22694829106330872
+0.22385676205158234
+0.2606302797794342
+0.2643882632255554
+0.291786253452301
+0.2736479640007019
+0.2762468457221985
+0.2563861906528473
+0.2629615068435669
+0.26627588272094727
+0.24850940704345703
+0.2606561779975891
+0.24134711921215057
+0.2628873884677887
+0.26912054419517517
+0.2818123698234558
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1053,7 +1034,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-tensor(14.9898, grad_fn=&lt;MseLossBackward0&gt;)
+tensor(15.0163, grad_fn=&lt;MseLossBackward0&gt;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1061,10 +1042,10 @@ tensor(14.9898, grad_fn=&lt;MseLossBackward0&gt;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot target function</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">)),</span> <span class="s2">&quot;r--&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">)),</span> <span class="s2">"r--"</span><span class="p">)</span>
 
 <span class="c1"># Plot data</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;bo&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s2">"bo"</span><span class="p">)</span>
 
 <span class="c1"># Plot fitted line</span>
 <span class="n">model3</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
@@ -1072,7 +1053,7 @@ tensor(14.9898, grad_fn=&lt;MseLossBackward0&gt;)
 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">):</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">model3</span><span class="p">(</span><span class="n">Tensor</span><span class="p">([</span><span class="n">x</span><span class="p">]))</span>
     <span class="n">y_</span> <span class="o">+=</span> <span class="p">[</span><span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">y_</span><span class="p">,</span> <span class="s2">&quot;g-&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">),</span> <span class="n">y_</span><span class="p">,</span> <span class="s2">"g-"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1135,7 +1116,7 @@ tensor(14.9898, grad_fn=&lt;MseLossBackward0&gt;)
 
 <span class="c1"># Use pre-defined torchvision function to load MNIST train data</span>
 <span class="n">X_train</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;./data&quot;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">()])</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">"./data"</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">()])</span>
 <span class="p">)</span>
 
 <span class="c1"># Filter out labels (originally 0-9), leaving only labels 0 and 1</span>
@@ -1174,10 +1155,10 @@ tensor(14.9898, grad_fn=&lt;MseLossBackward0&gt;)
 <span class="k">while</span> <span class="n">n_samples_show</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
     <span class="n">images</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">data_iter</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span>
 
-    <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">)</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
     <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
-    <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Labeled: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">n_samples_show</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Labeled: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
 
     <span class="n">n_samples_show</span> <span class="o">-=</span> <span class="mi">1</span>
 </pre></div>
@@ -1204,7 +1185,7 @@ tensor(14.9898, grad_fn=&lt;MseLossBackward0&gt;)
 
 <span class="c1"># Use pre-defined torchvision function to load MNIST test data</span>
 <span class="n">X_test</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;./data&quot;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">()])</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">"./data"</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">()])</span>
 <span class="p">)</span>
 
 <span class="c1"># Filter out labels (originally 0-9), leaving only labels 0 and 1</span>
@@ -1224,7 +1205,7 @@ tensor(14.9898, grad_fn=&lt;MseLossBackward0&gt;)
 <h3>Step 2: Defining the QNN and Hybrid Model<a class="headerlink" href="#Step-2:-Defining-the-QNN-and-Hybrid-Model" title="Link to this heading">¶</a></h3>
 <p>This second step shows the power of the <code class="docutils literal notranslate"><span class="pre">TorchConnector</span></code>. After defining our quantum neural network layer (in this case, a <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code>), we can embed it into a layer in our torch <code class="docutils literal notranslate"><span class="pre">Module</span></code> by initializing a torch connector as <code class="docutils literal notranslate"><span class="pre">TorchConnector(qnn)</span></code>.</p>
 <p><strong>⚠️ Attention:</strong> In order to have an adequate gradient backpropagation in hybrid models, we MUST set the initial parameter <code class="docutils literal notranslate"><span class="pre">input_gradients</span></code> to TRUE during the qnn initialization.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
@@ -1250,14 +1231,6 @@ tensor(14.9898, grad_fn=&lt;MseLossBackward0&gt;)
 <span class="n">qnn4</span> <span class="o">=</span> <span class="n">create_qnn</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
-</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
@@ -1322,7 +1295,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
         <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>  <span class="c1"># Optimize weights</span>
         <span class="n">total_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>  <span class="c1"># Store loss</span>
     <span class="n">loss_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">total_loss</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">total_loss</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Training [</span><span class="si">{:.0f}</span><span class="s2">%]</span><span class="se">\t</span><span class="s2">Loss: </span><span class="si">{:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">loss_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Training [</span><span class="si">{:.0f}</span><span class="s2">%]</span><span class="se">\t</span><span class="s2">Loss: </span><span class="si">{:.4f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">loss_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
 </pre></div>
 </div>
 </div>
@@ -1331,16 +1304,16 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Training [10%]  Loss: -1.1355
-Training [20%]  Loss: -1.5447
-Training [30%]  Loss: -1.7699
-Training [40%]  Loss: -2.0378
-Training [50%]  Loss: -2.2600
-Training [60%]  Loss: -2.4361
-Training [70%]  Loss: -2.6271
-Training [80%]  Loss: -2.8504
-Training [90%]  Loss: -3.0825
-Training [100%] Loss: -3.2810
+Training [10%]  Loss: -1.1343
+Training [20%]  Loss: -1.5428
+Training [30%]  Loss: -1.7676
+Training [40%]  Loss: -2.0375
+Training [50%]  Loss: -2.2540
+Training [60%]  Loss: -2.4418
+Training [70%]  Loss: -2.6513
+Training [80%]  Loss: -2.8630
+Training [90%]  Loss: -3.0889
+Training [100%] Loss: -3.2805
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1349,9 +1322,9 @@ Training [100%] Loss: -3.2810
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot loss convergence</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loss_list</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Hybrid NN Training Convergence&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Training Iterations&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Neg. Log Likelihood Loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Hybrid NN Training Convergence"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Training Iterations"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Neg. Log Likelihood Loss"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1368,7 +1341,7 @@ Training [100%] Loss: -3.2810
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model4</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;model4.pt&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model4</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">"model4.pt"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1382,17 +1355,9 @@ Training [100%] Loss: -3.2810
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qnn5</span> <span class="o">=</span> <span class="n">create_qnn</span><span class="p">()</span>
 <span class="n">model5</span> <span class="o">=</span> <span class="n">Net</span><span class="p">(</span><span class="n">qnn5</span><span class="p">)</span>
-<span class="n">model5</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model4.pt&quot;</span><span class="p">))</span>
+<span class="n">model5</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"model4.pt"</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
@@ -1423,7 +1388,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
         <span class="n">total_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
 
     <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;Performance on test data:</span><span class="se">\n\t</span><span class="s2">Loss: </span><span class="si">{:.4f}</span><span class="se">\n\t</span><span class="s2">Accuracy: </span><span class="si">{:.1f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="s2">"Performance on test data:</span><span class="se">\n\t</span><span class="s2">Loss: </span><span class="si">{:.4f}</span><span class="se">\n\t</span><span class="s2">Accuracy: </span><span class="si">{:.1f}</span><span class="s2">%"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">sum</span><span class="p">(</span><span class="n">total_loss</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">total_loss</span><span class="p">),</span> <span class="n">correct</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -1436,7 +1401,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Performance on test data:
-        Loss: -3.3288
+        Loss: -3.3407
         Accuracy: 100.0%
 </pre></div></div>
 </div>
@@ -1461,11 +1426,11 @@ Performance on test data:
 
         <span class="n">pred</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">)</span>
 
         <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
         <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
-        <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Predicted </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pred</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Predicted </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pred</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
 
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
 </pre></div>
@@ -1494,13 +1459,13 @@ Performance on test data:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.2.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.19</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Dec 24 13:58:53 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.5.2</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.1</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.20</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Aug 19 21:30:27 2026 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of a Qiskit project</h3><p>&copy; Copyright IBM 2017, 2025.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
+<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of a Qiskit project</h3><p>&copy; Copyright IBM 2017, 2026.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
 </div>
 </section>
 </section>
@@ -1547,7 +1512,7 @@ Performance on test data:
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1611,7 +1576,7 @@ Performance on test data:
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

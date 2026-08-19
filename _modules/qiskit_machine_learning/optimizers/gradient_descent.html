@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.gradient_descent - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.gradient_descent - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.gradient_descent</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2021, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2021, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,8 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;A standard gradient descent optimizer.&quot;&quot;&quot;</span>
+<span class="sd">"""A standard gradient descent optimizer."""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
@@ -488,33 +495,33 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GradientDescentState.html#qiskit_machine_learning.optimizers.GradientDescentState">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">GradientDescentState</span><span class="p">(</span><span class="n">OptimizerState</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;State of :class:`~.GradientDescent`.</span>
+<span class="w">    </span><span class="sd">"""State of :class:`~.GradientDescent`.</span>
 
 <span class="sd">    Dataclass with all the information of an optimizer plus the learning_rate and the step-size.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">stepsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Norm of the gradient on the last step.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Norm of the gradient on the last step."""</span>
 
     <span class="n">learning_rate</span><span class="p">:</span> <span class="n">LearningRate</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Learning rate at the current step of the optimization process.</span>
+<span class="w">    </span><span class="sd">"""Learning rate at the current step of the optimization process.</span>
 
 <span class="sd">    It behaves like a generator, (use ``next(learning_rate)`` to get the learning rate for the</span>
 <span class="sd">    next step) but it can also return  the current learning rate with ``learning_rate.current``.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># See parent class for a comment on having custom equals. I needed this</span>
     <span class="c1"># too as it does not appear to use super by default and without this failed</span>
     <span class="c1"># the exact same way. Note it does not include learning rate as that field</span>
     <span class="c1"># is not included in the compare as per the field decorator. The __eq__</span>
     <span class="c1"># method is supposed to accept any object. If you update the version of</span>
-    <span class="c1"># mypy you&#39;re using, it&#39;ll print out a note recommending this code</span>
+    <span class="c1"># mypy you're using, it'll print out a note recommending this code</span>
     <span class="c1"># structure.</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">GradientDescentState</span><span class="p">):</span>
             <span class="c1"># If we return NotImplemented, Python will automatically try</span>
-            <span class="c1"># running other.__eq__(self), in case &#39;other&#39; knows what to do with</span>
+            <span class="c1"># running other.__eq__(self), in case 'other' knows what to do with</span>
             <span class="c1"># Person objects.</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
@@ -525,9 +532,9 @@
 <div class="viewcode-block" id="GradientDescent">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GradientDescent.html#qiskit_machine_learning.optimizers.GradientDescent">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GradientDescent</span><span class="p">(</span><span class="n">SteppableOptimizer</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The gradient descent minimization routine.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""The gradient descent minimization routine.</span>
 
-<span class="sd">    For a function :math:`f` and an initial point :math:`\vec\theta_0`, the standard (or &quot;vanilla&quot;)</span>
+<span class="sd">    For a function :math:`f` and an initial point :math:`\vec\theta_0`, the standard (or "vanilla")</span>
 <span class="sd">    gradient descent method is an iterative scheme to find the minimum :math:`\vec\theta^*` of</span>
 <span class="sd">    :math:`f` by updating the parameters in the direction of the negative gradient of :math:`f`</span>
 
@@ -565,8 +572,8 @@
 
 <span class="sd">            result = optimizer.minimize(fun=fun, x0=initial_point)</span>
 
-<span class="sd">            print(f&quot;Found minimum {result.x} at a value&quot;</span>
-<span class="sd">                &quot;of {result.fun} using {result.nfev} evaluations.&quot;)</span>
+<span class="sd">            print(f"Found minimum {result.x} at a value"</span>
+<span class="sd">                "of {result.fun} using {result.nfev} evaluations.")</span>
 
 <span class="sd">        An example where the learning rate is an iterator and we supply the analytic gradient.</span>
 <span class="sd">        Note how much faster this converges (i.e. less ``nfev``) compared to the previous</span>
@@ -598,8 +605,8 @@
 <span class="sd">            optimizer = GradientDescent(maxiter=100, learning_rate=learning_rate)</span>
 <span class="sd">            result = optimizer.minimize(fun=fun, jac=grad_f, x0=initial_point)</span>
 
-<span class="sd">            print(f&quot;Found minimum {result.x} at a value&quot;</span>
-<span class="sd">            &quot;of {result.fun} using {result.nfev} evaluations.&quot;)</span>
+<span class="sd">            print(f"Found minimum {result.x} at a value"</span>
+<span class="sd">            "of {result.fun} using {result.nfev} evaluations.")</span>
 
 
 <span class="sd">    Another example where the evaluation of the function has a chance of failing. The user, with</span>
@@ -645,7 +652,7 @@
 
 <span class="sd">            result = optimizer.create_result()</span>
 
-<span class="sd">    Users that aren&#39;t dealing with complicated functions and who are more familiar with step by step</span>
+<span class="sd">    Users that aren't dealing with complicated functions and who are more familiar with step by step</span>
 <span class="sd">    optimization algorithms can use the :meth:`~.step` method which wraps the :meth:`~.ask`</span>
 <span class="sd">    and :meth:`~.tell` methods. In the same spirit the method :meth:`~.minimize` will optimize the</span>
 <span class="sd">    function and return the result.</span>
@@ -653,7 +660,7 @@
 <span class="sd">    To see other libraries that use this interface one can visit:</span>
 <span class="sd">    https://optuna.readthedocs.io/en/stable/tutorial/20_recipes/009_ask_and_tell.html</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -666,7 +673,7 @@
         <span class="n">callback</span><span class="p">:</span> <span class="n">CALLBACK</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">perturbation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            maxiter: The maximum number of iterations.</span>
 <span class="sd">            learning_rate: A constant, list, array or factory of generators yielding learning rates</span>
@@ -679,7 +686,7 @@
 <span class="sd">                Ignored when we have an explicit function for the gradient.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If ``learning_rate`` is an array and its length is less than ``maxiter``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="n">maxiter</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">:</span> <span class="n">GradientDescentState</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -689,54 +696,54 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">maxiter</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Length of learning_rate (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">)</span><span class="si">}</span><span class="s2">) &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;is smaller than maxiter (</span><span class="si">{</span><span class="n">maxiter</span><span class="si">}</span><span class="s2">).&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Length of learning_rate (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">)</span><span class="si">}</span><span class="s2">) "</span>
+                    <span class="sa">f</span><span class="s2">"is smaller than maxiter (</span><span class="si">{</span><span class="n">maxiter</span><span class="si">}</span><span class="s2">)."</span>
                 <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
 
     <span class="nd">@property</span>  <span class="c1"># type: ignore[override]</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GradientDescentState</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current state of the optimizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the current state of the optimizer."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span>
 
     <span class="nd">@state</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">GradientDescentState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the current state of the optimizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the current state of the optimizer."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">state</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tol</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the tolerance of the optimizer.</span>
+<span class="w">        </span><span class="sd">"""Returns the tolerance of the optimizer.</span>
 
-<span class="sd">        Any step with smaller step-size than this value will stop the optimization.&quot;&quot;&quot;</span>
+<span class="sd">        Any step with smaller step-size than this value will stop the optimization."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span>
 
     <span class="nd">@tol</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the tolerance.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the tolerance."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span> <span class="o">=</span> <span class="n">tol</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">perturbation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the perturbation.</span>
+<span class="w">        </span><span class="sd">"""Returns the perturbation.</span>
 
 <span class="sd">        This is the perturbation used in the finite difference gradient approximation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_perturbation</span>
 
     <span class="nd">@perturbation</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">perturbation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perturbation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the perturbation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the perturbation."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_perturbation</span> <span class="o">=</span> <span class="n">perturbation</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_callback_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Wraps the callback function to accommodate GradientDescent.</span>
 
 <span class="sd">        Will call :attr:`~.callback` and pass the following arguments:</span>
 <span class="sd">        current number of function values, current parameters, current function value,</span>
 <span class="sd">        norm of current gradient.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">nfev</span><span class="p">,</span>
@@ -754,21 +761,21 @@
             <span class="n">learning_rate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">next</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">)])</span>
 
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">,</span>
-            <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
-            <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="n">learning_rate</span><span class="p">,</span>
-            <span class="s2">&quot;perturbation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">perturbation</span><span class="p">,</span>
-            <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span>
+            <span class="s2">"maxiter"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">,</span>
+            <span class="s2">"tol"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span><span class="p">,</span>
+            <span class="s2">"learning_rate"</span><span class="p">:</span> <span class="n">learning_rate</span><span class="p">,</span>
+            <span class="s2">"perturbation"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">perturbation</span><span class="p">,</span>
+            <span class="s2">"callback"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="GradientDescent.ask">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GradientDescent.html#qiskit_machine_learning.optimizers.GradientDescent.ask">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AskData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an object with the data needed to evaluate the gradient.</span>
+<span class="w">        </span><span class="sd">"""Returns an object with the data needed to evaluate the gradient.</span>
 
 <span class="sd">        If this object contains a gradient function the gradient can be evaluated directly. Otherwise</span>
 <span class="sd">        approximate it with a finite difference scheme.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">AskData</span><span class="p">(</span>
             <span class="n">x_jac</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
         <span class="p">)</span></div>
@@ -777,7 +784,7 @@
 <div class="viewcode-block" id="GradientDescent.tell">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GradientDescent.html#qiskit_machine_learning.optimizers.GradientDescent.tell">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ask_data</span><span class="p">:</span> <span class="n">AskData</span><span class="p">,</span> <span class="n">tell_data</span><span class="p">:</span> <span class="n">TellData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates :attr:`.~GradientDescentState.x` by an amount proportional to the learning</span>
 <span class="sd">        rate and value of the gradient at that point.</span>
 
@@ -786,20 +793,20 @@
 <span class="sd">            tell_data: The data from the function evaluation.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the gradient passed doesn&#39;t have the right dimension.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            ValueError: If the gradient passed doesn't have the right dimension.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tell_data</span><span class="o">.</span><span class="n">eval_jac</span><span class="p">):</span>  <span class="c1"># type: ignore[arg-type]</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The gradient does not have the correct dimension&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The gradient does not have the correct dimension"</span><span class="p">)</span>
         <span class="c1"># pylint: disable=attribute-defined-outside-init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">tell_data</span><span class="o">.</span><span class="n">eval_jac</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">tell_data</span><span class="o">.</span><span class="n">eval_jac</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type, assignment]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">stepsize</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">tell_data</span><span class="o">.</span><span class="n">eval_jac</span><span class="p">))</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">nit</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="GradientDescent.evaluate">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GradientDescent.html#qiskit_machine_learning.optimizers.GradientDescent.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ask_data</span><span class="p">:</span> <span class="n">AskData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TellData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates the gradient.</span>
+<span class="w">        </span><span class="sd">"""Evaluates the gradient.</span>
 
 <span class="sd">        It does so either by evaluating an analytic gradient or by approximating it with a</span>
 <span class="sd">        finite difference scheme. It will either add ``1`` to the number of gradient evaluations or add</span>
@@ -812,7 +819,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The data containing the gradient evaluation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">jac</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">perturbation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">perturbation</span>
             <span class="n">grad</span> <span class="o">=</span> <span class="n">Optimizer</span><span class="o">.</span><span class="n">gradient_num_diff</span><span class="p">(</span>
@@ -832,14 +839,14 @@
 <div class="viewcode-block" id="GradientDescent.create_result">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GradientDescent.html#qiskit_machine_learning.optimizers.GradientDescent.create_result">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a result of the optimization process.</span>
+<span class="w">        </span><span class="sd">"""Creates a result of the optimization process.</span>
 
 <span class="sd">        This result contains the best point, the best function value, the number of function/gradient</span>
 <span class="sd">        evaluations and the number of iterations.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The result of the optimization process.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">OptimizerResult</span><span class="p">()</span>
         <span class="n">result</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">x</span>
         <span class="n">result</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">fun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
@@ -873,7 +880,7 @@
 <div class="viewcode-block" id="GradientDescent.continue_condition">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GradientDescent.html#qiskit_machine_learning.optimizers.GradientDescent.continue_condition">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">continue_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Condition that indicates the optimization process should come to an end.</span>
 
 <span class="sd">        When the stepsize is smaller than the tolerance, the optimization process is considered</span>
@@ -881,7 +888,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ``True`` if the optimization process should continue, ``False`` otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">stepsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
@@ -891,11 +898,11 @@
 <div class="viewcode-block" id="GradientDescent.get_support_level">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GradientDescent.html#qiskit_machine_learning.optimizers.GradientDescent.get_support_level">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the support level dictionary.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the support level dictionary."""</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">supported</span><span class="p">,</span>
-            <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
-            <span class="s2">&quot;initial_point&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
+            <span class="s2">"gradient"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">supported</span><span class="p">,</span>
+            <span class="s2">"bounds"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
+            <span class="s2">"initial_point"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
         <span class="p">}</span></div>
 </div>
 
@@ -923,7 +930,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -945,7 +952,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

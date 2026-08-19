@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.primitives.sampler - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.primitives.sampler - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.primitives.sampler</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2025.</span>
+<span class="c1"># (C) Copyright IBM 2025, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2025, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -469,7 +475,8 @@
 <span class="c1"># Any modifications or derivative works of this code must retain this</span>
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
-<span class="sd">&quot;&quot;&quot;Qiskit Machine Learning Sampler&quot;&quot;&quot;</span>
+<span class="sd">"""Qiskit Machine Learning Sampler"""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">is_dataclass</span><span class="p">,</span> <span class="n">asdict</span>
@@ -494,15 +501,15 @@
 <div class="viewcode-block" id="QMLSampler">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.primitives.QMLSampler.html#qiskit_machine_learning.primitives.QMLSampler">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">QMLSampler</span><span class="p">(</span><span class="n">StatevectorSampler</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    V2-based sampler primitive with two modes.</span>
 
 <span class="sd">      - shots=None (default): exact mode, no sampling. Returns deterministic probabilities.</span>
 <span class="sd">      - shots=int           : sampling mode, delegate to StatevectorSampler with given default_shots.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Statevector-based sampler supporting exact (analytic) and sampling modes.</span>
+<span class="w">        </span><span class="sd">"""Statevector-based sampler supporting exact (analytic) and sampling modes.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            shots (int | None): Number of shots for sampling mode. If ``None``, run in exact mode.</span>
@@ -510,7 +517,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            QMLSampler: Configured sampler instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exact_mode</span> <span class="o">=</span> <span class="n">shots</span> <span class="ow">is</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exact_mode</span><span class="p">:</span>
@@ -518,10 +525,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">default_shots</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">shots</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="n">parent_opts</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;__dict__&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">parent_opts</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"__dict__"</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"options"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">base</span> <span class="o">=</span> <span class="n">_options_to_dict</span><span class="p">(</span><span class="n">parent_opts</span><span class="p">)</span>
         <span class="n">merged</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-        <span class="n">merged</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;default_shots&quot;</span><span class="p">,</span> <span class="n">shots</span><span class="p">)</span>
+        <span class="n">merged</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"default_shots"</span><span class="p">,</span> <span class="n">shots</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">_OptionsNS</span><span class="p">(</span><span class="o">**</span><span class="n">merged</span><span class="p">)</span>
 
 <div class="viewcode-block" id="QMLSampler.run">
@@ -532,7 +539,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PrimitiveJob</span><span class="p">[</span><span class="n">PrimitiveResult</span><span class="p">[</span><span class="n">SamplerPubResult</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the sampler on PUBs.</span>
+<span class="w">        </span><span class="sd">"""Run the sampler on PUBs.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            pubs (Iterable[SamplerPubLike]): Publications to evaluate.</span>
@@ -540,7 +547,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            PrimitiveJob[PrimitiveResult[SamplerPubResult]]: Job executing the sampler.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exact_mode</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">pubs</span><span class="p">,</span> <span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">)</span>
 
@@ -554,26 +561,26 @@
     <span class="c1"># -------------------- exact evaluation --------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_run_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pubs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">SamplerPub</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">PrimitiveResult</span><span class="p">[</span><span class="n">SamplerPubResult</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deterministically evaluate all PUBs.</span>
+<span class="w">        </span><span class="sd">"""Deterministically evaluate all PUBs.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            pubs (Iterable[SamplerPub]): Fully coerced PUBs.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            PrimitiveResult[SamplerPubResult]: Exact results for each PUB.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_pub_exact</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span> <span class="k">for</span> <span class="n">pub</span> <span class="ow">in</span> <span class="n">pubs</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">PrimitiveResult</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_run_pub_exact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pub</span><span class="p">:</span> <span class="n">SamplerPub</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerPubResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute per-register exact probability containers for a single PUB.</span>
+<span class="w">        </span><span class="sd">"""Compute per-register exact probability containers for a single PUB.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            pub (SamplerPub): PUB containing circuit and parameters.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            SamplerPubResult: Exact probability results for this PUB.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">unitary_circ</span><span class="p">,</span> <span class="n">qargs</span><span class="p">,</span> <span class="n">meas_info</span> <span class="o">=</span> <span class="n">_preprocess_circuit</span><span class="p">(</span><span class="n">pub</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
 
         <span class="n">bound_circuits</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">parameter_values</span><span class="o">.</span><span class="n">bind_all</span><span class="p">(</span><span class="n">unitary_circ</span><span class="p">)</span>
@@ -585,7 +592,7 @@
                 <span class="n">sv</span> <span class="o">=</span> <span class="n">Statevector</span><span class="o">.</span><span class="n">from_instruction</span><span class="p">(</span><span class="n">circ</span><span class="p">)</span>
                 <span class="n">joint</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">probabilities_dict</span><span class="p">(</span><span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">joint</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span>
+                <span class="n">joint</span> <span class="o">=</span> <span class="p">{</span><span class="s2">""</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span>
             <span class="n">joint_probs_per_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">joint</span>
 
         <span class="c1"># Build per-register ExactProbArray views (one per broadcast index)</span>
@@ -617,10 +624,10 @@
         <span class="k">return</span> <span class="n">_ExactSamplerPubResult</span><span class="p">(</span>
             <span class="n">data_bin</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;shots&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;exact&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="n">names</span><span class="p">,</span>
-                <span class="s2">&quot;circuit_metadata&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="s2">"shots"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">"exact"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">"names"</span><span class="p">:</span> <span class="n">names</span><span class="p">,</span>
+                <span class="s2">"circuit_metadata"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="s2">"metadata"</span><span class="p">,</span> <span class="p">{}),</span>
             <span class="p">},</span>
         <span class="p">)</span></div>
 
@@ -630,15 +637,15 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ExactProbArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Deterministic probability container (scalar, i.e. shape == ()).</span>
 <span class="sd">    Methods:</span>
 <span class="sd">      - get_probabilities(loc=None) -&gt; dict[str, float]</span>
 <span class="sd">      - get_counts(loc=None, shots=None) -&gt; dict[str, int]  # only if distribution is dyadic</span>
 <span class="sd">    Supports concatenation via concatenate_bits() so join_data() forms the exact joint.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_joint_probs&quot;</span><span class="p">,</span> <span class="s2">&quot;_mask&quot;</span><span class="p">,</span> <span class="s2">&quot;_num_bits&quot;</span><span class="p">,</span> <span class="s2">&quot;_shape&quot;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_joint_probs"</span><span class="p">,</span> <span class="s2">"_mask"</span><span class="p">,</span> <span class="s2">"_num_bits"</span><span class="p">,</span> <span class="s2">"_shape"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -647,14 +654,14 @@
         <span class="n">num_bits</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exact probability container for a single classical register.</span>
+<span class="w">        </span><span class="sd">"""Exact probability container for a single classical register.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            joint_probs (Mapping[str, float]): Full joint measured-bit distribution.</span>
 <span class="sd">            mask (list[int]): LSB-ordered indices selecting bits exposed by this register.</span>
 <span class="sd">            num_bits (int): Width of the classical register.</span>
 <span class="sd">            shape (tuple[int, ...]): Broadcast shape (default ()).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_joint_probs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">joint_probs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_num_bits</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_bits</span><span class="p">)</span>
@@ -662,46 +669,46 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the broadcast shape of this container.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the broadcast shape of this container."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">num_bits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of classical bits represented by this container.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the number of classical bits represented by this container."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_bits</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">num_shots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return None to indicate that this distribution is analytic, not sampled.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return None to indicate that this distribution is analytic, not sampled."""</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_project_joint_to_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probs</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Project the joint distribution to this register&#39;s bit mask.</span>
+<span class="w">        </span><span class="sd">"""Project the joint distribution to this register's bit mask.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            probs (Mapping[str, float]): Full joint distribution.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[str, float]: Marginalized probability distribution.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">bitstr</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">probs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">bits</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bitstr</span><span class="p">)</span>  <span class="c1"># left</span>
             <span class="n">sel</span> <span class="o">=</span> <span class="p">[</span><span class="n">bits</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask</span><span class="p">)]</span>  <span class="c1"># LSB index 0 is rightmost char</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sel</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sel</span><span class="p">)</span>
             <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">p</span>
         <span class="k">return</span> <span class="n">out</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return exact bitstring probabilities.</span>
+<span class="w">        </span><span class="sd">"""Return exact bitstring probabilities.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[str, float]: Map from bitstring to exact probability.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project_joint_to_mask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_joint_probs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return dyadic counts consistent with probabilities.</span>
+<span class="w">        </span><span class="sd">"""Return dyadic counts consistent with probabilities.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            shots (int | None): Number of counts to generate. If ``None``, use dyadic size.</span>
@@ -711,11 +718,11 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the distribution is not dyadic.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_probabilities</span><span class="p">()</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">dyadic_k</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">,</span> <span class="n">kmax</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Helper function&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""Helper function"""</span>
             <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">):</span>
                 <span class="k">return</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">kmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
@@ -729,8 +736,8 @@
             <span class="n">k</span> <span class="o">=</span> <span class="n">dyadic_k</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;ExactProbArray.get_counts: distribution is not dyadic; &quot;</span>
-                    <span class="s2">&quot;use get_probabilities() for exact values.&quot;</span>
+                    <span class="s2">"ExactProbArray.get_counts: distribution is not dyadic; "</span>
+                    <span class="s2">"use get_probabilities() for exact values."</span>
                 <span class="p">)</span>
             <span class="n">ks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="n">k_common</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="k">if</span> <span class="n">ks</span> <span class="k">else</span> <span class="mi">0</span>
@@ -745,8 +752,8 @@
         <span class="k">return</span> <span class="n">counts</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">concatenate_bits</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;ExactProbArray&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExactProbArray&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Concatenate multiple ``ExactProbArray`` instances.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">concatenate_bits</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s2">"ExactProbArray"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">"ExactProbArray"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Concatenate multiple ``ExactProbArray`` instances.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            items (list[ExactProbArray]): Containers to concatenate.</span>
@@ -756,13 +763,13 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the joint distributions are incompatible.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No containers to concatenate.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No containers to concatenate."</span><span class="p">)</span>
         <span class="n">joint</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_joint_probs</span>
         <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
             <span class="k">if</span> <span class="n">it</span><span class="o">.</span><span class="n">_joint_probs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">joint</span> <span class="ow">and</span> <span class="n">it</span><span class="o">.</span><span class="n">_joint_probs</span> <span class="o">!=</span> <span class="n">joint</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot join different joint distributions.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot join different joint distributions."</span><span class="p">)</span>
         <span class="n">mask</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
             <span class="n">mask</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">_mask</span><span class="p">)</span>
@@ -771,45 +778,45 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ExactProbNDArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    ND wrapper around a numpy ndarray of ExactProbArray (dtype=object).</span>
 <span class="sd">    Exposes SamplerV2-like methods on the whole array:</span>
 <span class="sd">      - .get_counts(loc=None, shots=None)</span>
 <span class="sd">      - .get_probabilities(loc=None)</span>
 <span class="sd">    Supports indexing with numpy semantics: obj[idx].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_arr&quot;</span><span class="p">,)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_arr"</span><span class="p">,)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;N-dimensional wrapper for arrays of ``ExactProbArray``.</span>
+<span class="w">        </span><span class="sd">"""N-dimensional wrapper for arrays of ``ExactProbArray``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            arr (np.ndarray): Object array of ``ExactProbArray`` elements.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span>
 
     <span class="c1"># --- array-like protocol ---</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the shape of the underlying array.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the shape of the underlying array."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="nd">@overload</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ExactProbArray</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">slice</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExactProbNDArray&quot;</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">slice</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">"ExactProbNDArray"</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return probabilities element-wise or at a specific index.</span>
+<span class="w">        </span><span class="sd">"""Return probabilities element-wise or at a specific index.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            loc (int | tuple[int, ...] | None): Optional index.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[str, float] | np.ndarray: Probabilities for the selected element or array.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="c1"># Preserve behavior: if slicing returns an ndarray of ExactProbArray, wrap again.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -819,16 +826,16 @@
     <span class="c1"># Optional, used by some user code</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">num_shots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return None to indicate that all elements represent analytic distributions.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return None to indicate that all elements represent analytic distributions."""</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">num_bits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of bits per element, inferred from a representative</span>
-<span class="sd">        ExactProbArray.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the number of bits per element, inferred from a representative</span>
+<span class="sd">        ExactProbArray."""</span>
         <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="o">.</span><span class="n">flat</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">ExactProbArray</span><span class="p">):</span>
-                <span class="n">rep</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">ExactProbArray</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+                <span class="n">rep</span> <span class="o">=</span> <span class="n">raw</span>
                 <span class="k">return</span> <span class="n">rep</span><span class="o">.</span><span class="n">num_bits</span>
         <span class="k">return</span> <span class="mi">0</span>
 
@@ -840,8 +847,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return probabilities for a single location or an array of probability dicts for</span>
-<span class="sd">        all entries.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return probabilities for a single location or an array of probability dicts for</span>
+<span class="sd">        all entries."""</span>
         <span class="k">if</span> <span class="n">loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">elem</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">ExactProbArray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="p">[</span><span class="n">loc</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_probabilities</span><span class="p">()</span>
@@ -861,7 +868,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return counts element-wise or the union across positions.</span>
+<span class="w">        </span><span class="sd">"""Return counts element-wise or the union across positions.</span>
 <span class="sd">        When ``location=None``, follow ``BitArray`` semantics: union counts across all positions.</span>
 <span class="sd">        If you want per-position, index first (e.g., ``obj[i].get_counts())``.</span>
 
@@ -871,7 +878,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[str, int] | np.ndarray: Counts for the selected element or union.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">elem</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">ExactProbArray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="p">[</span><span class="n">loc</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_counts</span><span class="p">(</span><span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">)</span>
@@ -891,24 +898,24 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_options_to_dict</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an options object to a plain dict.</span>
+<span class="w">    </span><span class="sd">"""Convert an options object to a plain dict.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        opts: Any options-like object.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: Extracted key–value pairs.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">opts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">asdict</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;__dict__&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)}</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="s2">"__dict__"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)}</span>
     <span class="c1"># Fallback: probe attributes</span>
     <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_"</span><span class="p">):</span>
             <span class="k">continue</span>
         <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
@@ -918,14 +925,14 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_OptionsNS</span><span class="p">(</span><span class="n">SimpleNamespace</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mutable, dict-like options name space with an update(**kwargs) helper.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Mutable, dict-like options name space with an update(**kwargs) helper."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update options in place.</span>
+<span class="w">        </span><span class="sd">"""Update options in place.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            **kwargs: Key–value pairs to update.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
@@ -935,8 +942,8 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">_MeasureInfo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a map from each final classical bit to the qubit index it measures, assuming</span>
-<span class="sd">    only final measurements.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a map from each final classical bit to the qubit index it measures, assuming</span>
+<span class="sd">    only final measurements."""</span>
 
     <span class="n">creg_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">num_bits</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># measured bit-width of this register</span>
@@ -944,20 +951,20 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_final_measurement_mapping</span><span class="p">(</span><span class="n">circuit</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">ClassicalRegister</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map final classical bits to qubit indices.</span>
+<span class="w">    </span><span class="sd">"""Map final classical bits to qubit indices.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        circuit (QuantumCircuit): Circuit with final measurements.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict[(ClassicalRegister, int), int]: Mapping from classical bit to qubit index.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">active_qubits</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">))</span>
     <span class="n">active_cbits</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_clbits</span><span class="p">))</span>
     <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">ClassicalRegister</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">circuit</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
         <span class="n">op</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">&quot;measure&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">"measure"</span><span class="p">:</span>
             <span class="n">loc</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">find_bit</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">clbits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">c_idx</span> <span class="o">=</span> <span class="n">loc</span><span class="o">.</span><span class="n">index</span>
             <span class="n">q_idx</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">find_bit</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">index</span>
@@ -965,7 +972,7 @@
                 <span class="k">for</span> <span class="n">creg</span> <span class="ow">in</span> <span class="n">loc</span><span class="o">.</span><span class="n">registers</span><span class="p">:</span>  <span class="c1"># (ClassicalRegister, offset within that register)</span>
                     <span class="n">mapping</span><span class="p">[</span><span class="n">creg</span><span class="p">]</span> <span class="o">=</span> <span class="n">q_idx</span>
                 <span class="n">active_cbits</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;barrier&quot;</span><span class="p">,</span> <span class="s2">&quot;delay&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"barrier"</span><span class="p">,</span> <span class="s2">"delay"</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">qubits</span><span class="p">:</span>
                 <span class="n">q_i</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">find_bit</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
                 <span class="n">active_qubits</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">q_i</span><span class="p">)</span>
@@ -975,7 +982,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_preprocess_circuit</span><span class="p">(</span><span class="n">circuit</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Preprocess a circuit to extract measurement mapping.</span>
+<span class="w">    </span><span class="sd">"""Preprocess a circuit to extract measurement mapping.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        circuit (QuantumCircuit): Circuit with final measurements.</span>
@@ -985,7 +992,7 @@
 <span class="sd">            QuantumCircuit: Circuit with final measurements removed.</span>
 <span class="sd">            list[int]: Sorted measured qubit indices.</span>
 <span class="sd">            list[_MeasureInfo]: Measurement metadata per classical register.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="n">_final_measurement_mapping</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
     <span class="n">qargs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
     <span class="n">qargs_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">q</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">qargs</span><span class="p">)}</span>
@@ -1011,11 +1018,11 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_ExactSamplerPubResult</span><span class="p">(</span><span class="n">SamplerPubResult</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SamplerPubResult variant whose join_data() understands ExactProbArray and</span>
-<span class="sd">    ExactProbNDArray containers.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""SamplerPubResult variant whose join_data() understands ExactProbArray and</span>
+<span class="sd">    ExactProbNDArray containers."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">join_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Join named per-register probability containers.</span>
+<span class="w">        </span><span class="sd">"""Join named per-register probability containers.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            names (Iterable[str] | None): Register names to join.</span>
@@ -1025,15 +1032,15 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If names are empty or missing.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"names"</span><span class="p">,</span> <span class="p">[]))</span>
         <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">names</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;names is empty&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"names is empty"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;name does not exist: </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"name does not exist: </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
@@ -1078,7 +1085,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1100,7 +1107,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

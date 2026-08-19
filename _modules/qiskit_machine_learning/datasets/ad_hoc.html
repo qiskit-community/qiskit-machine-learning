@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.datasets.ad_hoc - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.datasets.ad_hoc - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.datasets.ad_hoc</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2018, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2018, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,9 +476,10 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Ad Hoc Dataset</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -496,16 +503,16 @@
     <span class="n">plot_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">one_hot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">include_sample_total</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">entanglement</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;full&quot;</span><span class="p">,</span>
-    <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;grid&quot;</span><span class="p">,</span>
+    <span class="n">entanglement</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"full"</span><span class="p">,</span>
+    <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"grid"</span><span class="p">,</span>
     <span class="n">divisions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">labelling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;expectation&quot;</span><span class="p">,</span>
+    <span class="n">labelling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"expectation"</span><span class="p">,</span>
     <span class="n">class_labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
     <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
     <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Generates a dataset that can be fully separated by</span>
 <span class="sd">    :class:`~qiskit.circuit.library.ZZFeatureMap` according to the procedure</span>
 <span class="sd">    outlined in [1]. First, vectors :math:`\vec{x} \in (0, 2\pi]^{n}` are generated from a</span>
@@ -530,8 +537,8 @@
 <span class="sd">        \phi_{\{i\}} = x_i \end{cases}</span>
 
 <span class="sd">    The choice of second-order terms :math:`Z_i Z_j` in the above summation depends</span>
-<span class="sd">    on the ``entanglement`` argument (``&quot;linear&quot;``, ``&quot;circular&quot;``, or</span>
-<span class="sd">    ``&quot;full&quot;``). See arguments for more information.</span>
+<span class="sd">    on the ``entanglement`` argument (``"linear"``, ``"circular"``, or</span>
+<span class="sd">    ``"full"``). See arguments for more information.</span>
 
 <span class="sd">    An observable is then defined as</span>
 
@@ -539,10 +546,10 @@
 <span class="sd">       O = V^\dagger \bigl(\prod_i Z_i\bigr) V</span>
 
 <span class="sd">    where :math:`V` is a randomly generated unitary matrix. Depending on the</span>
-<span class="sd">    ``labelling_method``, if ``&quot;expectation&quot;`` is used, the expectation value</span>
+<span class="sd">    ``labelling_method``, if ``"expectation"`` is used, the expectation value</span>
 <span class="sd">    :math:`\langle \Phi(\vec{x})| O |\Phi(\vec{x})\rangle` is compared to the</span>
 <span class="sd">    gap parameter :math:`\Delta` (from ``gap``) to assign :math:`\pm 1` labels.</span>
-<span class="sd">    if ``&quot;measurement&quot;`` is used, a simple measurement in the computational</span>
+<span class="sd">    if ``"measurement"`` is used, a simple measurement in the computational</span>
 <span class="sd">    basis is performed to assign labels.</span>
 
 <span class="sd">    **References:**</span>
@@ -556,7 +563,7 @@
 <span class="sd">        training_size : Number of training samples per class.</span>
 <span class="sd">        test_size :  Number of testing samples per class.</span>
 <span class="sd">        n : Number of qubits (dimension of the feature space).</span>
-<span class="sd">        gap : Separation gap :math:`\Delta` used when ``labelling_method=&quot;expectation&quot;``.</span>
+<span class="sd">        gap : Separation gap :math:`\Delta` used when ``labelling_method="expectation"``.</span>
 <span class="sd">            Default is 0.</span>
 <span class="sd">        plot_data : If True, plots the sampled data (disabled automatically if</span>
 <span class="sd">            ``n &gt; 3``). Default is False.</span>
@@ -566,28 +573,28 @@
 <span class="sd">        entanglement : Determines which second-order terms :math:`Z_i Z_j` appear in</span>
 <span class="sd">            :math:`U_{\Phi(\vec{x})}`. The options are:</span>
 
-<span class="sd">                * ``&quot;linear&quot;``: Includes terms :math:`Z_i Z_{i+1}`.</span>
-<span class="sd">                * ``&quot;circular&quot;``: Includes ``&quot;linear&quot;`` terms plus :math:`Z_{n-1}Z_0`.</span>
-<span class="sd">                * ``&quot;full&quot;``: Includes all pairwise terms :math:`Z_i Z_j`.</span>
+<span class="sd">                * ``"linear"``: Includes terms :math:`Z_i Z_{i+1}`.</span>
+<span class="sd">                * ``"circular"``: Includes ``"linear"`` terms plus :math:`Z_{n-1}Z_0`.</span>
+<span class="sd">                * ``"full"``: Includes all pairwise terms :math:`Z_i Z_j`.</span>
 
-<span class="sd">            Default is ``&quot;full&quot;``.</span>
+<span class="sd">            Default is ``"full"``.</span>
 <span class="sd">        sampling_method: The method used to generate uniform samples :math:`\vec{x}`.</span>
 <span class="sd">            Choices are:</span>
 
-<span class="sd">                * ``&quot;grid&quot;``: Chooses points from a uniform grid (supported only if ``n &lt;= 3``)</span>
-<span class="sd">                * ``&quot;hypercube&quot;``: Uses a variant of Latin Hypercube sampling for stratification</span>
-<span class="sd">                * ``&quot;sobol&quot;``: Uses Sobol sequences</span>
+<span class="sd">                * ``"grid"``: Chooses points from a uniform grid (supported only if ``n &lt;= 3``)</span>
+<span class="sd">                * ``"hypercube"``: Uses a variant of Latin Hypercube sampling for stratification</span>
+<span class="sd">                * ``"sobol"``: Uses Sobol sequences</span>
 
-<span class="sd">            Default is ``&quot;grid&quot;``.</span>
-<span class="sd">        divisions : Must be specified if ``sampling_method=&quot;hypercube&quot;``. This parameter</span>
+<span class="sd">            Default is ``"grid"``.</span>
+<span class="sd">        divisions : Must be specified if ``sampling_method="hypercube"``. This parameter</span>
 <span class="sd">            determines the number of stratifications along each dimension. Recommended</span>
 <span class="sd">            to be chosen close to ``training_size``.</span>
 <span class="sd">        labelling_method : Method for assigning labels. The options are:</span>
 
-<span class="sd">                * ``&quot;expectation&quot;``: Uses the expectation value of the observable.</span>
-<span class="sd">                * ``&quot;measurement&quot;``: Performs a measurement in the computational basis.</span>
+<span class="sd">                * ``"expectation"``: Uses the expectation value of the observable.</span>
+<span class="sd">                * ``"measurement"``: Performs a measurement in the computational basis.</span>
 
-<span class="sd">            Default is ``&quot;expectation&quot;``.</span>
+<span class="sd">            Default is ``"expectation"``.</span>
 <span class="sd">        class_labels : Custom labels for the two classes when one-hot is not enabled.</span>
 <span class="sd">            If not provided, the labels default to ``-1`` and ``+1``</span>
 
@@ -602,7 +609,7 @@
 
 <span class="sd">        If ``include_sample_total=True``, a fifth element (``np.ndarray``) is included</span>
 <span class="sd">        that specifies the total number of accepted samples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Default Value</span>
     <span class="k">if</span> <span class="n">class_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -610,36 +617,36 @@
 
     <span class="c1"># Errors</span>
     <span class="k">if</span> <span class="n">training_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Training size can&#39;t be less than 0&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Training size can't be less than 0"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">test_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Test size can&#39;t be less than 0&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Test size can't be less than 0"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of qubits can&#39;t be less than 1&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">gap</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">labelling_method</span> <span class="o">==</span> <span class="s2">&quot;expectation&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Gap can&#39;t be less than 0&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">entanglement</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="s2">&quot;circular&quot;</span><span class="p">,</span> <span class="s2">&quot;full&quot;</span><span class="p">}:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid entanglement type. Must be &#39;linear&#39;, &#39;circular&#39;, or &#39;full&#39;.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">sampling_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="s2">&quot;hypercube&quot;</span><span class="p">,</span> <span class="s2">&quot;sobol&quot;</span><span class="p">}:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid sampling method. Must be &#39;grid&#39;, &#39;hypercube&#39;, or &#39;sobol&#39;.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">divisions</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;hypercube&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Divisions must be set for &#39;hypercube&#39; sampling.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">labelling_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;expectation&quot;</span><span class="p">,</span> <span class="s2">&quot;measurement&quot;</span><span class="p">}:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid labelling method. Must be &#39;expectation&#39; or &#39;measurement&#39;.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Grid sampling is unsupported for n &gt; 3.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Number of qubits can't be less than 1"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gap</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">labelling_method</span> <span class="o">==</span> <span class="s2">"expectation"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Gap can't be less than 0"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">entanglement</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"linear"</span><span class="p">,</span> <span class="s2">"circular"</span><span class="p">,</span> <span class="s2">"full"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid entanglement type. Must be 'linear', 'circular', or 'full'."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sampling_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"grid"</span><span class="p">,</span> <span class="s2">"hypercube"</span><span class="p">,</span> <span class="s2">"sobol"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid sampling method. Must be 'grid', 'hypercube', or 'sobol'."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">divisions</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"hypercube"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Divisions must be set for 'hypercube' sampling."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">labelling_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"expectation"</span><span class="p">,</span> <span class="s2">"measurement"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid labelling method. Must be 'expectation' or 'measurement'."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"grid"</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Grid sampling is unsupported for n &gt; 3."</span><span class="p">)</span>
 
     <span class="c1"># Warnings</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">plot_data</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;Plotting for n &gt; 3 is unsupported. Disabling plot_data.&quot;</span><span class="p">,</span>
+            <span class="s2">"Plotting for n &gt; 3 is unsupported. Disabling plot_data."</span><span class="p">,</span>
             <span class="ne">UserWarning</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">plot_data</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">training_size</span> <span class="o">+</span> <span class="n">test_size</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4000</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"grid"</span> <span class="ow">and</span> <span class="p">(</span><span class="n">training_size</span> <span class="o">+</span> <span class="n">test_size</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4000</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Grid Sampling for large number of samples is not recommended</span>
-<span class="sd">            and can lead to samples repeating in the training and testing sets&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="sd">"""Grid Sampling for large number of samples is not recommended</span>
+<span class="sd">            and can lead to samples repeating in the training and testing sets"""</span><span class="p">,</span>
             <span class="ne">UserWarning</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -655,13 +662,13 @@
 
     <span class="c1"># Precompute ZZ Entanglements</span>
     <span class="n">zz_diags</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">entanglement</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">entanglement</span> <span class="o">==</span> <span class="s2">"full"</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
             <span class="n">zz_diags</span><span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">z_diags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">z_diags</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">zz_diags</span><span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">z_diags</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">z_diags</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">entanglement</span> <span class="o">==</span> <span class="s2">&quot;circular&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">entanglement</span> <span class="o">==</span> <span class="s2">"circular"</span><span class="p">:</span>
             <span class="n">zz_diags</span><span class="p">[(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">z_diags</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">z_diags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># n-qubit Z gate: notice that h_n[0,:] has the same elements as diagonal of z_n</span>
@@ -676,7 +683,7 @@
     <span class="n">n_samples</span> <span class="o">=</span> <span class="n">training_size</span> <span class="o">+</span> <span class="n">test_size</span>
 
     <span class="c1"># Labelling Methods</span>
-    <span class="k">if</span> <span class="n">labelling_method</span> <span class="o">==</span> <span class="s2">&quot;expectation&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">labelling_method</span> <span class="o">==</span> <span class="s2">"expectation"</span><span class="p">:</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_lab_fn</span><span class="p">(</span><span class="n">psi_state</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">_exp_label</span><span class="p">(</span><span class="n">psi_state</span><span class="p">,</span> <span class="n">gap</span><span class="p">,</span> <span class="n">mat_o</span><span class="p">)</span>
@@ -688,12 +695,12 @@
             <span class="k">return</span> <span class="n">_measure</span><span class="p">(</span><span class="n">psi_state</span><span class="p">,</span> <span class="n">eig</span><span class="p">)</span>
 
     <span class="c1"># Sampling Methods</span>
-    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"grid"</span><span class="p">:</span>
         <span class="n">a_features</span><span class="p">,</span> <span class="n">b_features</span> <span class="o">=</span> <span class="n">_grid_sampling</span><span class="p">(</span>
             <span class="n">n</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">z_diags</span><span class="p">,</span> <span class="n">zz_diags</span><span class="p">,</span> <span class="n">psi_0</span><span class="p">,</span> <span class="n">h_n</span><span class="p">,</span> <span class="n">_lab_fn</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;hypercube&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"hypercube"</span><span class="p">:</span>
 
             <span class="k">def</span><span class="w"> </span><span class="nf">_samp_fn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">_modified_lhc</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">divisions</span><span class="p">)</span>
@@ -737,33 +744,33 @@
 
 <span class="nd">@optionals</span><span class="o">.</span><span class="n">HAS_MATPLOTLIB</span><span class="o">.</span><span class="n">require_in_call</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_plot_ad_hoc_data</span><span class="p">(</span><span class="n">a_features</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">b_features</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">training_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot the ad hoc dataset.</span>
+<span class="w">    </span><span class="sd">"""Plot the ad hoc dataset.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        a_features (np.ndarray): Class-A feature vectors.</span>
 <span class="sd">        b_features (np.ndarray): Class-B feature vectors.</span>
 <span class="sd">        training_size (int): Number of training samples to plot.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">projection</span> <span class="o">=</span> <span class="s2">&quot;3d&quot;</span> <span class="k">if</span> <span class="n">a_features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">projection</span> <span class="o">=</span> <span class="s2">"3d"</span> <span class="k">if</span> <span class="n">a_features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">)</span>
     <span class="n">ax1</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">a_features</span><span class="p">[:</span><span class="n">training_size</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
     <span class="n">ax1</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">b_features</span><span class="p">[:</span><span class="n">training_size</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Ad-hoc Data&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Ad-hoc Data"</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_n_hadamard</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an n-qubit Hadamard matrix.</span>
+<span class="w">    </span><span class="sd">"""Generate an n-qubit Hadamard matrix.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        n (int): Number of qubits.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: The n-qubit Hadamard matrix.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">base</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">expo</span> <span class="o">=</span> <span class="n">n</span>
@@ -778,7 +785,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_i_z</span><span class="p">(</span><span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the i-th single-qubit Z gate in an n-qubit system.</span>
+<span class="w">    </span><span class="sd">"""Create the i-th single-qubit Z gate in an n-qubit system.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        i (int): Index of the qubit.</span>
@@ -786,7 +793,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: The Z gate acting on the i-th qubit.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">i_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
     <span class="n">i_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
@@ -798,14 +805,14 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_n_z</span><span class="p">(</span><span class="n">h_n</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an n-qubit Z gate from the n-qubit Hadamard matrix.</span>
+<span class="w">    </span><span class="sd">"""Generate an n-qubit Z gate from the n-qubit Hadamard matrix.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        h_n (np.ndarray): n-qubit Hadamard matrix.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: The n-qubit Z gate.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">h_n</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
@@ -813,7 +820,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_modified_lhc</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_div</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate samples using modified Latin Hypercube Sampling.</span>
+<span class="w">    </span><span class="sd">"""Generate samples using modified Latin Hypercube Sampling.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        n (int): Dimensionality of the data.</span>
@@ -822,7 +829,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: Generated samples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">bin_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">n_div</span>
     <span class="n">n_passes</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_samples</span> <span class="o">+</span> <span class="n">n_div</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_div</span>
@@ -839,7 +846,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_sobol_sampling</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate samples using Sobol sequence sampling.</span>
+<span class="w">    </span><span class="sd">"""Generate samples using Sobol sequence sampling.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        n (int): Dimensionality of the data.</span>
@@ -847,14 +854,14 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: Generated samples scaled to the interval [0, 2π].</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sobol</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">scramble</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">p</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sampler</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">p</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_phi_i</span><span class="p">(</span><span class="n">x_vecs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the φ_i term for a given dimension.</span>
+<span class="w">    </span><span class="sd">"""Compute the φ_i term for a given dimension.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x_vecs (np.ndarray): Input sample vectors.</span>
@@ -862,12 +869,12 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: Computed φ_i values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">x_vecs</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_phi_ij</span><span class="p">(</span><span class="n">x_vecs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the φ_ij term for given dimensions.</span>
+<span class="w">    </span><span class="sd">"""Compute the φ_ij term for given dimensions.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x_vecs (np.ndarray): Input sample vectors.</span>
@@ -876,7 +883,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: Computed φ_ij values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">x_vecs</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">x_vecs</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
 
@@ -893,7 +900,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_loop_sampling</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">z_diags</span><span class="p">,</span> <span class="n">zz_diags</span><span class="p">,</span> <span class="n">psi_0</span><span class="p">,</span> <span class="n">h_n</span><span class="p">,</span> <span class="n">lab_fn</span><span class="p">,</span> <span class="n">samp_fn</span><span class="p">,</span> <span class="n">sampling_method</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Loop-based sampling routine to allocate feature vectors into two classes.</span>
 
 <span class="sd">    Args:</span>
@@ -909,13 +916,13 @@
 <span class="sd">            measurement-based).</span>
 <span class="sd">        samp_fn (Callable): Sampling function that generates feature vectors.</span>
 <span class="sd">        sampling_method (str): String indicating which sampling method is used</span>
-<span class="sd">            (&quot;grid&quot;, &quot;hypercube&quot;, or &quot;sobol&quot;).</span>
+<span class="sd">            ("grid", "hypercube", or "sobol").</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple[np.ndarray, np.ndarray]:</span>
 <span class="sd">            Two arrays of shape `(n_samples, n)`, each containing the sampled</span>
 <span class="sd">            feature vectors belonging to class A and class B, respectively.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">a_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">b_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
@@ -927,7 +934,7 @@
         <span class="n">n_pass</span> <span class="o">=</span> <span class="n">a_needed</span> <span class="o">+</span> <span class="n">b_needed</span>
 
         <span class="c1"># Sobol works better with a 2^n just above n_pass</span>
-        <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;sobol&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"sobol"</span><span class="p">:</span>
             <span class="n">n_pass</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">((</span><span class="n">n_pass</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">bit_length</span><span class="p">())</span>
 
         <span class="c1"># Stratified Sampling for x vector</span>
@@ -972,7 +979,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_exp_label</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="n">gap</span><span class="p">,</span> <span class="n">mat_o</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute labels by comparing the expectation value of an observable to a gap.</span>
 
 <span class="sd">    Args:</span>
@@ -985,7 +992,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: Labels for each sample. Values will be -1, 0, or +1, where</span>
 <span class="sd">        0 indicates an expectation value within the gap zone (not exceeding ±gap).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">psi_dag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">psi</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
     <span class="n">exp_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">psi_dag</span> <span class="o">@</span> <span class="n">mat_o</span> <span class="o">@</span> <span class="n">psi</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">exp_val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">gap</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">exp_val</span><span class="p">))</span>
@@ -993,7 +1000,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_measure</span><span class="p">(</span><span class="n">psi</span><span class="p">,</span> <span class="n">eig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute labels by simulating a measurement of the observable on each state.</span>
 
 <span class="sd">    The eigen-decomposition of O is used as the measurement basis. Each state</span>
@@ -1003,12 +1010,12 @@
 <span class="sd">    Args:</span>
 <span class="sd">        psi (np.ndarray): Array of shape `(num_samples, dim, 1)` containing</span>
 <span class="sd">            the statevectors for each sample.</span>
-<span class="sd">        eig (np.ndarray): Eigenvalues of Observable to be &#39;measured&#39;</span>
+<span class="sd">        eig (np.ndarray): Eigenvalues of Observable to be 'measured'</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: Labels for each sample, set to one of the eigenvalues</span>
 <span class="sd">        of the observable O.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eig</span>
     <span class="n">eigshape</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">new_psi</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">eigshape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">eigshape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">@</span> <span class="n">psi</span>
@@ -1023,7 +1030,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_grid_sampling</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">z_diags</span><span class="p">,</span> <span class="n">zz_diags</span><span class="p">,</span> <span class="n">psi_0</span><span class="p">,</span> <span class="n">h_n</span><span class="p">,</span> <span class="n">lab_fn</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate feature vectors from a uniform grid (only supported for `n &lt;= 3`)</span>
 <span class="sd">    and assign labels using the specified labeling function.</span>
 
@@ -1043,7 +1050,7 @@
 <span class="sd">            feature vectors belonging to class A and class B, respectively.</span>
 <span class="sd">            This code is incomplete and references variables not defined above,</span>
 <span class="sd">            so the returned arrays are empty placeholders by default.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1111,7 +1118,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1133,7 +1140,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

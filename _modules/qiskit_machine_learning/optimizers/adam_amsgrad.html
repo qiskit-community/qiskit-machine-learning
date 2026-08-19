@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.adam_amsgrad - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.adam_amsgrad - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.adam_amsgrad</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2019, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2019, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,8 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;The Adam and AMSGRAD optimizers.&quot;&quot;&quot;</span>
+<span class="sd">"""The Adam and AMSGRAD optimizers."""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
@@ -489,14 +496,14 @@
 <div class="viewcode-block" id="ADAM">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.ADAM.html#qiskit_machine_learning.optimizers.ADAM">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ADAM</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adam and AMSGRAD optimizers.</span>
+<span class="w">    </span><span class="sd">"""Adam and AMSGRAD optimizers.</span>
 
 <span class="sd">    Adam [1] is a gradient-based optimization algorithm that is relies on adaptive estimates of</span>
 <span class="sd">    lower-order moments. The algorithm requires little memory and is invariant to diagonal</span>
 <span class="sd">    rescaling of the gradients. Furthermore, it is able to cope with non-stationary objective</span>
 <span class="sd">    functions and noisy and/or sparse gradients.</span>
 
-<span class="sd">    AMSGRAD [2] (a variant of Adam) uses a &#39;long-term memory&#39; of past gradients and, thereby,</span>
+<span class="sd">    AMSGRAD [2] (a variant of Adam) uses a 'long-term memory' of past gradients and, thereby,</span>
 <span class="sd">    improves convergence properties.</span>
 
 <span class="sd">    References:</span>
@@ -507,18 +514,18 @@
 <span class="sd">        [2]: Sashank J. Reddi and Satyen Kale and Sanjiv Kumar (2018),</span>
 <span class="sd">             On the Convergence of Adam and Beyond.</span>
 <span class="sd">             `arXiv:1904.09237 &lt;https://arxiv.org/abs/1904.09237&gt;`_</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_OPTIONS</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;maxiter&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;tol&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;lr&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;beta_1&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;beta_2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;noise_factor&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;eps&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;amsgrad&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;snapshot_dir&quot;</span><span class="p">,</span>
+        <span class="s2">"maxiter"</span><span class="p">,</span>
+        <span class="s2">"tol"</span><span class="p">,</span>
+        <span class="s2">"lr"</span><span class="p">,</span>
+        <span class="s2">"beta_1"</span><span class="p">,</span>
+        <span class="s2">"beta_2"</span><span class="p">,</span>
+        <span class="s2">"noise_factor"</span><span class="p">,</span>
+        <span class="s2">"eps"</span><span class="p">,</span>
+        <span class="s2">"amsgrad"</span><span class="p">,</span>
+        <span class="s2">"snapshot_dir"</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="c1"># pylint: disable=too-many-positional-arguments</span>
@@ -535,7 +542,7 @@
         <span class="n">snapshot_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">callback</span><span class="p">:</span> <span class="n">CALLBACK</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            maxiter: Maximum number of iterations</span>
 <span class="sd">            tol: Tolerance for termination</span>
@@ -546,11 +553,11 @@
 <span class="sd">            eps : Value &gt;=0, Epsilon to be used for finite differences if no analytic</span>
 <span class="sd">                gradient method is given.</span>
 <span class="sd">            amsgrad: True to use AMSGRAD, False if not</span>
-<span class="sd">            snapshot_dir: If not None save the optimizer&#39;s parameter</span>
+<span class="sd">            snapshot_dir: If not None save the optimizer's parameter</span>
 <span class="sd">                after every step to the given directory</span>
 <span class="sd">            callback: A callback function passed information in each iteration step.</span>
 <span class="sd">                The information is, in this order: current time step, the parameters, the function value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
@@ -574,43 +581,43 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_v_eff</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_dir</span><span class="p">,</span> <span class="s2">&quot;adam_params.csv&quot;</span><span class="p">)</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_dir</span><span class="p">,</span> <span class="s2">"adam_params.csv"</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
                 <span class="c1"># pylint: disable=unspecified-encoding</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
-                    <span class="n">fieldnames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;v_eff&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amsgrad</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">]</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+                    <span class="n">fieldnames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"v"</span><span class="p">,</span> <span class="s2">"v_eff"</span><span class="p">,</span> <span class="s2">"m"</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amsgrad</span> <span class="k">else</span> <span class="p">[</span><span class="s2">"v"</span><span class="p">,</span> <span class="s2">"m"</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">]</span>
                     <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">fieldnames</span><span class="p">)</span>
                     <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxiter</span><span class="p">,</span>
-            <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span><span class="p">,</span>
-            <span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span><span class="p">,</span>
-            <span class="s2">&quot;beta_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_1</span><span class="p">,</span>
-            <span class="s2">&quot;beta_2&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_2</span><span class="p">,</span>
-            <span class="s2">&quot;noise_factor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noise_factor</span><span class="p">,</span>
-            <span class="s2">&quot;eps&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span><span class="p">,</span>
-            <span class="s2">&quot;amsgrad&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amsgrad</span><span class="p">,</span>
-            <span class="s2">&quot;snapshot_dir&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_dir</span><span class="p">,</span>
+            <span class="s2">"maxiter"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxiter</span><span class="p">,</span>
+            <span class="s2">"tol"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span><span class="p">,</span>
+            <span class="s2">"lr"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span><span class="p">,</span>
+            <span class="s2">"beta_1"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_1</span><span class="p">,</span>
+            <span class="s2">"beta_2"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_2</span><span class="p">,</span>
+            <span class="s2">"noise_factor"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noise_factor</span><span class="p">,</span>
+            <span class="s2">"eps"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span><span class="p">,</span>
+            <span class="s2">"amsgrad"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amsgrad</span><span class="p">,</span>
+            <span class="s2">"snapshot_dir"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot_dir</span><span class="p">,</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="ADAM.get_support_level">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.ADAM.html#qiskit_machine_learning.optimizers.ADAM.get_support_level">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return support level dictionary&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return support level dictionary"""</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">supported</span><span class="p">,</span>
-            <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
-            <span class="s2">&quot;initial_point&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">supported</span><span class="p">,</span>
+            <span class="s2">"gradient"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">supported</span><span class="p">,</span>
+            <span class="s2">"bounds"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
+            <span class="s2">"initial_point"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">supported</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="ADAM.save_params">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.ADAM.html#qiskit_machine_learning.optimizers.ADAM.save_params">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapshot_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the current iteration parameters to a file called ``adam_params.csv``.</span>
+<span class="w">        </span><span class="sd">"""Save the current iteration parameters to a file called ``adam_params.csv``.</span>
 
 <span class="sd">        Note:</span>
 
@@ -619,46 +626,46 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            snapshot_dir: The directory to store the file in.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># pylint: disable=unspecified-encoding</span>
-        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">snapshot_dir</span><span class="p">,</span> <span class="s2">&quot;adam_params.csv&quot;</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">snapshot_dir</span><span class="p">,</span> <span class="s2">"adam_params.csv"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The file </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist."</span><span class="p">)</span>
 
-        <span class="n">fieldnames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;v_eff&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amsgrad</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">]</span>
+        <span class="n">fieldnames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"v"</span><span class="p">,</span> <span class="s2">"v_eff"</span><span class="p">,</span> <span class="s2">"m"</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amsgrad</span> <span class="k">else</span> <span class="p">[</span><span class="s2">"v"</span><span class="p">,</span> <span class="s2">"m"</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">]</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
             <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">fieldnames</span><span class="p">)</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">}</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"v"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v</span><span class="p">,</span> <span class="s2">"m"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">}</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amsgrad</span><span class="p">:</span>
-                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;v_eff&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_eff</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">"v_eff"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_eff</span>
             <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ADAM.load_params">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.ADAM.html#qiskit_machine_learning.optimizers.ADAM.load_params">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load iteration parameters for a file called ``adam_params.csv``.</span>
+<span class="w">        </span><span class="sd">"""Load iteration parameters for a file called ``adam_params.csv``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            load_dir: The directory containing ``adam_params.csv``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># pylint: disable=unspecified-encoding</span>
-        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">load_dir</span><span class="p">,</span> <span class="s2">&quot;adam_params.csv&quot;</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">load_dir</span><span class="p">,</span> <span class="s2">"adam_params.csv"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The file </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2"> does not exist."</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"r"</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
             <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">"v"</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[]"</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amsgrad</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_v_eff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;v_eff&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">))</span></div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_v_eff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">"v_eff"</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[]"</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">"m"</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[]"</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="s2">"t"</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[]"</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="ADAM.minimize">
@@ -670,7 +677,7 @@
         <span class="n">jac</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">POINT</span><span class="p">],</span> <span class="n">POINT</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Minimize the scalar function.</span>
+<span class="w">        </span><span class="sd">"""Minimize the scalar function.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            fun: The scalar function to minimize.</span>
@@ -680,7 +687,7 @@
 <span class="sd">                optimizer does not support bounds.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            The result of the optimization, containing e.g. the result as attribute ``x``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">jac</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">jac</span> <span class="o">=</span> <span class="n">Optimizer</span><span class="o">.</span><span class="n">wrap_function</span><span class="p">(</span><span class="n">Optimizer</span><span class="o">.</span><span class="n">gradient_num_diff</span><span class="p">,</span> <span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eps</span><span class="p">))</span>
 
@@ -752,7 +759,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -774,7 +781,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

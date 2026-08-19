@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.gradients.lin_comb.lin_comb_sampler_gradient - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.gradients.lin_comb.lin_comb_sampler_gradient - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.gradients.lin_comb.lin_comb_sampler_gradient</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -469,9 +475,9 @@
 <span class="c1"># Any modifications or derivative works of this code must retain this</span>
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Gradient of probabilities with linear combination of unitaries (LCU)</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -494,35 +500,35 @@
 <div class="viewcode-block" id="LinCombSamplerGradient">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.gradients.LinCombSamplerGradient.html#qiskit_machine_learning.gradients.LinCombSamplerGradient">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinCombSamplerGradient</span><span class="p">(</span><span class="n">BaseSamplerGradient</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the gradients of the sampling probability.</span>
+<span class="w">    </span><span class="sd">"""Compute the gradients of the sampling probability.</span>
 <span class="sd">    This method employs a linear combination of unitaries [1].</span>
 
 <span class="sd">    **Reference:**</span>
 <span class="sd">    [1] Schuld et al., Evaluating analytic gradients on quantum hardware, 2018</span>
 <span class="sd">    `arXiv:1811.11184 &lt;https://arxiv.org/pdf/1811.11184.pdf&gt;`_</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">SUPPORTED_GATES</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;rx&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ry&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;rz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;rzx&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;rzz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ryy&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;rxx&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cx&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cy&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;cz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ccx&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;swap&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;iswap&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;h&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;t&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;s&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sdg&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;x&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;y&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;z&quot;</span><span class="p">,</span>
+        <span class="s2">"rx"</span><span class="p">,</span>
+        <span class="s2">"ry"</span><span class="p">,</span>
+        <span class="s2">"rz"</span><span class="p">,</span>
+        <span class="s2">"rzx"</span><span class="p">,</span>
+        <span class="s2">"rzz"</span><span class="p">,</span>
+        <span class="s2">"ryy"</span><span class="p">,</span>
+        <span class="s2">"rxx"</span><span class="p">,</span>
+        <span class="s2">"cx"</span><span class="p">,</span>
+        <span class="s2">"cy"</span><span class="p">,</span>
+        <span class="s2">"cz"</span><span class="p">,</span>
+        <span class="s2">"ccx"</span><span class="p">,</span>
+        <span class="s2">"swap"</span><span class="p">,</span>
+        <span class="s2">"iswap"</span><span class="p">,</span>
+        <span class="s2">"h"</span><span class="p">,</span>
+        <span class="s2">"t"</span><span class="p">,</span>
+        <span class="s2">"s"</span><span class="p">,</span>
+        <span class="s2">"sdg"</span><span class="p">,</span>
+        <span class="s2">"x"</span><span class="p">,</span>
+        <span class="s2">"y"</span><span class="p">,</span>
+        <span class="s2">"z"</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -531,16 +537,16 @@
         <span class="n">options</span><span class="p">:</span> <span class="n">Options</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">pass_manager</span><span class="p">:</span> <span class="n">BasePassManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            sampler: The sampler used to compute the gradients.</span>
 <span class="sd">            options: Primitive backend runtime options used for circuit execution.</span>
-<span class="sd">                The order of priority is: options in ``run`` method &gt; gradient&#39;s</span>
-<span class="sd">                default options &gt; primitive&#39;s default setting.</span>
+<span class="sd">                The order of priority is: options in ``run`` method &gt; gradient's</span>
+<span class="sd">                default options &gt; primitive's default setting.</span>
 <span class="sd">                Higher priority setting overrides lower priority setting.</span>
 <span class="sd">            pass_manager: The pass manager to transpile the circuits if necessary.</span>
 <span class="sd">                Defaults to ``None``, as some primitives do not need transpiled circuits.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lin_comb_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sampler</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">pass_manager</span><span class="o">=</span><span class="n">pass_manager</span><span class="p">)</span>
 
@@ -551,7 +557,7 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]],</span>
         <span class="o">**</span><span class="n">options</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerGradientResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the estimator gradients on the given circuits.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the estimator gradients on the given circuits."""</span>
         <span class="n">g_circuits</span><span class="p">,</span> <span class="n">g_parameter_values</span><span class="p">,</span> <span class="n">g_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess</span><span class="p">(</span>
             <span class="n">circuits</span><span class="p">,</span> <span class="n">parameter_values</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUPPORTED_GATES</span>
         <span class="p">)</span>
@@ -565,13 +571,13 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]],</span>
         <span class="o">**</span><span class="n">options</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SamplerGradientResult</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the sampler gradients on the given circuits.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the sampler gradients on the given circuits."""</span>
         <span class="n">job_circuits</span><span class="p">,</span> <span class="n">job_param_values</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
         <span class="n">all_n</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">parameter_values_</span><span class="p">,</span> <span class="n">parameters_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">parameter_values</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
             <span class="c1"># Prepare circuits for the gradient of the specified parameters.</span>
             <span class="c1"># TODO: why is this not wrapped into another list level like it is done elsewhere?</span>
-            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">parameters_</span><span class="p">})</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters_</span><span class="p">})</span>
             <span class="n">circuit_key</span> <span class="o">=</span> <span class="n">circuit_cache_key</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">circuit_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lin_comb_cache</span><span class="p">:</span>
                 <span class="c1"># Cache the circuits for the linear combination of unitaries.</span>
@@ -582,7 +588,7 @@
             <span class="n">lin_comb_circuits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lin_comb_cache</span><span class="p">[</span><span class="n">circuit_key</span><span class="p">]</span>
             <span class="n">gradient_circuits</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">param_</span> <span class="ow">in</span> <span class="n">parameters_</span><span class="p">:</span>
-                <span class="c1"># TODO: the uuid attribute of param_ doesn&#39;t match that of param_match</span>
+                <span class="c1"># TODO: the uuid attribute of param_ doesn't match that of param_match</span>
                 <span class="c1"># TODO: causing the two objects to not be identical, even if all other attributes match</span>
                 <span class="n">param</span> <span class="o">=</span> <span class="n">param_</span>
                 <span class="k">for</span> <span class="n">param_match</span> <span class="ow">in</span> <span class="n">lin_comb_circuits</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -608,7 +614,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AlgorithmError</span><span class="p">(</span><span class="s2">&quot;Sampler job failed.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="k">raise</span> <span class="n">AlgorithmError</span><span class="p">(</span><span class="s2">"Sampler job failed."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
         <span class="c1"># Compute the gradients.</span>
         <span class="n">gradients</span> <span class="o">=</span> <span class="p">[]</span>
@@ -664,7 +670,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -686,7 +692,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

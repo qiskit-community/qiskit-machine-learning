@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.datasets.entanglement_concentration - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.datasets.entanglement_concentration - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.datasets.entanglement_concentration</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2025.</span>
+<span class="c1"># (C) Copyright IBM 2025, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2025, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,9 +476,10 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Entanglement Concentration</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -495,19 +502,23 @@
     <span class="n">test_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;easy&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"easy"</span><span class="p">,</span>
     <span class="n">one_hot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">include_sample_total</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cardinal&quot;</span><span class="p">,</span>
+    <span class="n">sampling_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"cardinal"</span><span class="p">,</span>
     <span class="n">class_labels</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">formatting</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">,</span>
+    <span class="n">formatting</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"ndarray"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
-    <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
-    <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
-    <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
-    <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">],</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">],</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">]</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Generates a dataset that comprises Quantum States with two different</span>
 <span class="sd">    amounts of Concentration of Entanglement (CE) and their corresponding class labels.</span>
 <span class="sd">    These states are generated by the effect of two different pre-trained ansatz</span>
@@ -515,21 +526,21 @@
 <span class="sd">    data in courtesy of L Schatzki et al [3]. The datapoints can be fully separated using</span>
 <span class="sd">    the SWAP test outlined in [2]. First, input states are randomly generated from a</span>
 <span class="sd">    uniform distribution, using a sampling method determined by the ``sampling_method``</span>
-<span class="sd">    argument. Next, based on the ``mode`` argument, two pre-trained circuits, &quot;A&quot; and &quot;B&quot;</span>
+<span class="sd">    argument. Next, based on the ``mode`` argument, two pre-trained circuits, "A" and "B"</span>
 <span class="sd">    are used for generating datapoints.</span>
 
 
 <span class="sd">    CE can be interpreted as a measure of correlation between the different qubits.</span>
-<span class="sd">    The ``mode`` argument supports two options. ``&quot;easy&quot;`` gives datapoints with high CE</span>
-<span class="sd">    difference, hence being easy to separate. ``&quot;hard&quot;`` mode gives closer CE values.</span>
-<span class="sd">    The user&#39;s classifiers can be benchmarked against these modes for their ability to</span>
+<span class="sd">    The ``mode`` argument supports two options. ``"easy"`` gives datapoints with high CE</span>
+<span class="sd">    difference, hence being easy to separate. ``"hard"`` mode gives closer CE values.</span>
+<span class="sd">    The user's classifiers can be benchmarked against these modes for their ability to</span>
 <span class="sd">    separate the data into two classes based on CE.</span>
 
 
 <span class="sd">    Current implementation supports only ``n`` values of 3 and 4.</span>
 
 
-<span class="sd">    ``sampling_method`` argument supports two options. ``&quot;isotropic&quot;`` and ``&quot;cardinal&quot;``.</span>
+<span class="sd">    ``sampling_method`` argument supports two options. ``"isotropic"`` and ``"cardinal"``.</span>
 <span class="sd">    Isotropic generates qubit states that are sampled randomly in the Bloch Sphere and takes the</span>
 <span class="sd">    tensor product of all the qubits to build the input state. Cardinal generates only states</span>
 <span class="sd">    that fall on the axes of the Bloch Sphere before taking the tensor product.</span>
@@ -559,29 +570,29 @@
 <span class="sd">        mode :</span>
 <span class="sd">            Choices are:</span>
 
-<span class="sd">                * ``&quot;easy&quot;``: uses CE values 0.18 and 0.40 for n = 3 and 0.12 and 0.43 for n = 4</span>
-<span class="sd">                * ``&quot;hard&quot;``: uses CE values 0.28 and 0.40 for n = 3 and 0.22 and 0.34 for n = 4</span>
+<span class="sd">                * ``"easy"``: uses CE values 0.18 and 0.40 for n = 3 and 0.12 and 0.43 for n = 4</span>
+<span class="sd">                * ``"hard"``: uses CE values 0.28 and 0.40 for n = 3 and 0.22 and 0.34 for n = 4</span>
 
-<span class="sd">            Default is ``&quot;easy&quot;``.</span>
+<span class="sd">            Default is ``"easy"``.</span>
 <span class="sd">        one_hot : If True, returns labels in one-hot format. Default is True.</span>
 <span class="sd">        include_sample_total : If True, the function also returns the total number</span>
 <span class="sd">            of accepted samples. Default is False.</span>
 <span class="sd">        sampling_method: The method used to generate input states.</span>
 <span class="sd">            Choices are:</span>
 
-<span class="sd">                * ``&quot;isotropic&quot;``: samples qubit states uniformly in the bloch sphere</span>
-<span class="sd">                * ``&quot;cardinal&quot;``: samples qubit states out of the 6 axes of bloch sphere</span>
+<span class="sd">                * ``"isotropic"``: samples qubit states uniformly in the bloch sphere</span>
+<span class="sd">                * ``"cardinal"``: samples qubit states out of the 6 axes of bloch sphere</span>
 
-<span class="sd">            Default is ``&quot;cardinal&quot;``.</span>
+<span class="sd">            Default is ``"cardinal"``.</span>
 <span class="sd">        class_labels : Custom labels for the two classes when one-hot is not enabled.</span>
 <span class="sd">            If not provided, the labels default to ``0`` and ``+1``</span>
 <span class="sd">        formatting: The format in which datapoints are given.</span>
 <span class="sd">            Choices are:</span>
 
-<span class="sd">                * ``&quot;ndarray&quot;``: gives a numpy array of shape (n_points, 2**n_qubits, 1)</span>
-<span class="sd">                * ``&quot;statevector&quot;``: gives a python list of Statevector objects</span>
+<span class="sd">                * ``"ndarray"``: gives a numpy array of shape (n_points, 2**n_qubits, 1)</span>
+<span class="sd">                * ``"statevector"``: gives a python list of Statevector objects</span>
 
-<span class="sd">            Default is ``&quot;ndarray&quot;``.</span>
+<span class="sd">            Default is ``"ndarray"``.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Tuple</span>
@@ -594,7 +605,7 @@
 
 <span class="sd">        If ``include_sample_total=True``, a fifth element (``np.ndarray``) is included</span>
 <span class="sd">        that specifies the total number of accepted samples.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Default Value</span>
     <span class="k">if</span> <span class="n">class_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">class_labels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
@@ -603,38 +614,34 @@
 
     <span class="c1"># Errors</span>
     <span class="k">if</span> <span class="n">training_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Training size can&#39;t be less than 0&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Training size can't be less than 0"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">test_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Test size can&#39;t be less than 0&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Test size can't be less than 0"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Currently only 3, 4 and 8 qubits are supported&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;easy&quot;</span><span class="p">,</span> <span class="s2">&quot;hard&quot;</span><span class="p">}:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid mode. Must be &#39;easy&#39; or &#39;hard&#39;&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">sampling_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;isotropic&quot;</span><span class="p">,</span> <span class="s2">&quot;cardinal&quot;</span><span class="p">}:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid sampling method. Must be &#39;isotropic&#39; or &#39;cardinal&#39;&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;cardinal&quot;</span> <span class="ow">and</span> <span class="n">n_points</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">6</span><span class="o">**</span><span class="n">n</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Cardinal Sampling cannot generate a large number of unique</span>
-<span class="sd">            datapoints due to the limited number of combinations possible.</span>
-<span class="sd">            Try &quot;isotropic&quot; sampling method&quot;&quot;&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">formatting</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;statevector&quot;</span><span class="p">,</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">}:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Formatting must be &quot;statevector&quot; or &quot;ndarray&quot;. Please check for</span>
-<span class="sd">            case sensitivity.&quot;&quot;&quot;</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Currently only 3, 4 and 8 qubits are supported"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"easy"</span><span class="p">,</span> <span class="s2">"hard"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid mode. Must be 'easy' or 'hard'"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sampling_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"isotropic"</span><span class="p">,</span> <span class="s2">"cardinal"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid sampling method. Must be 'isotropic' or 'cardinal'"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"cardinal"</span> <span class="ow">and</span> <span class="n">n_points</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">6</span><span class="o">**</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"""Cardinal Sampling cannot generate a large number of unique</span>
+<span class="s2">            datapoints due to the limited number of combinations possible.</span>
+<span class="s2">            Try "isotropic" sampling method"""</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">formatting</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"statevector"</span><span class="p">,</span> <span class="s2">"ndarray"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"""Formatting must be "statevector" or "ndarray". Please check for</span>
+<span class="s2">            case sensitivity."""</span><span class="p">)</span>
 
     <span class="c1"># Warnings</span>
-    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;cardinal&quot;</span> <span class="ow">and</span> <span class="n">n_points</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="o">**</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"cardinal"</span> <span class="ow">and</span> <span class="n">n_points</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="o">**</span><span class="n">n</span><span class="p">):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Cardinal Sampling for large number of samples is not recommended</span>
+<span class="w">            </span><span class="sd">"""Cardinal Sampling for large number of samples is not recommended</span>
 <span class="sd">            and can lead to an arbitrarily large generation time due to</span>
-<span class="sd">            repeating datapoints. Try &quot;isotropic&quot; sampling method&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="sd">            repeating datapoints. Try "isotropic" sampling method"""</span><span class="p">,</span>
             <span class="ne">UserWarning</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Depth Settings</span>
-    <span class="n">depth</span> <span class="o">=</span> <span class="p">{(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;easy&quot;</span><span class="p">):</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;hard&quot;</span><span class="p">):</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;easy&quot;</span><span class="p">):</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;hard&quot;</span><span class="p">):</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)}</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="p">{(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"easy"</span><span class="p">):</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">"hard"</span><span class="p">):</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">"easy"</span><span class="p">):</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">"hard"</span><span class="p">):</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)}</span>
 
     <span class="n">d_low</span><span class="p">,</span> <span class="n">d_high</span> <span class="o">=</span> <span class="n">depth</span><span class="p">[(</span><span class="n">n</span><span class="p">,</span> <span class="n">mode</span><span class="p">)]</span>
 
@@ -642,20 +649,20 @@
     <span class="n">qc_low</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="n">qc_high</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
-    <span class="n">params_low</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">d_low</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">params_low</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">"low"</span><span class="p">,</span> <span class="n">d_low</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
     <span class="n">_hardware_efficient_ansatz</span><span class="p">(</span><span class="n">qc_low</span><span class="p">,</span> <span class="n">params_low</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">d_low</span><span class="p">)</span>
-    <span class="n">bound_qc_low</span> <span class="o">=</span> <span class="n">_assign_parameters</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">d_low</span><span class="p">,</span> <span class="n">qc_low</span><span class="p">)</span>
+    <span class="n">bound_qc_low</span> <span class="o">=</span> <span class="n">_assign_parameters</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="s2">"low"</span><span class="p">,</span> <span class="n">d_low</span><span class="p">,</span> <span class="n">qc_low</span><span class="p">)</span>
 
-    <span class="n">params_high</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">d_high</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">params_high</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">"high"</span><span class="p">,</span> <span class="n">d_high</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
     <span class="n">_hardware_efficient_ansatz</span><span class="p">(</span><span class="n">qc_high</span><span class="p">,</span> <span class="n">params_high</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">d_high</span><span class="p">)</span>
-    <span class="n">bound_qc_high</span> <span class="o">=</span> <span class="n">_assign_parameters</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">d_high</span><span class="p">,</span> <span class="n">qc_high</span><span class="p">)</span>
+    <span class="n">bound_qc_high</span> <span class="o">=</span> <span class="n">_assign_parameters</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="s2">"high"</span><span class="p">,</span> <span class="n">d_high</span><span class="p">,</span> <span class="n">qc_high</span><span class="p">)</span>
 
     <span class="c1"># Convert them to Unitaries for batch processing</span>
     <span class="n">u_low</span> <span class="o">=</span> <span class="n">Operator</span><span class="p">(</span><span class="n">bound_qc_low</span><span class="p">,</span> <span class="n">input_dims</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">output_dims</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">data</span>
     <span class="n">u_high</span> <span class="o">=</span> <span class="n">Operator</span><span class="p">(</span><span class="n">bound_qc_high</span><span class="p">,</span> <span class="n">input_dims</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">output_dims</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">data</span>
 
     <span class="c1"># Sampling Input States</span>
-    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">&quot;isotropic&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">sampling_method</span> <span class="o">==</span> <span class="s2">"isotropic"</span><span class="p">:</span>
         <span class="n">psi_in</span> <span class="o">=</span> <span class="n">_isotropic</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">psi_in</span> <span class="o">=</span> <span class="n">_cardinal</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n_points</span><span class="p">)</span>
@@ -663,7 +670,10 @@
     <span class="n">a_features</span> <span class="o">=</span> <span class="n">u_low</span> <span class="o">@</span> <span class="n">psi_in</span>
     <span class="n">b_features</span> <span class="o">=</span> <span class="n">u_high</span> <span class="o">@</span> <span class="n">psi_in</span>
 
-    <span class="k">if</span> <span class="n">formatting</span> <span class="o">==</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">:</span>
+    <span class="n">x_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">]</span>
+    <span class="n">x_test</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statevector</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">formatting</span> <span class="o">==</span> <span class="s2">"ndarray"</span><span class="p">:</span>
         <span class="n">x_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a_features</span><span class="p">[:</span><span class="n">training_size</span><span class="p">],</span> <span class="n">b_features</span><span class="p">[:</span><span class="n">training_size</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a_features</span><span class="p">[</span><span class="n">training_size</span><span class="p">:],</span> <span class="n">b_features</span><span class="p">[</span><span class="n">training_size</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -696,19 +706,19 @@
     <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">qc</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantumCircuit</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load pre‑trained parameters from ``models/`` and bind them.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Load pre‑trained parameters from ``models/`` and bind them."""</span>
 
     <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;models&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;entanglement_</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">n_qubits</span><span class="si">}</span><span class="s2">qubits.json&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">"models"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"entanglement_</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">n_qubits</span><span class="si">}</span><span class="s2">qubits.json"</span>
     <span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">weights_file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">weights_file</span><span class="p">:</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">weights_file</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
     <span class="n">expected</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">depth</span> <span class="o">*</span> <span class="n">n_qubits</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">!=</span> <span class="n">expected</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Parameter mismatch – please reinstall the latest &#39;qiskit-machine-learning&#39;</span>
-<span class="sd">            package (or update the model files).&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="sd">"""Parameter mismatch – please reinstall the latest 'qiskit-machine-learning'</span>
+<span class="sd">            package (or update the model files)."""</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">qc</span><span class="o">.</span><span class="n">assign_parameters</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -717,7 +727,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_hardware_efficient_ansatz</span><span class="p">(</span>
     <span class="n">qc</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">ParameterVector</span><span class="p">,</span> <span class="n">n_qubits</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Append a hardware‑efficient ansatz layer‑by‑layer to the Quantum Circuit.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Append a hardware‑efficient ansatz layer‑by‑layer to the Quantum Circuit."""</span>
     <span class="n">p_idx</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">):</span>
@@ -742,12 +752,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_cardinal</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Samples Qubit States in the axes of the Block Sphere</span>
+<span class="w">    </span><span class="sd">"""Samples Qubit States in the axes of the Block Sphere</span>
 <span class="sd">    and takes Kronecker product of those to create the input states</span>
 
 <span class="sd">    Each product state is built from the six axis states</span>
 <span class="sd">        |0&gt;, |1&gt;, |+&gt;, |–&gt;, |i&gt;, |–i&gt;</span>
-<span class="sd">    chosen independently and uniformly for every qubit.&quot;&quot;&quot;</span>
+<span class="sd">    chosen independently and uniformly for every qubit."""</span>
 
     <span class="n">sqrt2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
     <span class="n">axis_states</span> <span class="o">=</span> <span class="p">(</span>
@@ -794,7 +804,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_isotropic</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Samples Qubit States uniformly in the Block Sphere&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Samples Qubit States uniformly in the Block Sphere"""</span>
 
     <span class="n">rng</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span>
 
@@ -845,7 +855,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -867,7 +877,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

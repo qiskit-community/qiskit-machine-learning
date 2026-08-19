@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.steppable_optimizer - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.steppable_optimizer - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.steppable_optimizer</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,8 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;SteppableOptimizer interface&quot;&quot;&quot;</span>
+<span class="sd">"""SteppableOptimizer interface"""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">ABC</span>
@@ -483,7 +490,7 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.AskData.html#qiskit_machine_learning.optimizers.AskData">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AskData</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for return type of :meth:`~.SteppableOptimizer.ask`.</span>
+<span class="w">    </span><span class="sd">"""Base class for return type of :meth:`~.SteppableOptimizer.ask`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x_fun: Point or list of points where the function needs to be evaluated to compute the next</span>
@@ -491,7 +498,7 @@
 <span class="sd">        x_jac: Point or list of points where the gradient/jacobian needs to be evaluated to compute</span>
 <span class="sd">        the next state of the optimizer.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">x_fun</span><span class="p">:</span> <span class="n">POINT</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">POINT</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">x_jac</span><span class="p">:</span> <span class="n">POINT</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">POINT</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
@@ -502,13 +509,13 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.TellData.html#qiskit_machine_learning.optimizers.TellData">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TellData</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for argument type of :meth:`~.SteppableOptimizer.tell`.</span>
+<span class="w">    </span><span class="sd">"""Base class for argument type of :meth:`~.SteppableOptimizer.tell`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        eval_fun: Image of the function at :attr:`~.ask_data.x_fun`.</span>
 <span class="sd">        eval_jac: Image of the gradient-jacobian at :attr:`~.ask_data.x_jac`.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">eval_fun</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">eval_jac</span><span class="p">:</span> <span class="n">POINT</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">POINT</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
@@ -519,37 +526,37 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.OptimizerState.html#qiskit_machine_learning.optimizers.OptimizerState">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OptimizerState</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class representing the state of the optimizer.</span>
+<span class="w">    </span><span class="sd">"""Base class representing the state of the optimizer.</span>
 
 <span class="sd">    This class stores the current state of the optimizer, given by the current point and</span>
 <span class="sd">    (optionally) information like the function value, the gradient or the number of</span>
 <span class="sd">    function evaluations. This dataclass can also store any other individual variables that</span>
 <span class="sd">    change during the optimization.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">x</span><span class="p">:</span> <span class="n">POINT</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Current optimization parameters.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Current optimization parameters."""</span>
     <span class="n">fun</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">POINT</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function being  optimized.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Function being  optimized."""</span>
     <span class="n">jac</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">POINT</span><span class="p">],</span> <span class="n">POINT</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Jacobian of the function being optimized.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Jacobian of the function being optimized."""</span>
     <span class="n">nfev</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of function evaluations so far in the optimization.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Number of function evaluations so far in the optimization."""</span>
     <span class="n">njev</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of jacobian evaluations so far in the optimization.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Number of jacobian evaluations so far in the optimization."""</span>
     <span class="n">nit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of optimization steps performed so far in the optimization.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Number of optimization steps performed so far in the optimization."""</span>
 
     <span class="c1"># Under Python 3.13 the auto-generated equal fails with an error around</span>
     <span class="c1"># using numpy all or any. See https://github.com/qiskit-community/qiskit-algorithms/pull/225</span>
     <span class="c1"># for further information. Hence, this custom function was added. The __eq__</span>
     <span class="c1"># method is supposed to accept any object. If you update the version of</span>
-    <span class="c1"># mypy you&#39;re using, it&#39;ll print out a note recommending this code structure.</span>
+    <span class="c1"># mypy you're using, it'll print out a note recommending this code structure.</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">OptimizerState</span><span class="p">):</span>
             <span class="c1"># If we return NotImplemented, Python will automatically try</span>
-            <span class="c1"># running other.__eq__(self), in case &#39;other&#39; knows what to do with</span>
+            <span class="c1"># running other.__eq__(self), in case 'other' knows what to do with</span>
             <span class="c1"># Person objects.</span>
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
@@ -575,7 +582,7 @@
 <div class="viewcode-block" id="SteppableOptimizer">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SteppableOptimizer.html#qiskit_machine_learning.optimizers.SteppableOptimizer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SteppableOptimizer</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for a steppable optimizer.</span>
 
 <span class="sd">    This family of optimizers uses the `ask and tell interface</span>
@@ -638,7 +645,7 @@
 <span class="sd">            result = optimizer.create_result()</span>
 
 
-<span class="sd">    Users that aren&#39;t dealing with complicated functions and who are more familiar with step by step</span>
+<span class="sd">    Users that aren't dealing with complicated functions and who are more familiar with step by step</span>
 <span class="sd">    optimization algorithms can use the :meth:`~.step` method which wraps the :meth:`~.ask`</span>
 <span class="sd">    and :meth:`~.tell` methods. In the same spirit the method :meth:`~.minimize` will optimize the</span>
 <span class="sd">    function and return the result.</span>
@@ -647,34 +654,34 @@
 <span class="sd">    https://optuna.readthedocs.io/en/stable/tutorial/20_recipes/009_ask_and_tell.html</span>
 
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            maxiter: Number of steps in the optimization process before ending the loop.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">:</span> <span class="n">OptimizerState</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizerState</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current state of the optimizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the current state of the optimizer."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span>
 
     <span class="nd">@state</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">OptimizerState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the current state of the optimizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the current state of the optimizer."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">state</span>
 
 <div class="viewcode-block" id="SteppableOptimizer.ask">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SteppableOptimizer.html#qiskit_machine_learning.optimizers.SteppableOptimizer.ask">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AskData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ask the optimizer for a set of points to evaluate.</span>
+<span class="w">        </span><span class="sd">"""Ask the optimizer for a set of points to evaluate.</span>
 
 <span class="sd">        This method asks the optimizer which are the next points to evaluate.</span>
 <span class="sd">        These points can, e.g., correspond to function values and/or its derivative.</span>
@@ -685,14 +692,14 @@
 <span class="sd">            An object containing the data needed to make the function evaluation to advance the</span>
 <span class="sd">            optimization process.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
 <div class="viewcode-block" id="SteppableOptimizer.tell">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SteppableOptimizer.html#qiskit_machine_learning.optimizers.SteppableOptimizer.tell">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ask_data</span><span class="p">:</span> <span class="n">AskData</span><span class="p">,</span> <span class="n">tell_data</span><span class="p">:</span> <span class="n">TellData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the optimization state using the results of the function evaluation.</span>
+<span class="w">        </span><span class="sd">"""Updates the optimization state using the results of the function evaluation.</span>
 
 <span class="sd">        A canonical optimization example using :meth:`~.ask` and :meth:`~.tell` can be seen</span>
 <span class="sd">        in :meth:`~.step`.</span>
@@ -701,7 +708,7 @@
 <span class="sd">            ask_data: Contains the information on how the evaluation was done.</span>
 <span class="sd">            tell_data: Contains all relevant information about the evaluation of the objective</span>
 <span class="sd">                function.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -709,7 +716,7 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SteppableOptimizer.html#qiskit_machine_learning.optimizers.SteppableOptimizer.evaluate">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ask_data</span><span class="p">:</span> <span class="n">AskData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TellData</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluates the function according to the instructions contained in :attr:`~.ask_data`.</span>
+<span class="w">        </span><span class="sd">"""Evaluates the function according to the instructions contained in :attr:`~.ask_data`.</span>
 
 <span class="sd">        If the user decides to use :meth:`~.step` instead of :meth:`~.ask` and :meth:`~.tell`</span>
 <span class="sd">        this function will contain the logic on how to evaluate the function.</span>
@@ -720,24 +727,24 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Data of all relevant information about the function evaluation.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_callback_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Wraps the callback function to accommodate each optimizer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="SteppableOptimizer.step">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SteppableOptimizer.html#qiskit_machine_learning.optimizers.SteppableOptimizer.step">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs one step in the optimization process.</span>
+<span class="w">        </span><span class="sd">"""Performs one step in the optimization process.</span>
 
-<span class="sd">        This method composes :meth:`~.ask`, :meth:`~.evaluate`, and :meth:`~.tell` to make a &quot;step&quot;</span>
+<span class="sd">        This method composes :meth:`~.ask`, :meth:`~.evaluate`, and :meth:`~.tell` to make a "step"</span>
 <span class="sd">        in the optimization process.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">ask_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ask</span><span class="p">()</span>
         <span class="n">tell_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">ask_data</span><span class="o">=</span><span class="n">ask_data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tell</span><span class="p">(</span><span class="n">ask_data</span><span class="o">=</span><span class="n">ask_data</span><span class="p">,</span> <span class="n">tell_data</span><span class="o">=</span><span class="n">tell_data</span><span class="p">)</span></div>
@@ -754,7 +761,7 @@
         <span class="n">jac</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">POINT</span><span class="p">],</span> <span class="n">POINT</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Populates the state of the optimizer with the data provided and sets all the counters to 0.</span>
+<span class="w">        </span><span class="sd">"""Populates the state of the optimizer with the data provided and sets all the counters to 0.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            fun: Function to minimize.</span>
@@ -762,7 +769,7 @@
 <span class="sd">            jac: Function to compute the gradient.</span>
 <span class="sd">            bounds: Bounds of the search space.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -775,7 +782,7 @@
         <span class="n">jac</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">POINT</span><span class="p">],</span> <span class="n">POINT</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Minimizes the function.</span>
+<span class="w">        </span><span class="sd">"""Minimizes the function.</span>
 
 <span class="sd">        For well-behaved functions the user can call this method to minimize a function.</span>
 <span class="sd">        If the user wants more control on how to evaluate the function a custom loop can be</span>
@@ -790,7 +797,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Object containing the result of the optimization.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="n">fun</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">jac</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">continue_condition</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
@@ -802,7 +809,7 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SteppableOptimizer.html#qiskit_machine_learning.optimizers.SteppableOptimizer.create_result">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the result of the optimization.</span>
+<span class="w">        </span><span class="sd">"""Returns the result of the optimization.</span>
 
 <span class="sd">        All the information needed to create such a result should be stored in the optimizer state</span>
 <span class="sd">        and will typically contain the best point found, the function value and gradient at that point,</span>
@@ -811,18 +818,18 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            The result of the optimization process.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
 <div class="viewcode-block" id="SteppableOptimizer.continue_condition">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SteppableOptimizer.html#qiskit_machine_learning.optimizers.SteppableOptimizer.continue_condition">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">continue_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Condition that indicates the optimization process should continue.</span>
+<span class="w">        </span><span class="sd">"""Condition that indicates the optimization process should continue.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ``True`` if the optimization process should continue, ``False`` otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">nit</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span>  <span class="c1"># pylint: disable=no-member</span></div>
 </div>
 
@@ -850,7 +857,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -872,7 +879,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

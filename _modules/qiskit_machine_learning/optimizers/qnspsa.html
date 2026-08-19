@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.qnspsa - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.qnspsa - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.qnspsa</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2021, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2021, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,7 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;The QN-SPSA optimizer.&quot;&quot;&quot;</span>
+<span class="sd">"""The QN-SPSA optimizer."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -491,7 +497,7 @@
 <div class="viewcode-block" id="QNSPSA">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.QNSPSA.html#qiskit_machine_learning.optimizers.QNSPSA">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">QNSPSA</span><span class="p">(</span><span class="n">SPSA</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The Quantum Natural SPSA (QN-SPSA) optimizer.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""The Quantum Natural SPSA (QN-SPSA) optimizer.</span>
 
 <span class="sd">    The QN-SPSA optimizer [1] is a stochastic optimizer that belongs to the family of gradient</span>
 <span class="sd">    descent methods. This optimizer is based on SPSA but attempts to improve the convergence by</span>
@@ -529,7 +535,7 @@
 
 <span class="sd">            # problem setup</span>
 <span class="sd">            ansatz = pauli_two_design(2, reps=1, seed=2)</span>
-<span class="sd">            observable = Pauli(&quot;ZZ&quot;)</span>
+<span class="sd">            observable = Pauli("ZZ")</span>
 <span class="sd">            initial_point = np.random.random(ansatz.num_parameters)</span>
 
 <span class="sd">            # loss function</span>
@@ -549,10 +555,10 @@
 
 <span class="sd">    References:</span>
 
-<span class="sd">        [1] J. Gacon et al, &quot;Simultaneous Perturbation Stochastic Approximation of the Quantum</span>
-<span class="sd">        Fisher Information&quot;, `arXiv:2103.09232 &lt;https://arxiv.org/abs/2103.09232&gt;`_</span>
+<span class="sd">        [1] J. Gacon et al, "Simultaneous Perturbation Stochastic Approximation of the Quantum</span>
+<span class="sd">        Fisher Information", `arXiv:2103.09232 &lt;https://arxiv.org/abs/2103.09232&gt;`_</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -572,7 +578,7 @@
         <span class="n">callback</span><span class="p">:</span> <span class="n">CALLBACK</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">termination_checker</span><span class="p">:</span> <span class="n">TERMINATIONCHECKER</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            fidelity: A function to compute the fidelity of the ansatz state with itself for</span>
 <span class="sd">                two different sets of parameters.</span>
@@ -624,7 +630,7 @@
 <span class="sd">                evaluations used in the estimate of the gradient.</span>
 
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">maxiter</span><span class="p">,</span>
             <span class="n">blocking</span><span class="p">,</span>
@@ -679,14 +685,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The optimizer settings in a dictionary format.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The optimizer settings in a dictionary format."""</span>
         <span class="c1"># re-use serialization from SPSA</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">settings</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;fidelity&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fidelity</span><span class="p">})</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"fidelity"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fidelity</span><span class="p">})</span>
 
         <span class="c1"># remove SPSA-specific arguments not in QNSPSA</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;trust_region&quot;</span><span class="p">)</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;second_order&quot;</span><span class="p">)</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"trust_region"</span><span class="p">)</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"second_order"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">settings</span>
 
@@ -698,7 +704,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">sampler</span><span class="p">:</span> <span class="n">BaseSamplerV2</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get a function to compute the fidelity of ``circuit`` with itself.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Get a function to compute the fidelity of ``circuit`` with itself.</span>
 
 <span class="sd">        Let ``circuit`` be a parameterized quantum circuit performing the operation</span>
 <span class="sd">        :math:`U(\theta)` given a set of parameters :math:`\theta`. Then this method returns</span>
@@ -718,7 +724,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            A handle to the function :math:`F`.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">fid</span> <span class="o">=</span> <span class="n">ComputeUncompute</span><span class="p">(</span><span class="n">sampler</span><span class="p">)</span>
 
         <span class="n">num_parameters</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_parameters</span>
@@ -762,7 +768,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -784,7 +790,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

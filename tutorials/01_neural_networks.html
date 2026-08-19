@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Neural Network Classifier &amp; Regressor" href="02_neural_network_classifier_and_regressor.html" /><link rel="prev" title="Machine Learning Tutorials" href="index.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Quantum Neural Networks - Qiskit Machine Learning 0.9.0</title>
+        <title>Quantum Neural Networks - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -203,7 +203,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -230,7 +230,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -292,6 +292,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -387,6 +388,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -533,12 +538,12 @@ weights.</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumCircuit</span>
 
-<span class="n">params1</span> <span class="o">=</span> <span class="p">[</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;input1&quot;</span><span class="p">),</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;weight1&quot;</span><span class="p">)]</span>
+<span class="n">params1</span> <span class="o">=</span> <span class="p">[</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">"input1"</span><span class="p">),</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">"weight1"</span><span class="p">)]</span>
 <span class="n">qc1</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">qc1</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">qc1</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">params1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">qc1</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">params1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">qc1</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;clifford&quot;</span><span class="p">)</span>
+<span class="n">qc1</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">"clifford"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -558,7 +563,7 @@ weights.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.quantum_info</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparsePauliOp</span>
 
-<span class="n">observable1</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([(</span><span class="s2">&quot;Y&quot;</span> <span class="o">*</span> <span class="n">qc1</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<span class="n">observable1</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([(</span><span class="s2">"Y"</span> <span class="o">*</span> <span class="n">qc1</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
@@ -590,21 +595,13 @@ weights.</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.neural_networks.estimator_qnn.EstimatorQNN at 0x7f7d63a3ea70&gt;
+&lt;qiskit_machine_learning.neural_networks.estimator_qnn.EstimatorQNN at 0x7fe826c9f6a0&gt;
 </pre></div></div>
 </div>
 <p>We’ll see how to use the QNN in the following sections, but before that, let’s check out the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> class.</p>
@@ -622,10 +619,10 @@ No gradient function provided, creating a gradient function. If your Estimator r
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterVector</span>
 
-<span class="n">inputs2</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">weights2</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input parameters: </span><span class="si">{</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">inputs2</span><span class="o">.</span><span class="n">params</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;weight parameters: </span><span class="si">{</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">weights2</span><span class="o">.</span><span class="n">params</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">inputs2</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">"input"</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">weights2</span> <span class="o">=</span> <span class="n">ParameterVector</span><span class="p">(</span><span class="s2">"weight"</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"input parameters: </span><span class="si">{</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">inputs2</span><span class="o">.</span><span class="n">params</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"weight parameters: </span><span class="si">{</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">weights2</span><span class="o">.</span><span class="n">params</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="n">qc2</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">qc2</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">inputs2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
@@ -637,7 +634,7 @@ No gradient function provided, creating a gradient function. If your Estimator r
 <span class="n">qc2</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">weights2</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">qc2</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">weights2</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="n">qc2</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">&quot;mpl&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;clifford&quot;</span><span class="p">)</span>
+<span class="n">qc2</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="s2">"mpl"</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">"clifford"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -679,21 +676,13 @@ weight parameters: [&#39;weight[0]&#39;, &#39;weight[1]&#39;, &#39;weight[2]&#39
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Sampler requires transpilation, please provide a pass manager.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;qiskit_machine_learning.neural_networks.sampler_qnn.SamplerQNN at 0x7f7da415b970&gt;
+&lt;qiskit_machine_learning.neural_networks.sampler_qnn.SamplerQNN at 0x7fe80b86aa10&gt;
 </pre></div></div>
 </div>
 <p>In addition to the basic arguments shown above, the <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> accepts three more settings: <code class="docutils literal notranslate"><span class="pre">input_gradients</span></code>, <code class="docutils literal notranslate"><span class="pre">interpret</span></code>, and <code class="docutils literal notranslate"><span class="pre">output_shape</span></code>. These will be introduced in sections 4 and 5.</p>
@@ -720,10 +709,10 @@ No gradient function provided, creating a gradient function. If your Sampler req
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Number of input features for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_inputs</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Input: </span><span class="si">{</span><span class="n">estimator_qnn_input</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Number of input features for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_inputs</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Input: </span><span class="si">{</span><span class="n">estimator_qnn_input</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Number of trainable weights for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Weights: </span><span class="si">{</span><span class="n">estimator_qnn_weights</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Number of trainable weights for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Weights: </span><span class="si">{</span><span class="n">estimator_qnn_weights</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -756,10 +745,10 @@ Weights: [0.43887844]
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Number of input features for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn</span><span class="o">.</span><span class="n">num_inputs</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Input: </span><span class="si">{</span><span class="n">sampler_qnn_input</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Number of input features for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn</span><span class="o">.</span><span class="n">num_inputs</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Input: </span><span class="si">{</span><span class="n">sampler_qnn_input</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Number of trainable weights for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Weights: </span><span class="si">{</span><span class="n">sampler_qnn_weights</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Number of trainable weights for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn</span><span class="o">.</span><span class="n">num_weights</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">Weights: </span><span class="si">{</span><span class="n">sampler_qnn_weights</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -790,7 +779,7 @@ Weights: [0.09417735 0.97562235 0.7611397  0.78606431]
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimator_qnn_forward</span> <span class="o">=</span> <span class="n">estimator_qnn</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">estimator_qnn_input</span><span class="p">,</span> <span class="n">estimator_qnn_weights</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Forward pass result for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_forward</span><span class="si">}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_forward</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Forward pass result for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_forward</span><span class="si">}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_forward</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -800,7 +789,7 @@ Weights: [0.09417735 0.97562235 0.7611397  0.78606431]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for EstimatorQNN: [[0.29143986]].
+Forward pass result for EstimatorQNN: [[0.30111148]].
 Shape: (1, 1)
 </pre></div></div>
 </div>
@@ -815,7 +804,7 @@ Shape: (1, 1)
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sampler_qnn_forward</span> <span class="o">=</span> <span class="n">sampler_qnn</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">sampler_qnn_input</span><span class="p">,</span> <span class="n">sampler_qnn_weights</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Forward pass result for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_forward</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_forward</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Forward pass result for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_forward</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_forward</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -825,7 +814,7 @@ Shape: (1, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for SamplerQNN: [[0.01953125 0.25683594 0.52929688 0.19433594]].
+Forward pass result for SamplerQNN: [[0.01269531 0.25976562 0.50195312 0.22558594]].
 Shape: (1, 4)
 </pre></div></div>
 </div>
@@ -845,7 +834,7 @@ Shape: (1, 4)
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Forward pass result for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_forward_batched</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_forward_batched</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Forward pass result for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_forward_batched</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_forward_batched</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -855,8 +844,8 @@ Shape: (1, 4)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for EstimatorQNN: [[0.29921771]
- [0.29208118]].
+Forward pass result for EstimatorQNN: [[0.27254018]
+ [0.28276103]].
 Shape: (2, 1)
 </pre></div></div>
 </div>
@@ -873,7 +862,7 @@ Shape: (2, 1)
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Forward pass result for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_forward_batched</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_forward_batched</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Forward pass result for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_forward_batched</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_forward_batched</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -883,8 +872,8 @@ Shape: (2, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Forward pass result for SamplerQNN: [[0.03027344 0.24609375 0.50292969 0.22070312]
- [0.01464844 0.24414062 0.55566406 0.18554688]].
+Forward pass result for SamplerQNN: [[0.015625   0.26367188 0.53613281 0.18457031]
+ [0.01464844 0.26269531 0.52441406 0.19824219]].
 Shape: (2, 4)
 </pre></div></div>
 </div>
@@ -913,10 +902,10 @@ Shape: (2, 4)
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Input gradients for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_input_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_input_grad</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Input gradients for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_input_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_input_grad</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Weight gradients for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Weight gradients for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -945,10 +934,10 @@ Shape: (1, 1, 1)
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Input gradients for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_input_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_input_grad</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Input gradients for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_input_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_input_grad</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Weight gradients for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Weight gradients for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -960,10 +949,10 @@ Shape: (1, 1, 1)
 <div class="highlight"><pre>
 Input gradients for SamplerQNN: None.
 Shape: None
-Weight gradients for SamplerQNN: [[[ 0.01025391 -0.10839844 -0.06347656 -0.10302734]
-  [ 0.21777344 -0.09375     0.06103516 -0.22119141]
-  [-0.48583984  0.31445312 -0.32861328  0.09863281]
-  [ 0.2578125  -0.11230469  0.33105469  0.22558594]]].
+Weight gradients for SamplerQNN: [[[ 0.00537109 -0.11132812 -0.06152344 -0.10107422]
+  [ 0.20849609 -0.09423828  0.06591797 -0.21972656]
+  [-0.48779297  0.32568359 -0.32714844  0.10400391]
+  [ 0.27392578 -0.12011719  0.32275391  0.21679688]]].
 Shape: (1, 4, 4)
 </pre></div></div>
 </div>
@@ -993,10 +982,10 @@ Shape: (1, 4, 4)
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Input gradients for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_input_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_input_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Input gradients for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_input_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_input_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Weight gradients for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Weight gradients for EstimatorQNN: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1025,10 +1014,10 @@ Shape: (1, 1, 1)
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Input gradients for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_input_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_input_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Input gradients for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_input_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_input_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Weight gradients for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">"Weight gradients for SamplerQNN: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="si">}</span><span class="s2">.  </span><span class="se">\n</span><span class="s2">Shape: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1038,15 +1027,15 @@ Shape: (1, 1, 1)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Input gradients for SamplerQNN: [[[-0.05615234 -0.10302734]
-  [ 0.38867188 -0.18701172]
-  [-0.3515625   0.07470703]
-  [ 0.01904297  0.21533203]]].
+Input gradients for SamplerQNN: [[[-0.06884766 -0.10351562]
+  [ 0.39257812 -0.19726562]
+  [-0.33984375  0.09570312]
+  [ 0.01611328  0.20507812]]].
 Shape: (1, 4, 2)
-Weight gradients for SamplerQNN: [[[ 0.00976562 -0.10449219 -0.07177734 -0.09521484]
-  [ 0.22753906 -0.08837891  0.0625     -0.21679688]
-  [-0.48535156  0.30712891 -0.31835938  0.08740234]
-  [ 0.24804688 -0.11425781  0.32763672  0.22460938]]].
+Weight gradients for SamplerQNN: [[[ 0.00439453 -0.09472656 -0.06005859 -0.09912109]
+  [ 0.19433594 -0.08837891  0.07177734 -0.22167969]
+  [-0.49121094  0.32714844 -0.32617188  0.09423828]
+  [ 0.29248047 -0.14404297  0.31445312  0.2265625 ]]].
 Shape: (1, 4, 4)
 </pre></div></div>
 </div>
@@ -1058,11 +1047,11 @@ Shape: (1, 4, 4)
 <section id="5.1.-EstimatorQNN-with-Multiple-Observables">
 <h3>5.1. <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> with Multiple Observables<a class="headerlink" href="#5.1.-EstimatorQNN-with-Multiple-Observables" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">EstimatorQNN</span></code> allows to pass lists of observables for more complex QNN architectures. For example (note the change in output shape):</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">observable2</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([(</span><span class="s2">&quot;Z&quot;</span> <span class="o">*</span> <span class="n">qc1</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">observable2</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_list</span><span class="p">([(</span><span class="s2">"Z"</span> <span class="o">*</span> <span class="n">qc1</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
 
 <span class="n">estimator_qnn2</span> <span class="o">=</span> <span class="n">EstimatorQNN</span><span class="p">(</span>
     <span class="n">circuit</span><span class="o">=</span><span class="n">qc1</span><span class="p">,</span>
@@ -1074,14 +1063,6 @@ Shape: (1, 4, 4)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Estimator requires transpilation, please provide a pass manager.
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
@@ -1091,10 +1072,10 @@ No gradient function provided, creating a gradient function. If your Estimator r
     <span class="n">estimator_qnn_input</span><span class="p">,</span> <span class="n">estimator_qnn_weights</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forward output for EstimatorQNN1: </span><span class="si">{</span><span class="n">estimator_qnn_forward</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forward output for EstimatorQNN2: </span><span class="si">{</span><span class="n">estimator_qnn_forward2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backward output for EstimatorQNN1: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backward output for EstimatorQNN2: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Forward output for EstimatorQNN1: </span><span class="si">{</span><span class="n">estimator_qnn_forward</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Forward output for EstimatorQNN2: </span><span class="si">{</span><span class="n">estimator_qnn_forward2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Backward output for EstimatorQNN1: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Backward output for EstimatorQNN2: </span><span class="si">{</span><span class="n">estimator_qnn_weight_grad2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1113,11 +1094,11 @@ Backward output for EstimatorQNN2: (1, 2, 1)
 <section id="5.2.-SamplerQNN-with-custom-interpret">
 <h3>5.2. <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> with custom <code class="docutils literal notranslate"><span class="pre">interpret</span></code><a class="headerlink" href="#5.2.-SamplerQNN-with-custom-interpret" title="Link to this heading">¶</a></h3>
 <p>One common <code class="docutils literal notranslate"><span class="pre">interpret</span></code> method for <code class="docutils literal notranslate"><span class="pre">SamplerQNN</span></code> is the <code class="docutils literal notranslate"><span class="pre">parity</span></code> function, which allows it to perform binary classification. As explained in the instantiation section, using interpret functions will modify the output shape of the forward and backward passes. In the case of the parity interpret function, <code class="docutils literal notranslate"><span class="pre">output_shape</span></code> is fixed to <code class="docutils literal notranslate"><span class="pre">2</span></code>. Therefore, the expected forward and weight gradient shapes are <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">2)</span></code> and <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">2,</span> <span class="pre">num_weights)</span></code>, respectively:</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{:b}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">"</span><span class="si">{:b}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"1"</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
 <span class="n">output_shape</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># parity = 0, 1</span>
 
 <span class="n">sampler_qnn2</span> <span class="o">=</span> <span class="n">SamplerQNN</span><span class="p">(</span>
@@ -1131,14 +1112,6 @@ Backward output for EstimatorQNN2: (1, 2, 1)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-No gradient function provided, creating a gradient function. If your Sampler requires transpilation, please provide a pass manager.
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
@@ -1148,10 +1121,10 @@ No gradient function provided, creating a gradient function. If your Sampler req
     <span class="n">sampler_qnn_input</span><span class="p">,</span> <span class="n">sampler_qnn_weights</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forward output for SamplerQNN1: </span><span class="si">{</span><span class="n">sampler_qnn_forward</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forward output for SamplerQNN2: </span><span class="si">{</span><span class="n">sampler_qnn_forward2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backward output for SamplerQNN1: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backward output for SamplerQNN2: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Forward output for SamplerQNN1: </span><span class="si">{</span><span class="n">sampler_qnn_forward</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Forward output for SamplerQNN2: </span><span class="si">{</span><span class="n">sampler_qnn_forward2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Backward output for SamplerQNN1: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Backward output for SamplerQNN2: </span><span class="si">{</span><span class="n">sampler_qnn_weight_grad2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1187,13 +1160,13 @@ Backward output for SamplerQNN2: (1, 2, 4)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.2.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.19</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Dec 24 13:51:05 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.5.2</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.1</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.20</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Aug 19 21:25:14 2026 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of a Qiskit project</h3><p>&copy; Copyright IBM 2017, 2025.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
+<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of a Qiskit project</h3><p>&copy; Copyright IBM 2017, 2026.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
 </div>
 </section>
 </section>
@@ -1239,7 +1212,7 @@ Backward output for SamplerQNN2: (1, 2, 4)
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1327,7 +1300,7 @@ Backward output for SamplerQNN2: (1, 2, 4)
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

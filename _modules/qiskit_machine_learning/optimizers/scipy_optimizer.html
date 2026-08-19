@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.scipy_optimizer - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.scipy_optimizer - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.scipy_optimizer</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2018, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2018, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,8 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Wrapper class of scipy.optimize.minimize.&quot;&quot;&quot;</span>
+<span class="sd">"""Wrapper class of scipy.optimize.minimize."""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
@@ -486,25 +493,25 @@
 <div class="viewcode-block" id="SciPyOptimizer">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SciPyOptimizer.html#qiskit_machine_learning.optimizers.SciPyOptimizer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SciPyOptimizer</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A general Qiskit Optimizer wrapping scipy.optimize.minimize.</span>
+<span class="w">    </span><span class="sd">"""A general Qiskit Optimizer wrapping scipy.optimize.minimize.</span>
 
 <span class="sd">    For further detail, please refer to</span>
 <span class="sd">    https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">_bounds_support_methods</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;l-bfgs-b&quot;</span><span class="p">,</span> <span class="s2">&quot;tnc&quot;</span><span class="p">,</span> <span class="s2">&quot;slsqp&quot;</span><span class="p">,</span> <span class="s2">&quot;powell&quot;</span><span class="p">,</span> <span class="s2">&quot;trust-constr&quot;</span><span class="p">}</span>
+    <span class="n">_bounds_support_methods</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"l-bfgs-b"</span><span class="p">,</span> <span class="s2">"tnc"</span><span class="p">,</span> <span class="s2">"slsqp"</span><span class="p">,</span> <span class="s2">"powell"</span><span class="p">,</span> <span class="s2">"trust-constr"</span><span class="p">}</span>
     <span class="n">_gradient_support_methods</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;cg&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bfgs&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;newton-cg&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;l-bfgs-b&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;tnc&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;slsqp&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;dogleg&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;trust-ncg&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;trust-krylov&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;trust-exact&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;trust-constr&quot;</span><span class="p">,</span>
+        <span class="s2">"cg"</span><span class="p">,</span>
+        <span class="s2">"bfgs"</span><span class="p">,</span>
+        <span class="s2">"newton-cg"</span><span class="p">,</span>
+        <span class="s2">"l-bfgs-b"</span><span class="p">,</span>
+        <span class="s2">"tnc"</span><span class="p">,</span>
+        <span class="s2">"slsqp"</span><span class="p">,</span>
+        <span class="s2">"dogleg"</span><span class="p">,</span>
+        <span class="s2">"trust-ncg"</span><span class="p">,</span>
+        <span class="s2">"trust-krylov"</span><span class="p">,</span>
+        <span class="s2">"trust-exact"</span><span class="p">,</span>
+        <span class="s2">"trust-constr"</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -514,13 +521,13 @@
         <span class="n">max_evals_grouped</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            method: Type of solver.</span>
 <span class="sd">            options: A dictionary of solver options.</span>
 <span class="sd">            kwargs: additional kwargs for scipy.optimize.minimize.</span>
 <span class="sd">            max_evals_grouped: Max number of default gradient evaluations performed simultaneously.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">method</span>
         <span class="c1"># Set support level</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_methods</span><span class="p">:</span>
@@ -534,25 +541,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span> <span class="o">=</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">options</span> <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
-        <span class="n">validate_min</span><span class="p">(</span><span class="s2">&quot;max_evals_grouped&quot;</span><span class="p">,</span> <span class="n">max_evals_grouped</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">validate_min</span><span class="p">(</span><span class="s2">"max_evals_grouped"</span><span class="p">,</span> <span class="n">max_evals_grouped</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_evals_grouped</span> <span class="o">=</span> <span class="n">max_evals_grouped</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
 <div class="viewcode-block" id="SciPyOptimizer.get_support_level">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.SciPyOptimizer.html#qiskit_machine_learning.optimizers.SciPyOptimizer.get_support_level">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return support level dictionary&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return support level dictionary"""</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_support_level</span><span class="p">,</span>
-            <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_level</span><span class="p">,</span>
-            <span class="s2">&quot;initial_point&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span><span class="p">,</span>
+            <span class="s2">"gradient"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_support_level</span><span class="p">,</span>
+            <span class="s2">"bounds"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_level</span><span class="p">,</span>
+            <span class="s2">"initial_point"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_OPTIONS&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_OPTIONS"</span><span class="p">):</span>
             <span class="c1"># all _OPTIONS should be keys in self._options, but add a failsafe here</span>
             <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">option</span>
@@ -564,13 +571,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">settings</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;max_evals_grouped&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_evals_grouped</span>
-        <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s2">"max_evals_grouped"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_evals_grouped</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s2">"options"</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span>
         <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">)</span>
 
-        <span class="c1"># the subclasses don&#39;t need the &quot;method&quot; key as the class type specifies the method</span>
+        <span class="c1"># the subclasses don't need the "method" key as the class type specifies the method</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="n">SciPyOptimizer</span><span class="p">:</span>
-            <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span>
+            <span class="n">settings</span><span class="p">[</span><span class="s2">"method"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span>
 
         <span class="k">return</span> <span class="n">settings</span>
 
@@ -590,11 +597,11 @@
             <span class="n">jac</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gradient_supported</span> <span class="ow">and</span> <span class="n">jac</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_evals_grouped</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;eps&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">:</span>
-                <span class="n">epsilon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;eps&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"eps"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">:</span>
+                <span class="n">epsilon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"eps"</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">epsilon</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="mf">1e-8</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;l-bfgs-b&quot;</span><span class="p">,</span> <span class="s2">&quot;tnc&quot;</span><span class="p">}</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+                    <span class="mf">1e-8</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"l-bfgs-b"</span><span class="p">,</span> <span class="s2">"tnc"</span><span class="p">}</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="n">jac</span> <span class="o">=</span> <span class="n">Optimizer</span><span class="o">.</span><span class="n">wrap_function</span><span class="p">(</span>
                 <span class="n">Optimizer</span><span class="o">.</span><span class="n">gradient_num_diff</span><span class="p">,</span> <span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_evals_grouped</span><span class="p">)</span>
@@ -607,9 +614,9 @@
         <span class="c1"># Starting in scipy 1.9.0 maxiter is deprecated and maxfun (added in 1.5.0)</span>
         <span class="c1"># should be used instead</span>
         <span class="n">swapped_deprecated_args</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="o">==</span> <span class="s2">&quot;tnc&quot;</span> <span class="ow">and</span> <span class="s2">&quot;maxiter&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method</span> <span class="o">==</span> <span class="s2">"tnc"</span> <span class="ow">and</span> <span class="s2">"maxiter"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">:</span>
             <span class="n">swapped_deprecated_args</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;maxfun&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;maxiter&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"maxfun"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"maxiter"</span><span class="p">)</span>
 
         <span class="n">raw_result</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
             <span class="n">fun</span><span class="o">=</span><span class="n">fun</span><span class="p">,</span>
@@ -621,14 +628,14 @@
             <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">swapped_deprecated_args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;maxiter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;maxfun&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"maxiter"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"maxfun"</span><span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">OptimizerResult</span><span class="p">()</span>
         <span class="n">result</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">raw_result</span><span class="o">.</span><span class="n">x</span>
         <span class="n">result</span><span class="o">.</span><span class="n">fun</span> <span class="o">=</span> <span class="n">raw_result</span><span class="o">.</span><span class="n">fun</span>
         <span class="n">result</span><span class="o">.</span><span class="n">nfev</span> <span class="o">=</span> <span class="n">raw_result</span><span class="o">.</span><span class="n">nfev</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">njev</span> <span class="o">=</span> <span class="n">raw_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;njev&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">nit</span> <span class="o">=</span> <span class="n">raw_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">njev</span> <span class="o">=</span> <span class="n">raw_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"njev"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">nit</span> <span class="o">=</span> <span class="n">raw_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"nit"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result</span></div>
 
@@ -667,7 +674,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -689,7 +696,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

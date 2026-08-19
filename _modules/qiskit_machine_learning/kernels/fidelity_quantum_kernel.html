@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.kernels.fidelity_quantum_kernel - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.kernels.fidelity_quantum_kernel - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.kernels.fidelity_quantum_kernel</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -469,7 +475,7 @@
 <span class="c1"># Any modifications or derivative works of this code must retain this</span>
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
-<span class="sd">&quot;&quot;&quot;Fidelity Quantum Kernel&quot;&quot;&quot;</span>
+<span class="sd">"""Fidelity Quantum Kernel"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -487,7 +493,7 @@
 <div class="viewcode-block" id="FidelityQuantumKernel">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FidelityQuantumKernel</span><span class="p">(</span><span class="n">BaseKernel</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    An implementation of the quantum kernel interface based on the</span>
 <span class="sd">    :class:`~qiskit_machine_learning.state_fidelities.BaseStateFidelity` algorithm.</span>
 
@@ -497,7 +503,7 @@
 <span class="sd">    .. math::</span>
 
 <span class="sd">        K(x,y) = |\langle \phi(x) | \phi(y) \rangle|^2</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -505,13 +511,13 @@
         <span class="n">feature_map</span><span class="p">:</span> <span class="n">QuantumCircuit</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">fidelity</span><span class="p">:</span> <span class="n">BaseStateFidelity</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">enforce_psd</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">evaluate_duplicates</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;off_diagonal&quot;</span><span class="p">,</span>
+        <span class="n">evaluate_duplicates</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"off_diagonal"</span><span class="p">,</span>
         <span class="n">max_circuits_per_job</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            feature_map: Parameterized circuit to be used as the feature map. If ``None`` is given,</span>
-<span class="sd">                :func:`~qiskit.circuit.library.zz_feature_map` is used with two qubits. If there&#39;s</span>
+<span class="sd">                :func:`~qiskit.circuit.library.zz_feature_map` is used with two qubits. If there's</span>
 <span class="sd">                a mismatch in the number of qubits of the feature map and the number of features</span>
 <span class="sd">                in the dataset, then the kernel will try to adjust the feature map to reflect the</span>
 <span class="sd">                number of features.</span>
@@ -538,12 +544,12 @@
 <span class="sd">               check the backend specifications. Use ``None`` for all entries per job. Default ``None``.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: When unsupported value is passed to `evaluate_duplicates`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">enforce_psd</span><span class="o">=</span><span class="n">enforce_psd</span><span class="p">)</span>
 
         <span class="n">eval_duplicates</span> <span class="o">=</span> <span class="n">evaluate_duplicates</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">eval_duplicates</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;off_diagonal&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported value passed as evaluate_duplicates: </span><span class="si">{</span><span class="n">eval_duplicates</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eval_duplicates</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"all"</span><span class="p">,</span> <span class="s2">"off_diagonal"</span><span class="p">,</span> <span class="s2">"none"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported value passed as evaluate_duplicates: </span><span class="si">{</span><span class="n">eval_duplicates</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span> <span class="o">=</span> <span class="n">eval_duplicates</span>
         <span class="k">if</span> <span class="n">fidelity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fidelity</span> <span class="o">=</span> <span class="n">ComputeUncompute</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="n">Sampler</span><span class="p">())</span>
@@ -551,7 +557,7 @@
         <span class="k">if</span> <span class="n">max_circuits_per_job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">max_circuits_per_job</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unsupported value passed as max_circuits_per_job: </span><span class="si">{</span><span class="n">max_circuits_per_job</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Unsupported value passed as max_circuits_per_job: </span><span class="si">{</span><span class="n">max_circuits_per_job</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_circuits_per_job</span> <span class="o">=</span> <span class="n">max_circuits_per_job</span>
 
@@ -589,9 +595,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_parameterization</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">x_vec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y_vec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">KernelIndices</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Combines x_vec and y_vec to get all the combinations needed to evaluate the kernel entries.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">num_features</span> <span class="o">=</span> <span class="n">x_vec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">left_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_features</span><span class="p">))</span>
         <span class="n">right_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_features</span><span class="p">))</span>
@@ -614,9 +620,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_symmetric_parameterization</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">x_vec</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">KernelIndices</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Combines two copies of x_vec to get all the combinations needed to evaluate the kernel entries.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">num_features</span> <span class="o">=</span> <span class="n">x_vec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">left_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_features</span><span class="p">))</span>
         <span class="n">right_parameters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_features</span><span class="p">))</span>
@@ -643,9 +649,9 @@
         <span class="n">right_parameters</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">indices</span><span class="p">:</span> <span class="n">KernelIndices</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Given a parameterization, this computes the symmetric kernel matrix.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">kernel_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_kernel_entries</span><span class="p">(</span><span class="n">left_parameters</span><span class="p">,</span> <span class="n">right_parameters</span><span class="p">)</span>
 
         <span class="c1"># fill in trivial entries and then update with fidelity values</span>
@@ -663,9 +669,9 @@
         <span class="n">right_parameters</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">indices</span><span class="p">:</span> <span class="n">KernelIndices</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Given a set of parameterization, this computes the kernel matrix.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">kernel_entries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_kernel_entries</span><span class="p">(</span><span class="n">left_parameters</span><span class="p">,</span> <span class="n">right_parameters</span><span class="p">)</span>
         <span class="n">kernel_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">kernel_shape</span><span class="p">)</span>
 
@@ -678,10 +684,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_kernel_entries</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">left_parameters</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">right_parameters</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Gets kernel entries by executing the underlying fidelity instance and getting the results</span>
 <span class="sd">        back from the async job.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">num_circuits</span> <span class="o">=</span> <span class="n">left_parameters</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">kernel_entries</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># Check if it is trivial case, only identical samples</span>
@@ -721,7 +727,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_trivial</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x_i</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y_j</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">symmetric</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Verifies if the kernel entry is trivial (to be set to `1.0`) or not.</span>
 
 <span class="sd">        Args:</span>
@@ -733,17 +739,17 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `True` if the entry is trivial, `False` otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># if we evaluate all combinations, then it is non-trivial</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span> <span class="o">==</span> <span class="s2">"all"</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="c1"># if we are on the diagonal and we don&#39;t evaluate it, it is trivial</span>
-        <span class="k">if</span> <span class="n">symmetric</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span> <span class="o">==</span> <span class="s2">&quot;off_diagonal&quot;</span><span class="p">:</span>
+        <span class="c1"># if we are on the diagonal and we don't evaluate it, it is trivial</span>
+        <span class="k">if</span> <span class="n">symmetric</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span> <span class="o">==</span> <span class="s2">"off_diagonal"</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-        <span class="c1"># if don&#39;t evaluate any duplicates</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">x_i</span><span class="p">,</span> <span class="n">y_j</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+        <span class="c1"># if don't evaluate any duplicates</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">x_i</span><span class="p">,</span> <span class="n">y_j</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span> <span class="o">==</span> <span class="s2">"none"</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
 
         <span class="c1"># otherwise evaluate</span>
@@ -751,13 +757,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fidelity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the fidelity primitive used by this kernel.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the fidelity primitive used by this kernel."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fidelity</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the strategy used by this kernel to evaluate kernel matrix elements if duplicate</span>
-<span class="sd">        samples are found.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the strategy used by this kernel to evaluate kernel matrix elements if duplicate</span>
+<span class="sd">        samples are found."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_duplicates</span></div>
 
 </pre></div>
@@ -784,7 +790,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -806,7 +812,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

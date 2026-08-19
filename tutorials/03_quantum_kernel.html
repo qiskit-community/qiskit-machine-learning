@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="PyTorch qGAN Implementation" href="04_torch_qgan.html" /><link rel="prev" title="Training a Quantum Model on a Real Dataset" href="02a_training_a_quantum_model_on_a_real_dataset.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Quantum Kernel Machine Learning - Qiskit Machine Learning 0.9.0</title>
+        <title>Quantum Kernel Machine Learning - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -203,7 +203,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -230,7 +230,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -292,6 +292,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -387,6 +388,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -585,26 +590,26 @@ QSVC</span></a> and <a class="reference internal" href="08_quantum_kernel_traine
     <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_total</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-        <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
-        <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
-        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu&quot;</span><span class="p">,</span>
+        <span class="n">interpolation</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">"RdBu"</span><span class="p">,</span>
         <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">],</span>
     <span class="p">)</span>
 
     <span class="c1"># A train plot</span>
-    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;A train&quot;</span><span class="p">)</span>
+    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"A train"</span><span class="p">)</span>
 
     <span class="c1"># B train plot</span>
-    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;B train&quot;</span><span class="p">)</span>
+    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"B train"</span><span class="p">)</span>
 
     <span class="c1"># A test plot</span>
-    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
+    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"A test"</span><span class="p">)</span>
 
     <span class="c1"># B test plot</span>
-    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;B test&quot;</span><span class="p">)</span>
+    <span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"B test"</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ad hoc dataset&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Ad hoc dataset"</span><span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -645,7 +650,7 @@ QSVC</span></a> and <a class="reference internal" href="08_quantum_kernel_traine
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.state_fidelities</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputeUncompute</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">FidelityQuantumKernel</span>
 
-<span class="n">adhoc_feature_map</span> <span class="o">=</span> <span class="n">zz_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+<span class="n">adhoc_feature_map</span> <span class="o">=</span> <span class="n">zz_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">)</span>
 
 <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
 
@@ -678,7 +683,7 @@ QSVC</span></a> and <a class="reference internal" href="08_quantum_kernel_traine
 
 <span class="n">adhoc_score_callable_function</span> <span class="o">=</span> <span class="n">adhoc_svc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Callable kernel classification test score: </span><span class="si">{</span><span class="n">adhoc_score_callable_function</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Callable kernel classification test score: </span><span class="si">{</span><span class="n">adhoc_score_callable_function</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -705,12 +710,12 @@ Callable kernel classification test score: 1.0
 <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 
 <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix_train</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix_train</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">"upper"</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"Blues"</span>
 <span class="p">)</span>
-<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Ad hoc training kernel matrix&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Ad hoc training kernel matrix"</span><span class="p">)</span>
 
-<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix_test</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Reds&quot;</span><span class="p">)</span>
-<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Ad hoc testing kernel matrix&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix_test</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">"upper"</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"Reds"</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Ad hoc testing kernel matrix"</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -728,13 +733,13 @@ Callable kernel classification test score: 1.0
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_svc</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;precomputed&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_svc</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">"precomputed"</span><span class="p">)</span>
 
 <span class="n">adhoc_svc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">adhoc_matrix_train</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
 
 <span class="n">adhoc_score_precomputed_kernel</span> <span class="o">=</span> <span class="n">adhoc_svc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">adhoc_matrix_test</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Precomputed kernel classification test score: </span><span class="si">{</span><span class="n">adhoc_score_precomputed_kernel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Precomputed kernel classification test score: </span><span class="si">{</span><span class="n">adhoc_score_precomputed_kernel</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -763,7 +768,7 @@ Precomputed kernel classification test score: 1.0
 
 <span class="n">qsvc_score</span> <span class="o">=</span> <span class="n">qsvc</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;QSVC classification test score: </span><span class="si">{</span><span class="n">qsvc_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"QSVC classification test score: </span><span class="si">{</span><span class="n">qsvc_score</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -782,11 +787,11 @@ QSVC classification test score: 1.0
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Classification Model                    | Accuracy Score&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---------------------------------------------------------&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SVC using kernel as a callable function | </span><span class="si">{</span><span class="n">adhoc_score_callable_function</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SVC using precomputed kernel matrix     | </span><span class="si">{</span><span class="n">adhoc_score_precomputed_kernel</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;QSVC                                    | </span><span class="si">{</span><span class="n">qsvc_score</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Classification Model                    | Accuracy Score"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"---------------------------------------------------------"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"SVC using kernel as a callable function | </span><span class="si">{</span><span class="n">adhoc_score_callable_function</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"SVC using precomputed kernel matrix     | </span><span class="si">{</span><span class="n">adhoc_score_precomputed_kernel</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"QSVC                                    | </span><span class="si">{</span><span class="n">qsvc_score</span><span class="si">:</span><span class="s2">10.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -839,20 +844,20 @@ QSVC                                    |       1.00
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
     <span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_total</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-    <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
-    <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
-    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu&quot;</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">,</span>
+    <span class="n">origin</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">"RdBu"</span><span class="p">,</span>
     <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">],</span>
 <span class="p">)</span>
 
 <span class="c1"># A label plot</span>
-<span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">)</span>
 
 <span class="c1"># B label plot</span>
-<span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">train_features</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"B"</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ad hoc dataset for clustering&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Ad hoc dataset for clustering"</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -873,7 +878,7 @@ QSVC                                    |       1.00
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_feature_map</span> <span class="o">=</span> <span class="n">zz_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_feature_map</span> <span class="o">=</span> <span class="n">zz_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="n">adhoc_dimension</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">)</span>
 
 <span class="n">adhoc_kernel</span> <span class="o">=</span> <span class="n">FidelityQuantumKernel</span><span class="p">(</span><span class="n">fidelity</span><span class="o">=</span><span class="n">fidelity</span><span class="p">,</span> <span class="n">feature_map</span><span class="o">=</span><span class="n">adhoc_feature_map</span><span class="p">)</span>
 </pre></div>
@@ -895,8 +900,8 @@ QSVC                                    |       1.00
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adhoc_matrix</span> <span class="o">=</span> <span class="n">adhoc_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_vec</span><span class="o">=</span><span class="n">train_features</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greens&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Ad hoc clustering kernel matrix&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asmatrix</span><span class="p">(</span><span class="n">adhoc_matrix</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">"upper"</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"Greens"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Ad hoc clustering kernel matrix"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -916,13 +921,13 @@ QSVC                                    |       1.00
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralClustering</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalized_mutual_info_score</span>
 
-<span class="n">adhoc_spectral</span> <span class="o">=</span> <span class="n">SpectralClustering</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;precomputed&quot;</span><span class="p">)</span>
+<span class="n">adhoc_spectral</span> <span class="o">=</span> <span class="n">SpectralClustering</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">affinity</span><span class="o">=</span><span class="s2">"precomputed"</span><span class="p">)</span>
 
 <span class="n">cluster_labels</span> <span class="o">=</span> <span class="n">adhoc_spectral</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">adhoc_matrix</span><span class="p">)</span>
 
 <span class="n">cluster_score</span> <span class="o">=</span> <span class="n">normalized_mutual_info_score</span><span class="p">(</span><span class="n">cluster_labels</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Clustering score: </span><span class="si">{</span><span class="n">cluster_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Clustering score: </span><span class="si">{</span><span class="n">cluster_score</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -983,7 +988,7 @@ Clustering score: 0.7287008798015754
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">feature_map</span> <span class="o">=</span> <span class="n">zz_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">feature_map</span> <span class="o">=</span> <span class="n">zz_feature_map</span><span class="p">(</span><span class="n">feature_dimension</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">entanglement</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">)</span>
 <span class="n">qpca_kernel</span> <span class="o">=</span> <span class="n">FidelityQuantumKernel</span><span class="p">(</span><span class="n">fidelity</span><span class="o">=</span><span class="n">fidelity</span><span class="p">,</span> <span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1011,12 +1016,12 @@ Clustering score: 0.7287008798015754
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.decomposition</span><span class="w"> </span><span class="kn">import</span> <span class="n">KernelPCA</span>
 
-<span class="n">kernel_pca_rbf</span> <span class="o">=</span> <span class="n">KernelPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;rbf&quot;</span><span class="p">)</span>
+<span class="n">kernel_pca_rbf</span> <span class="o">=</span> <span class="n">KernelPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s2">"rbf"</span><span class="p">)</span>
 <span class="n">kernel_pca_rbf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features</span><span class="p">)</span>
 <span class="n">train_features_rbf</span> <span class="o">=</span> <span class="n">kernel_pca_rbf</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">train_features</span><span class="p">)</span>
 <span class="n">test_features_rbf</span> <span class="o">=</span> <span class="n">kernel_pca_rbf</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test_features</span><span class="p">)</span>
 
-<span class="n">kernel_pca_q</span> <span class="o">=</span> <span class="n">KernelPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;precomputed&quot;</span><span class="p">)</span>
+<span class="n">kernel_pca_q</span> <span class="o">=</span> <span class="n">KernelPCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s2">"precomputed"</span><span class="p">)</span>
 <span class="n">train_features_q</span> <span class="o">=</span> <span class="n">kernel_pca_q</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">matrix_train</span><span class="p">)</span>
 <span class="n">test_features_q</span> <span class="o">=</span> <span class="n">kernel_pca_q</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">matrix_test</span><span class="p">)</span>
 </pre></div>
@@ -1033,7 +1038,7 @@ Clustering score: 0.7287008798015754
 <span class="n">logistic_regression</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_features_q</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
 
 <span class="n">logistic_score</span> <span class="o">=</span> <span class="n">logistic_regression</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_features_q</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logistic regression score: </span><span class="si">{</span><span class="n">logistic_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Logistic regression score: </span><span class="si">{</span><span class="n">logistic_score</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1053,15 +1058,15 @@ Logistic regression score: 0.95
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">rbf_ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 
 
-<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">train_features_q</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;A train&quot;</span><span class="p">)</span>
-<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">train_features_q</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;B train&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">train_features_q</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"A train"</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">train_features_q</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"B train"</span><span class="p">)</span>
 
-<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">test_features_q</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
-<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">test_features_q</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">test_features_q</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"A test"</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">q_ax</span><span class="p">,</span> <span class="n">test_features_q</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"A test"</span><span class="p">)</span>
 
-<span class="n">q_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Principal component #1&quot;</span><span class="p">)</span>
-<span class="n">q_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Principal component #0&quot;</span><span class="p">)</span>
-<span class="n">q_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Projection of training and test data</span><span class="se">\n</span><span class="s2"> using KPCA with Quantum Kernel&quot;</span><span class="p">)</span>
+<span class="n">q_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Principal component #1"</span><span class="p">)</span>
+<span class="n">q_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Principal component #0"</span><span class="p">)</span>
+<span class="n">q_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Projection of training and test data</span><span class="se">\n</span><span class="s2"> using KPCA with Quantum Kernel"</span><span class="p">)</span>
 
 <span class="c1"># Plotting the linear separation</span>
 <span class="n">h</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># step size in the mesh</span>
@@ -1077,14 +1082,14 @@ Logistic regression score: 0.95
 <span class="n">predictions</span> <span class="o">=</span> <span class="n">predictions</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="n">q_ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdBu</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 
-<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">train_features_rbf</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;A train&quot;</span><span class="p">)</span>
-<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">train_features_rbf</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;B train&quot;</span><span class="p">)</span>
-<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">test_features_rbf</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
-<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">test_features_rbf</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="s2">&quot;A test&quot;</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">train_features_rbf</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"A train"</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">train_features_rbf</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"B train"</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">test_features_rbf</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"A test"</span><span class="p">)</span>
+<span class="n">plot_features</span><span class="p">(</span><span class="n">rbf_ax</span><span class="p">,</span> <span class="n">test_features_rbf</span><span class="p">,</span> <span class="n">test_labels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="s2">"A test"</span><span class="p">)</span>
 
-<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Principal component #1&quot;</span><span class="p">)</span>
-<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Principal component #0&quot;</span><span class="p">)</span>
-<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Projection of training data</span><span class="se">\n</span><span class="s2"> using KernelPCA&quot;</span><span class="p">)</span>
+<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Principal component #1"</span><span class="p">)</span>
+<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Principal component #0"</span><span class="p">)</span>
+<span class="n">rbf_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Projection of training data</span><span class="se">\n</span><span class="s2"> using KernelPCA"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1132,13 +1137,13 @@ Logistic regression score: 0.95
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.2.3</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.0</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.19</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Dec 24 13:54:33 2025 UTC</td></tr></table></div>
+<h3>Version Information</h3><table><tr><th>Software</th><th>Version</th></tr><tr><td><code>qiskit</code></td><td>2.5.2</td></tr><tr><td><code>qiskit_machine_learning</code></td><td>0.9.1</td></tr><tr><th colspan='2'>System information</th></tr><tr><td>Python version</td><td>3.10.20</td></tr><tr><td>OS</td><td>Linux</td></tr><tr><td colspan='2'>Wed Aug 19 21:27:37 2026 UTC</td></tr></table></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
-<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of a Qiskit project</h3><p>&copy; Copyright IBM 2017, 2025.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
+<div style='width: 100%; background-color:#d5d9e0;padding-left: 10px; padding-bottom: 10px; padding-right: 10px; padding-top: 5px'><h3>This code is a part of a Qiskit project</h3><p>&copy; Copyright IBM 2017, 2026.</p><p>This code is licensed under the Apache License, Version 2.0. You may<br>obtain a copy of this license in the LICENSE.txt file in the root directory<br> of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.<p>Any modifications or derivative works of this code must retain this<br>copyright notice, and modified files need to carry a notice indicating<br>that they have been altered from the originals.</p></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -1192,7 +1197,7 @@ Logistic regression score: 0.95
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1264,7 +1269,7 @@ Logistic regression score: 0.95
   </div>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

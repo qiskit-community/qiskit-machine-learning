@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.algorithms.inference.qbayesian - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.algorithms.inference.qbayesian - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.algorithms.inference.qbayesian</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2023, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2023, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -469,7 +475,7 @@
 <span class="c1"># Any modifications or derivative works of this code must retain this</span>
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
-<span class="sd">&quot;&quot;&quot;Quantum Bayesian Inference&quot;&quot;&quot;</span>
+<span class="sd">"""Quantum Bayesian Inference"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -489,7 +495,7 @@
 <div class="viewcode-block" id="QBayesian">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.QBayesian.html#qiskit_machine_learning.algorithms.QBayesian">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">QBayesian</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Implements a quantum Bayesian inference (QBI) algorithm that has been developed in [1]. The</span>
 <span class="sd">    Bayesian network must be based on binary random variables (0/1) and represented by a quantum</span>
 <span class="sd">    circuit. The quantum circuit can be passed in various forms as long as it represents the joint</span>
@@ -511,15 +517,15 @@
 
 <span class="sd">        qb = QBayesian(qc)</span>
 <span class="sd">        result = qb.inference(query={...}, evidence={...})</span>
-<span class="sd">        print(&quot;Probability of query given evidence: &quot;, result)</span>
+<span class="sd">        print("Probability of query given evidence: ", result)</span>
 
 <span class="sd">    **References**</span>
-<span class="sd">        [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang. &quot;Quantum inference on Bayesian</span>
-<span class="sd">        networks&quot;, Physical Review A 89.6 (2014): 062315.</span>
+<span class="sd">        [1]: Low, Guang Hao, Theodore J. Yoder, and Isaac L. Chuang. "Quantum inference on Bayesian</span>
+<span class="sd">        networks", Physical Review A 89.6 (2014): 062315.</span>
 
-<span class="sd">        [2]: Borujeni, Sima E., et al. &quot;Quantum circuit representation of Bayesian networks.&quot;</span>
+<span class="sd">        [2]: Borujeni, Sima E., et al. "Quantum circuit representation of Bayesian networks."</span>
 <span class="sd">        Expert Systems with Applications 176 (2021): 114768.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Discrete quantum Bayesian network</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -531,7 +537,7 @@
         <span class="n">sampler</span><span class="p">:</span> <span class="n">BaseSamplerV2</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">pass_manager</span><span class="p">:</span> <span class="n">BasePassManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            circuit: The quantum circuit that represents the Bayesian network. Each random variable</span>
 <span class="sd">                should be assigned to exactly one register of one qubit. The last qubit in the</span>
@@ -546,11 +552,11 @@
 <span class="sd">                by :class:`~qiskit.primitives.Sampler` will be used.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If any register in the circuit is not mapped to exactly one qubit.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Test valid input</span>
         <span class="k">for</span> <span class="n">qrg</span> <span class="ow">in</span> <span class="n">circuit</span><span class="o">.</span><span class="n">qregs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">qrg</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Every register needs to be mapped to exactly one unique qubit.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Every register needs to be mapped to exactly one unique qubit."</span><span class="p">)</span>
 
         <span class="c1"># Initialize parameter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_circ</span> <span class="o">=</span> <span class="n">circuit</span>
@@ -561,7 +567,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span> <span class="o">=</span> <span class="n">sampler</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">&quot;_input_qubit_count&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">"_input_qubit_count"</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">_input_qubit_count</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pass_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -583,16 +589,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_converged</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_grover_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evidence</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">QuantumCircuit</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructs a Grover operator based on the provided evidence. The evidence is used to</span>
-<span class="sd">        determine the &quot;good states&quot; that the Grover operator will amplify.</span>
+<span class="sd">        determine the "good states" that the Grover operator will amplify.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            evidence: A dictionary representing the evidence with keys as variable labels</span>
 <span class="sd">                and values as states.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            GroverOperator: The constructed Grover operator.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Evidence to reversed qubit index sorted by index</span>
         <span class="n">num_qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_circ</span><span class="o">.</span><span class="n">num_qubits</span>
         <span class="n">e2idx</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
@@ -602,7 +608,7 @@
         <span class="c1"># Binary format of good states</span>
         <span class="n">num_evd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">e2idx</span><span class="p">)</span>
         <span class="n">bin_str</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;0</span><span class="si">{</span><span class="p">(</span><span class="n">num_qubits</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">num_evd</span><span class="p">)</span><span class="si">}</span><span class="s2">b&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">num_qubits</span> <span class="o">-</span> <span class="n">num_evd</span><span class="p">))</span>
+            <span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"0</span><span class="si">{</span><span class="p">(</span><span class="n">num_qubits</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">num_evd</span><span class="p">)</span><span class="si">}</span><span class="s2">b"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">num_qubits</span> <span class="o">-</span> <span class="n">num_evd</span><span class="p">))</span>
         <span class="p">]</span>
         <span class="c1"># Get good states</span>
         <span class="n">good_states</span> <span class="o">=</span> <span class="p">[]</span>
@@ -612,12 +618,12 @@
             <span class="n">good_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
         <span class="c1"># Get statevector by transform good states w.r.t its index to 1 and o/w to 0</span>
         <span class="n">oracle</span> <span class="o">=</span> <span class="n">Statevector</span><span class="p">(</span>
-            <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;0</span><span class="si">{</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">b&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">good_states</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">num_qubits</span><span class="p">)]</span>
+            <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"0</span><span class="si">{</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">b"</span><span class="p">)</span> <span class="ow">in</span> <span class="n">good_states</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">num_qubits</span><span class="p">)]</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">grover_operator</span><span class="p">(</span><span class="n">oracle</span><span class="p">,</span> <span class="n">state_preparation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_circ</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_run_circuit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the quantum circuit with the sampler and return P(bitstring) with fixed width.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Run the quantum circuit with the sampler and return P(bitstring) with fixed width."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pass_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">circuit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
 
@@ -629,31 +635,31 @@
         <span class="n">bit_counts</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># 1) Prefer robust, register-agnostic access (no try/except: guards only)</span>
-        <span class="n">join_data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="s2">&quot;join_data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">join_data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="s2">"join_data"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">join_data</span><span class="p">):</span>
             <span class="n">joined</span> <span class="o">=</span> <span class="n">join_data</span><span class="p">()</span>
-            <span class="n">get_counts</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">joined</span><span class="p">,</span> <span class="s2">&quot;get_counts&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">get_counts</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">joined</span><span class="p">,</span> <span class="s2">"get_counts"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">get_counts</span><span class="p">):</span>
                 <span class="n">bit_counts</span> <span class="o">=</span> <span class="n">get_counts</span><span class="p">()</span>
 
         <span class="c1"># 2) Fallback: first available register deterministically</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bit_counts</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># dict-like (fast + deterministic)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">reg_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
                         <span class="n">reg</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">reg_name</span><span class="p">]</span>
-                        <span class="n">gc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="s2">&quot;get_counts&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="n">gc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="s2">"get_counts"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                         <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">gc</span><span class="p">):</span>
                             <span class="n">bit_counts</span> <span class="o">=</span> <span class="n">gc</span><span class="p">()</span>
                             <span class="k">break</span>
 
                 <span class="c1"># object-like container (deterministic by sorted dir)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">reg_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)):</span>
+                    <span class="k">for</span> <span class="n">reg_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)):</span>
                         <span class="n">reg</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">reg_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                        <span class="n">gc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="s2">&quot;get_counts&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="n">gc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="s2">"get_counts"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                         <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">gc</span><span class="p">):</span>
                             <span class="n">bit_counts</span> <span class="o">=</span> <span class="n">gc</span><span class="p">()</span>
                             <span class="k">break</span>
@@ -668,16 +674,16 @@
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_to_bin_key</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,)):</span>
-                <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;0</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">b&quot;</span><span class="p">)</span>
-            <span class="n">ks</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;0b&quot;</span><span class="p">,</span> <span class="s2">&quot;0B&quot;</span><span class="p">)):</span>
-                <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;0</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">b&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="s2">&quot;0X&quot;</span><span class="p">)):</span>
-                <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;0</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">b&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">}</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"0</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">b"</span><span class="p">)</span>
+            <span class="n">ks</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"0b"</span><span class="p">,</span> <span class="s2">"0B"</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"0</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">b"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"0x"</span><span class="p">,</span> <span class="s2">"0X"</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"0</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">b"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="s2">"0"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">}</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">width</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">ks</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
             <span class="c1"># decimal string</span>
-            <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ks</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;0</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">b&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ks</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"0</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">b"</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bit_counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">out</span><span class="p">[</span><span class="n">_to_bin_key</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_to_bin_key</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">v</span> <span class="o">/</span> <span class="n">total</span>
@@ -687,7 +693,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">__power_grover</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">grover_op</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">evidence</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Qubit</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Applies the Grover operator to the quantum circuit 2^k times, measures the evidence qubits,</span>
 <span class="sd">        and returns a tuple containing the updated quantum circuit and a set of the measured</span>
 <span class="sd">        evidence qubits.</span>
@@ -699,7 +705,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: A tuple containing the updated quantum circuit and a set of the measured evidence</span>
 <span class="sd">                qubits.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Create circuit</span>
         <span class="n">qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_circ</span><span class="o">.</span><span class="n">qregs</span><span class="p">)</span>
         <span class="n">qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_circ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_circ</span><span class="o">.</span><span class="n">qregs</span><span class="p">)</span>
@@ -733,19 +739,19 @@
         <span class="k">return</span> <span class="n">qc</span><span class="p">,</span> <span class="n">e_meas</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_format_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">evidence</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transforms samples keys back to their variables names.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Transforms samples keys back to their variables names."""</span>
         <span class="n">f_samples</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">smpl_key</span><span class="p">,</span> <span class="n">smpl_val</span> <span class="ow">in</span> <span class="n">samples</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">q_str</span><span class="p">,</span> <span class="n">e_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">q_str</span><span class="p">,</span> <span class="n">e_str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">""</span>
             <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">var_idx</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label2qidx</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                 <span class="k">if</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">evidence</span><span class="p">:</span>
-                    <span class="n">e_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">smpl_key</span><span class="p">[</span><span class="n">var_idx</span><span class="p">]</span><span class="si">}</span><span class="s2">,&quot;</span>
+                    <span class="n">e_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">smpl_key</span><span class="p">[</span><span class="n">var_idx</span><span class="p">]</span><span class="si">}</span><span class="s2">,"</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">q_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">smpl_key</span><span class="p">[</span><span class="n">var_idx</span><span class="p">]</span><span class="si">}</span><span class="s2">,&quot;</span>
+                    <span class="n">q_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">smpl_key</span><span class="p">[</span><span class="n">var_idx</span><span class="p">]</span><span class="si">}</span><span class="s2">,"</span>
             <span class="k">if</span> <span class="n">evidence</span><span class="p">:</span>
-                <span class="n">f_samples</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;P(</span><span class="si">{</span><span class="n">q_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">e_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">smpl_val</span>
+                <span class="n">f_samples</span><span class="p">[</span><span class="sa">f</span><span class="s2">"P(</span><span class="si">{</span><span class="n">q_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">e_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)"</span><span class="p">]</span> <span class="o">=</span> <span class="n">smpl_val</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">f_samples</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;P(</span><span class="si">{</span><span class="n">q_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">smpl_val</span>
+                <span class="n">f_samples</span><span class="p">[</span><span class="sa">f</span><span class="s2">"P(</span><span class="si">{</span><span class="n">q_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)"</span><span class="p">]</span> <span class="o">=</span> <span class="n">smpl_val</span>
         <span class="k">return</span> <span class="n">f_samples</span>
 
 <div class="viewcode-block" id="QBayesian.rejection_sampling">
@@ -753,7 +759,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">rejection_sampling</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">evidence</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">format_res</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Performs quantum rejection sampling given the evidence.</span>
 
 <span class="sd">        Args:</span>
@@ -762,13 +768,13 @@
 <span class="sd">                empty, it measures all qubits. If evidence is given, it uses the Grover operator for</span>
 <span class="sd">                amplitude amplification and repeats until the evidence matches or limit is reached.</span>
 <span class="sd">            format_res: If true, maps the output back to variable names. For example, the output</span>
-<span class="sd">                {&#39;100&#39;: 0.23} with evidence A=0, B=0 will be mapped to {&#39;P(C=1|A=0,B=0)&#39;: 0.23}.</span>
+<span class="sd">                {'100': 0.23} with evidence A=0, B=0 will be mapped to {'P(C=1|A=0,B=0)': 0.23}.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            A dictionary with the probability distribution of the samples given the evidence, where</span>
 <span class="sd">            the keys are the sequential values of the variables. Note that the last variable value</span>
 <span class="sd">            appears as the first character for the key. If format_res is true, the output will be</span>
-<span class="sd">            mapped back to the variable names, for example {&#39;P(C=1|A=0,B=0)&#39;: 0.23}.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            mapped back to the variable names, for example {'P(C=1|A=0,B=0)': 0.23}.</span>
+<span class="sd">        """</span>
         <span class="c1"># If evidence is empty</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">evidence</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Create circuit</span>
@@ -815,7 +821,7 @@
             <span class="c1"># Run circuit</span>
             <span class="n">counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_circuit</span><span class="p">(</span><span class="n">best_qc_meas</span><span class="p">)</span>
             <span class="c1"># Build default string with evidence</span>
-            <span class="n">query_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">query_string</span> <span class="o">=</span> <span class="s2">""</span>
             <span class="n">var_idx_sorted</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label2qidx</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="p">]</span>
@@ -823,14 +829,14 @@
                 <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">evidence</span><span class="p">:</span>
                     <span class="n">query_string</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">evidence</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">query_string</span> <span class="o">+=</span> <span class="s2">&quot;q&quot;</span>
+                    <span class="n">query_string</span> <span class="o">+=</span> <span class="s2">"q"</span>
             <span class="c1"># Retrieve valid samples</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="c1"># Replace placeholder q with query variables from samples</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">query</span> <span class="o">=</span> <span class="n">query_string</span>
                 <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
-                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="n">char</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"q"</span><span class="p">,</span> <span class="n">char</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">[</span><span class="n">query</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">format_res</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">)</span>
@@ -845,7 +851,7 @@
         <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">evidence</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Performs quantum inference for the query variables given the evidence. It uses quantum</span>
 <span class="sd">        rejection sampling if evidence is given and calculates the probability of the query.</span>
 
@@ -862,11 +868,11 @@
 <span class="sd">            The probability of the query given the evidence.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If evidence is required for rejection sampling and ``None`` is given.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">evidence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rejection_sampling</span><span class="p">(</span><span class="n">evidence</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provide evidence or indicate no evidence with an empty dictionary&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Provide evidence or indicate no evidence with an empty dictionary"</span><span class="p">)</span>
         <span class="c1"># Get sorted indices of query qubits</span>
         <span class="n">query_indices_rev</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label2qidx</span><span class="p">[</span><span class="n">q_key</span><span class="p">],</span> <span class="n">q_val</span><span class="p">)</span> <span class="k">for</span> <span class="n">q_key</span><span class="p">,</span> <span class="n">q_val</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
         <span class="c1"># Get probability of query</span>
@@ -884,43 +890,43 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">converged</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns ``True`` if a solution for the evidence with the given threshold was found</span>
-<span class="sd">        without reaching the maximum number of times the Grover operator was applied (2^limit).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns ``True`` if a solution for the evidence with the given threshold was found</span>
+<span class="sd">        without reaching the maximum number of times the Grover operator was applied (2^limit)."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converged</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the samples generated from the rejection sampling.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the samples generated from the rejection sampling."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the maximum number of times the Grover operator can be applied (2^limit).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the maximum number of times the Grover operator can be applied (2^limit)."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_limit</span>
 
     <span class="nd">@limit</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the maximum number of times the Grover operator can be applied (2^limit).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the maximum number of times the Grover operator can be applied (2^limit)."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_limit</span> <span class="o">=</span> <span class="n">limit</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sampler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseSamplerV2</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the sampler primitive used to compute the samples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the sampler primitive used to compute the samples."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span>
 
     <span class="nd">@sampler</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sampler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampler</span><span class="p">:</span> <span class="n">BaseSamplerV2</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the sampler primitive used to compute the samples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the sampler primitive used to compute the samples."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sampler</span> <span class="o">=</span> <span class="n">sampler</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the threshold to accept the evidence.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the threshold to accept the evidence."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span>
 
     <span class="nd">@threshold</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the threshold to accept the evidence.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the threshold to accept the evidence."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span> <span class="o">=</span> <span class="n">threshold</span></div>
 
 </pre></div>
@@ -947,7 +953,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -969,7 +975,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

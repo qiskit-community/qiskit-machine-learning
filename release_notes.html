@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="SVCLoss" href="stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="HuberLoss" href="stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>Release Notes - Qiskit Machine Learning 0.9.0</title>
+        <title>Release Notes - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,14 +465,91 @@
         <article role="main">
           <br><br><br><section id="release-notes">
 <h1>Release Notes<a class="headerlink" href="#release-notes" title="Link to this heading">¶</a></h1>
+<section id="release-notes-0-9-1">
+<span id="id1"></span><h2>0.9.1<a class="headerlink" href="#release-notes-0-9-1" title="Link to this heading">¶</a></h2>
+<section id="new-features">
+<span id="release-notes-0-9-1-new-features"></span><h3>New Features<a class="headerlink" href="#new-features" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p>Added regression-based kernel loss functions for use with
+<a class="reference internal" href="stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer" title="qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">QuantumKernelTrainer</span></code></a>.
+The following new loss functions are now available:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html#qiskit_machine_learning.utils.loss_functions.SVRLoss" title="qiskit_machine_learning.utils.loss_functions.SVRLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">SVRLoss</span></code></a> -
+Dual objective-based loss for Support Vector Regression.</p></li>
+<li><p><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html#qiskit_machine_learning.utils.loss_functions.MSRLoss" title="qiskit_machine_learning.utils.loss_functions.MSRLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSRLoss</span></code></a> -
+Mean squared error loss.</p></li>
+<li><p><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html#qiskit_machine_learning.utils.loss_functions.MARLoss" title="qiskit_machine_learning.utils.loss_functions.MARLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">MARLoss</span></code></a> -
+Mean absolute error loss.</p></li>
+<li><p><a class="reference internal" href="stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html#qiskit_machine_learning.utils.loss_functions.HuberLoss" title="qiskit_machine_learning.utils.loss_functions.HuberLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">HuberLoss</span></code></a> -
+Robust loss combining squared and absolute error.</p></li>
+</ul>
+<p>These enable training quantum kernels for regression tasks with algorithms
+like <code class="xref py py-class docutils literal notranslate"><span class="pre">QSVR</span></code>.</p>
+<p>Example usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainableFidelityQuantumKernel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.kernels.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumKernelTrainer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.utils.loss_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SVRLoss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.library</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZZFeatureMap</span>
+
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">ZZFeatureMap</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">TrainableFidelityQuantumKernel</span><span class="p">(</span>
+    <span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span>
+    <span class="n">training_parameters</span><span class="o">=</span><span class="n">feature_map</span><span class="o">.</span><span class="n">parameters</span>
+<span class="p">)</span>
+<span class="c1"># Use SVRLoss for regression</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">SVRLoss</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">QuantumKernelTrainer</span><span class="p">(</span><span class="n">quantum_kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">)</span>
+<span class="c1"># result = trainer.fit(X_train, y_train)</span>
+</pre></div>
+</div>
+<p>Closes <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/issues/960">#960</a>.</p>
+</li>
+</ul>
+</section>
+<section id="deprecation-notes">
+<span id="release-notes-0-9-1-deprecation-notes"></span><h3>Deprecation Notes<a class="headerlink" href="#deprecation-notes" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Deprecation of <code class="docutils literal notranslate"><span class="pre">num_qubits</span></code> and automatic circuit alignment. The <code class="docutils literal notranslate"><span class="pre">num_qubits</span></code>
+argument and the  automatic qubit alignment (padding or resizing) of <code class="docutils literal notranslate"><span class="pre">feature_map</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ansatz</span></code> circuits are deprecated as of version 0.10.0 and will be removed after a 6-month
+deprecation period. Users must ensure that <code class="docutils literal notranslate"><span class="pre">feature_map</span></code> and <code class="docutils literal notranslate"><span class="pre">ansatz</span></code> are explicitly
+constructed with the same number of qubits before passing them to APIs that previously
+accepted <code class="docutils literal notranslate"><span class="pre">num_qubits</span></code>. In a future release, providing <code class="docutils literal notranslate"><span class="pre">num_qubits</span></code> or passing circuits
+with different number of qubits will raise an error.
+See <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/issues/1010">https://github.com/qiskit-community/qiskit-machine-learning/issues/1010</a> for more details.</p></li>
+</ul>
+</section>
+<section id="bug-fixes">
+<span id="release-notes-0-9-1-bug-fixes"></span><h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Fixed a numerical stability issue in
+<cite>qiskit_machine_learning.neural_networks.EffectiveDimension.get_fisher_information()</cite>
+so that small negative model outputs no longer result in NaN values. This makes the
+effective dimension computation robust to signed outputs from EstimatorQNN.</p></li>
+</ul>
+<ul class="simple">
+<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">SamplerQNN._postprocess</span></code> to correctly handle transpiled
+circuits. Previously, the method filtered measurement results by
+integer value (<code class="docutils literal notranslate"><span class="pre">ki</span> <span class="pre">&lt;</span> <span class="pre">2**num_virtual_qubits</span></code>), which caused two
+problems: (1) valid measurements were silently discarded when logical
+qubits were placed at high physical positions by the transpiler, and
+(2) shots where ancilla qubits flipped due to hardware noise were
+also discarded even when logical qubits occupied low positions. As a
+result, the output probabilities did not sum to 1.0. The fix uses the
+circuit layout to marginalize over ancilla qubits, preserving every
+shot and producing a correctly normalized probability distribution.
+See <a class="reference external" href="https://github.com/qiskit-community/qiskit-machine-learning/issues/1040">#1040</a>.</p></li>
+</ul>
+</section>
+</section>
 <section id="release-notes-0-9-0">
-<span id="id1"></span><h2>0.9.0<a class="headerlink" href="#release-notes-0-9-0" title="Link to this heading">¶</a></h2>
+<span id="id4"></span><h2>0.9.0<a class="headerlink" href="#release-notes-0-9-0" title="Link to this heading">¶</a></h2>
 <section id="prelude">
 <span id="release-notes-0-9-0-prelude"></span><h3>Prelude<a class="headerlink" href="#prelude" title="Link to this heading">¶</a></h3>
 <p>This release migrates Qiskit Machine Learning to be compatible with Qiskit 2.x and updates the library’s simulation primitives and documentation accordingly.</p>
 </section>
-<section id="new-features">
-<span id="release-notes-0-9-0-new-features"></span><h3>New Features<a class="headerlink" href="#new-features" title="Link to this heading">¶</a></h3>
+<section id="release-notes-0-9-0-new-features">
+<span id="id5"></span><h3>New Features<a class="headerlink" href="#release-notes-0-9-0-new-features" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Added support for using Qiskit Machine Learning with Python 3.13 following the release of
 Python 3.13 (final) in October 2024 (<a class="reference external" href="https://peps.python.org/pep-0719/">PEP 719</a>). To
@@ -528,8 +610,8 @@ documentation for more detailed information.</p>
     <span class="n">training_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="n">test_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
     <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;easy&quot;</span><span class="p">,</span>
-    <span class="n">formatting</span><span class="o">=</span><span class="s2">&quot;statevector&quot;</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"easy"</span><span class="p">,</span>
+    <span class="n">formatting</span><span class="o">=</span><span class="s2">"statevector"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -564,9 +646,9 @@ that the argument “gap” is now a keyword argument and no longer a positional
     <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
     <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">one_hot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">labelling_method</span><span class="o">=</span><span class="s2">&quot;measurement&quot;</span><span class="p">,</span>
-    <span class="n">sampling_method</span><span class="o">=</span><span class="s2">&quot;sobol&quot;</span><span class="p">,</span>
-    <span class="n">entanglement</span><span class="o">=</span><span class="s2">&quot;circular&quot;</span>
+    <span class="n">labelling_method</span><span class="o">=</span><span class="s2">"measurement"</span><span class="p">,</span>
+    <span class="n">sampling_method</span><span class="o">=</span><span class="s2">"sobol"</span><span class="p">,</span>
+    <span class="n">entanglement</span><span class="o">=</span><span class="s2">"circular"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -605,7 +687,7 @@ Qiskit’s V2 primitives ecosystem (PUB-based execution and structured results).
 </ul>
 <ul>
 <li><p>Several commonly used feature maps and ansatze from
-<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit_library#module-qiskit.circuit.library" title="(in Qiskit v2.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit.circuit.library</span></code></a> have transitioned from class-based
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/circuit_library#module-qiskit.circuit.library" title="(in Qiskit v2.5)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit.circuit.library</span></code></a> have transitioned from class-based
 constructors to functional constructors. Qiskit Machine Learning now
 follows this updated API. Due to this, the default <code class="docutils literal notranslate"><span class="pre">ZZFeatureMap(2)</span></code>
 is removed when a feature map is not provided.</p>
@@ -645,8 +727,8 @@ Qiskit Machine Learning).</p>
 </li>
 </ul>
 </section>
-<section id="deprecation-notes">
-<span id="release-notes-0-9-0-deprecation-notes"></span><h3>Deprecation Notes<a class="headerlink" href="#deprecation-notes" title="Link to this heading">¶</a></h3>
+<section id="release-notes-0-9-0-deprecation-notes">
+<span id="id6"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-9-0-deprecation-notes" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>Qiskit has deprecated circuit library classes that were based on
 <cite>BlueprintCircuit</cite> in favor of methods that construct the circuits
@@ -679,10 +761,10 @@ been deprecated and will be removed (target v0.10.0). Please use
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializableModelMixin.to_dill()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializableModelMixin.from_dill()</span></code> instead.</p></li>
 </ul>
 </section>
-<section id="bug-fixes">
-<span id="release-notes-0-9-0-bug-fixes"></span><h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">¶</a></h3>
+<section id="release-notes-0-9-0-bug-fixes">
+<span id="id7"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-9-0-bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p>Hashing of <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.QuantumCircuit" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.circuit.QuantumCircuit</span></code></a> objects used internally
+<li><p>Hashing of <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.QuantumCircuit" title="(in Qiskit v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.circuit.QuantumCircuit</span></code></a> objects used internally
 by Qiskit Machine Learning is now deterministic. This improves stability
 and reproducibility in workflows that rely on circuit hashing, caching,
 or dictionary-based storage of circuits.</p></li>
@@ -705,13 +787,13 @@ a NoneType AttributeError as described by
 </section>
 </section>
 <section id="release-notes-0-8-0">
-<span id="id2"></span><h2>0.8.0<a class="headerlink" href="#release-notes-0-8-0" title="Link to this heading">¶</a></h2>
+<span id="id8"></span><h2>0.8.0<a class="headerlink" href="#release-notes-0-8-0" title="Link to this heading">¶</a></h2>
 <section id="release-notes-0-8-0-prelude">
-<span id="id3"></span><h3>Prelude<a class="headerlink" href="#release-notes-0-8-0-prelude" title="Link to this heading">¶</a></h3>
+<span id="id9"></span><h3>Prelude<a class="headerlink" href="#release-notes-0-8-0-prelude" title="Link to this heading">¶</a></h3>
 <p>From this release, Qiskit Machine Learning requires Qiskit <cite>1.0</cite> or above, with important changes and upgrades, such as the introduction of Quantum Bayesian inference and the migration of a subset of Qiskit Algorithms features to Qiskit Machine Learning. These changes are part of the process to build full compatibility with the version-2 (V2) Qiskit primitives available from version <cite>0.8</cite> of Qiskit Machine Learning. V1 primitives are deprecated and will be removed from version <cite>0.9</cite> (please find more information below).</p>
 </section>
 <section id="release-notes-0-8-0-new-features">
-<span id="id4"></span><h3>New Features<a class="headerlink" href="#release-notes-0-8-0-new-features" title="Link to this heading">¶</a></h3>
+<span id="id10"></span><h3>New Features<a class="headerlink" href="#release-notes-0-8-0-new-features" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>Added a new class <a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.QBayesian.html#qiskit_machine_learning.algorithms.QBayesian" title="qiskit_machine_learning.algorithms.QBayesian"><code class="xref py py-class docutils literal notranslate"><span class="pre">QBayesian</span></code></a>  that does quantum Bayesian inference on a
 a quantum circuit representing a Bayesian network with binary random variables.</p>
@@ -736,7 +818,7 @@ probability is represented by the probability amplitude of quantum state 001.</p
 <span class="c1"># Perform inference</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">qb</span><span class="o">.</span><span class="n">inference</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="p">},</span> <span class="n">evidence</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="p">})</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Probability of query given evidence:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Probability of query given evidence:"</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -784,7 +866,7 @@ removed.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-8-0-upgrade-notes">
-<span id="id5"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-8-0-upgrade-notes" title="Link to this heading">¶</a></h3>
+<span id="id11"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-8-0-upgrade-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Removed support for using Qiskit Machine Learning with Python 3.8 to reflect
 the EOL of Python 3.8 in October 2024 (PEP 569). To continue using Qiskit Machine Learning, you
@@ -872,7 +954,7 @@ the <cite>0.8</cite> release going forward, while <cite>V1</cite> primitives are
 </ul>
 </section>
 <section id="release-notes-0-8-0-deprecation-notes">
-<span id="id6"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-8-0-deprecation-notes" title="Link to this heading">¶</a></h3>
+<span id="id12"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-8-0-deprecation-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><strong>Deprecated V1 Primitives</strong>:
 The <cite>V1</cite> primitives (e.g., <cite>EstimatorV1</cite> and <cite>SamplerV1</cite>) are no longer compatible
@@ -883,7 +965,7 @@ executions to ensure long-term compatibility.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-8-0-bug-fixes">
-<span id="id7"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-8-0-bug-fixes" title="Link to this heading">¶</a></h3>
+<span id="id13"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-8-0-bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Added a <cite>max_circuits_per_job</cite> parameter to the <a class="reference internal" href="stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel" title="qiskit_machine_learning.kernels.FidelityQuantumKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">FidelityQuantumKernel</span></code></a> used
 in the case that if more circuits are submitted than the job limit for the 
@@ -920,9 +1002,9 @@ no longer matters.</p></li>
 </section>
 </section>
 <section id="release-notes-0-7-0">
-<span id="id8"></span><h2>0.7.0<a class="headerlink" href="#release-notes-0-7-0" title="Link to this heading">¶</a></h2>
+<span id="id14"></span><h2>0.7.0<a class="headerlink" href="#release-notes-0-7-0" title="Link to this heading">¶</a></h2>
 <section id="release-notes-0-7-0-prelude">
-<span id="id9"></span><h3>Prelude<a class="headerlink" href="#release-notes-0-7-0-prelude" title="Link to this heading">¶</a></h3>
+<span id="id15"></span><h3>Prelude<a class="headerlink" href="#release-notes-0-7-0-prelude" title="Link to this heading">¶</a></h3>
 <p>Qiskit Machine Learning has been migrated to the <a class="reference external" href="https://github.com/qiskit-community">qiskit-community Github organization</a> to further emphasize that it is a community-driven project.
 To reflect this change, and because we are onboarding additional code-owners and maintainers, with this version (0.7) we have decided to <em>remove all deprecated</em> code, regardless of the time of its deprecation. This ensures that the new members of the development team do not have a large bulk of legacy code to maintain.
 This can mean one of two things for you as the end-user:</p>
@@ -937,7 +1019,7 @@ Qiskit Machine Learning to 0.6.</p></li>
 <p>For more context on the changes around Qiskit Machine Learning and the other application projects as well as the Algorithms library in Qiskit, be sure to read this <a class="reference external" href="https://medium.com/qiskit/a-new-chapter-for-qiskit-algorithms-and-applications-5baff541e826">blog post</a>.</p>
 </section>
 <section id="release-notes-0-7-0-new-features">
-<span id="id10"></span><h3>New Features<a class="headerlink" href="#release-notes-0-7-0-new-features" title="Link to this heading">¶</a></h3>
+<span id="id16"></span><h3>New Features<a class="headerlink" href="#release-notes-0-7-0-new-features" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code> class can be passed as circuit
 to the <a class="reference internal" href="stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html#qiskit_machine_learning.neural_networks.SamplerQNN" title="qiskit_machine_learning.neural_networks.SamplerQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplerQNN</span></code></a>
@@ -958,7 +1040,7 @@ from the <code class="xref py py-class docutils literal notranslate"><span class
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit_machine_learning.neural_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">SamplerQNN</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">parity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">bin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">bin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"1"</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
 
 <span class="c1"># Create a parameterized 2 qubit circuit composed of the default ZZFeatureMap feature map</span>
 <span class="c1"># and RealAmplitudes ansatz.</span>
@@ -996,12 +1078,12 @@ from the <code class="xref py py-class docutils literal notranslate"><span class
 composes a Quantum Circuit from a feature map and an ansatz.</p>
 <p>At least one parameter, i.e. number of qubits, feature map, ansatz, has to be provided.</p>
 <p>If only the number of qubits is provided the resulting quantum circuit is a composition
-of the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> and the 
-<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a> ansatz.
-If the number of qubits is 1 the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a> is used per
-default. If only a feature map is provided, the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>
+of the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> and the 
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a> ansatz.
+If the number of qubits is 1 the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZFeatureMap" title="(in Qiskit v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZFeatureMap</span></code></a> is used per
+default. If only a feature map is provided, the <a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.RealAmplitudes" title="(in Qiskit v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RealAmplitudes</span></code></a>
 ansatz with the corresponding number of qubits is used. If only an ansatz is provided the
-<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> with the corresponding number of qubits is used.</p>
+<a class="reference external" href="https://quantum.cloud.ibm.com/docs/api/qiskit/qiskit.circuit.library.ZZFeatureMap" title="(in Qiskit v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZZFeatureMap</span></code></a> with the corresponding number of qubits is used.</p>
 <p>In case number of qubits is provided along with either a feature map, an ansatz or both, a
 potential mismatch between the three inputs with respect to the number of qubits is
 resolved by constructing the <code class="xref py py-class docutils literal notranslate"><span class="pre">QNNCircuit</span></code> with
@@ -1087,7 +1169,7 @@ from the <cite>qiskit.algorithms</cite> package that is deprecated now.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-7-0-upgrade-notes">
-<span id="id11"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-7-0-upgrade-notes" title="Link to this heading">¶</a></h3>
+<span id="id17"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-7-0-upgrade-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Support for running with Python 3.7 has been removed. To run Qiskit Machine Learning you need
 a minimum Python version of 3.8.</p></li>
@@ -1140,7 +1222,7 @@ to get functionality similar to what the removed <cite>runtime</cite> package pr
 </ul>
 </section>
 <section id="release-notes-0-7-0-bug-fixes">
-<span id="id12"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-7-0-bug-fixes" title="Link to this heading">¶</a></h3>
+<span id="id18"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-7-0-bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Compatibility fix to support Python 3.11.</p></li>
 </ul>
@@ -1163,9 +1245,9 @@ tensor, leading to rounding errors.</p></li>
 </section>
 </section>
 <section id="release-notes-0-6-0">
-<span id="id13"></span><h2>0.6.0<a class="headerlink" href="#release-notes-0-6-0" title="Link to this heading">¶</a></h2>
+<span id="id19"></span><h2>0.6.0<a class="headerlink" href="#release-notes-0-6-0" title="Link to this heading">¶</a></h2>
 <section id="release-notes-0-6-0-new-features">
-<span id="id14"></span><h3>New Features<a class="headerlink" href="#release-notes-0-6-0-new-features" title="Link to this heading">¶</a></h3>
+<span id="id20"></span><h3>New Features<a class="headerlink" href="#release-notes-0-6-0-new-features" title="Link to this heading">¶</a></h3>
 <ul>
 <li><p>Allow callable as an optimizer in
 <code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code>,
@@ -1192,7 +1274,7 @@ such as <code class="xref py py-class docutils literal notranslate"><span class=
 <p>The above signature also allows to directly pass any SciPy minimizer, for instance as</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">minimize</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">minimize</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"L-BFGS-B"</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -1291,7 +1373,7 @@ operations should not be mixed with dense ones, otherwise exceptions may be thro
 </ul>
 </section>
 <section id="release-notes-0-6-0-upgrade-notes">
-<span id="id15"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-6-0-upgrade-notes" title="Link to this heading">¶</a></h3>
+<span id="id21"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-6-0-upgrade-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>The previously deprecated <code class="docutils literal notranslate"><span class="pre">CrossEntropySigmoidLoss</span></code> loss function has been removed.</p></li>
 </ul>
@@ -1307,7 +1389,7 @@ corresponding keyword arguments.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-6-0-bug-fixes">
-<span id="id16"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-6-0-bug-fixes" title="Link to this heading">¶</a></h3>
+<span id="id22"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-6-0-bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html#qiskit_machine_learning.neural_networks.SamplerQNN" title="qiskit_machine_learning.neural_networks.SamplerQNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">SamplerQNN</span></code></a> can now correctly handle quantum
 circuits without both input parameters and weights. If such a circuit is passed to the QNN then
@@ -1316,9 +1398,9 @@ this circuit executed once in the forward pass and backward returns <code class=
 </section>
 </section>
 <section id="release-notes-0-5-0">
-<span id="id17"></span><h2>0.5.0<a class="headerlink" href="#release-notes-0-5-0" title="Link to this heading">¶</a></h2>
+<span id="id23"></span><h2>0.5.0<a class="headerlink" href="#release-notes-0-5-0" title="Link to this heading">¶</a></h2>
 <section id="release-notes-0-5-0-new-features">
-<span id="id18"></span><h3>New Features<a class="headerlink" href="#release-notes-0-5-0-new-features" title="Link to this heading">¶</a></h3>
+<span id="id24"></span><h3>New Features<a class="headerlink" href="#release-notes-0-5-0-new-features" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Added support for categorical and ordinal labels to 
 <a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC" title="qiskit_machine_learning.algorithms.VQC"><code class="xref py py-class docutils literal notranslate"><span class="pre">VQC</span></code></a>. Now labels can be passed in different formats, 
@@ -1358,10 +1440,10 @@ of <a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.
 <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">ub</span> <span class="o">-</span> <span class="n">lb</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">lb</span>
 <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">eps</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
-<span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;θ_0&quot;</span><span class="p">),</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;θ_1&quot;</span><span class="p">)]</span>
-<span class="n">feature_map</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fm&quot;</span><span class="p">)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">"θ_0"</span><span class="p">),</span> <span class="n">Parameter</span><span class="p">(</span><span class="s2">"θ_1"</span><span class="p">)]</span>
+<span class="n">feature_map</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"fm"</span><span class="p">)</span>
 <span class="n">feature_map</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">ansatz</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vf&quot;</span><span class="p">)</span>
+<span class="n">ansatz</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"vf"</span><span class="p">)</span>
 <span class="n">ansatz</span><span class="o">.</span><span class="n">ry</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
 
 <span class="n">vqr</span> <span class="o">=</span> <span class="n">VQR</span><span class="p">(</span>
@@ -1476,7 +1558,7 @@ of <a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.
   <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
   <span class="n">feature_map</span><span class="o">=</span><span class="n">feature_map</span><span class="p">,</span>
   <span class="n">ansatz</span><span class="o">=</span><span class="n">ansatz</span><span class="p">,</span>
-  <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;cross_entropy&quot;</span><span class="p">,</span>
+  <span class="n">loss</span><span class="o">=</span><span class="s2">"cross_entropy"</span><span class="p">,</span>
   <span class="n">optimizer</span><span class="o">=</span><span class="n">COBYLA</span><span class="p">(</span><span class="n">maxiter</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
 <span class="p">)</span>
 
@@ -1560,7 +1642,7 @@ the weights, it is the same as calling <code class="docutils literal notranslate
 </ul>
 </section>
 <section id="release-notes-0-5-0-upgrade-notes">
-<span id="id19"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-5-0-upgrade-notes" title="Link to this heading">¶</a></h3>
+<span id="id25"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-5-0-upgrade-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>The method <a class="reference internal" href="stubs/qiskit_machine_learning.algorithms.TrainableModel.html#qiskit_machine_learning.algorithms.TrainableModel.fit" title="qiskit_machine_learning.algorithms.TrainableModel.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a> is not abstract 
 any more. Now, it implements basic checks, calls a new abstract method 
@@ -1586,7 +1668,7 @@ in practice.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-5-0-deprecation-notes">
-<span id="id20"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-5-0-deprecation-notes" title="Link to this heading">¶</a></h3>
+<span id="id26"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-5-0-deprecation-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>The <cite>qiskit_machine_learning.algorithms.distribution_learners</cite> package is deprecated and will
 be removed no sooner than 3 months after the release. There’s no direct replacement for the
@@ -1639,7 +1721,7 @@ renamed to match. That is to say:</p>
 </ul>
 </section>
 <section id="release-notes-0-5-0-bug-fixes">
-<span id="id21"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-5-0-bug-fixes" title="Link to this heading">¶</a></h3>
+<span id="id27"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-5-0-bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Previously in the <code class="xref py py-class docutils literal notranslate"><span class="pre">QuantumGenerator</span></code> of 
 the <code class="xref py py-class docutils literal notranslate"><span class="pre">QGAN</span></code> algorithm, if we used
@@ -1679,9 +1761,9 @@ to the mixin class <cite>ClassifierMixin</cite> from scikit-learn is added.</p><
 </section>
 </section>
 <section id="release-notes-0-4-0">
-<span id="id22"></span><h2>0.4.0<a class="headerlink" href="#release-notes-0-4-0" title="Link to this heading">¶</a></h2>
+<span id="id28"></span><h2>0.4.0<a class="headerlink" href="#release-notes-0-4-0" title="Link to this heading">¶</a></h2>
 <section id="release-notes-0-4-0-new-features">
-<span id="id23"></span><h3>New Features<a class="headerlink" href="#release-notes-0-4-0-new-features" title="Link to this heading">¶</a></h3>
+<span id="id29"></span><h3>New Features<a class="headerlink" href="#release-notes-0-4-0-new-features" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>In the previous releases at the backpropagation stage of <code class="docutils literal notranslate"><span class="pre">CircuitQNN</span></code> and <code class="docutils literal notranslate"><span class="pre">OpflowQNN</span></code>
 gradients were computed for each sample in a dataset individually and then the obtained values
@@ -1737,7 +1819,7 @@ provided via the <code class="docutils literal notranslate"><span class="pre">Qu
 </ul>
 </section>
 <section id="release-notes-0-4-0-upgrade-notes">
-<span id="id24"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-4-0-upgrade-notes" title="Link to this heading">¶</a></h3>
+<span id="id30"></span><h3>Upgrade Notes<a class="headerlink" href="#release-notes-0-4-0-upgrade-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Added support for running with Python 3.10. 
 At the the time of the release, Torch didn’t have a python 3.10 version.</p></li>
@@ -1752,7 +1834,7 @@ a minimum Python version of 3.7.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-4-0-deprecation-notes">
-<span id="id25"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-4-0-deprecation-notes" title="Link to this heading">¶</a></h3>
+<span id="id31"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-4-0-deprecation-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>The functions <cite>breast_cancer</cite>, <cite>digits</cite>, <cite>gaussian</cite>, <cite>iris</cite> and <cite>wine</cite> in the <cite>datasets</cite> module are deprecated and
 should not be used.</p></li>
@@ -1766,7 +1848,7 @@ should not be used.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-4-0-bug-fixes">
-<span id="id26"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-4-0-bug-fixes" title="Link to this heading">¶</a></h3>
+<span id="id32"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-4-0-bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fixes in Ad Hoc dataset. Fixed an <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when <code class="docutils literal notranslate"><span class="pre">n=3</span></code> is passed to <code class="docutils literal notranslate"><span class="pre">ad_hoc_data</span></code>.
 When the value of <code class="docutils literal notranslate"><span class="pre">n</span></code> is not 2 or 3, a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised with a message that the only
@@ -1822,9 +1904,9 @@ the implementation.</p></li>
 </section>
 </section>
 <section id="release-notes-0-3-0">
-<span id="id27"></span><h2>0.3.0<a class="headerlink" href="#release-notes-0-3-0" title="Link to this heading">¶</a></h2>
+<span id="id33"></span><h2>0.3.0<a class="headerlink" href="#release-notes-0-3-0" title="Link to this heading">¶</a></h2>
 <section id="release-notes-0-3-0-new-features">
-<span id="id28"></span><h3>New Features<a class="headerlink" href="#release-notes-0-3-0-new-features" title="Link to this heading">¶</a></h3>
+<span id="id34"></span><h3>New Features<a class="headerlink" href="#release-notes-0-3-0-new-features" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Addition of a <code class="docutils literal notranslate"><span class="pre">QuantumKernelTrainer</span></code> object which may be used by kernel-based machine learning algorithms to perform
 optimization of some <code class="docutils literal notranslate"><span class="pre">QuantumKernel</span></code> parameters before training the model. Addition of a new base class,
@@ -1892,13 +1974,13 @@ or calculating the score of the trained model faster using Qiskit Runtime.</p></
 </ul>
 </section>
 <section id="release-notes-0-3-0-deprecation-notes">
-<span id="id29"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-3-0-deprecation-notes" title="Link to this heading">¶</a></h3>
+<span id="id35"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-3-0-deprecation-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Positional arguments in QSVR and QSVC are deprecated.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-3-0-bug-fixes">
-<span id="id30"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-3-0-bug-fixes" title="Link to this heading">¶</a></h3>
+<span id="id36"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-3-0-bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Fixed a bug in <code class="docutils literal notranslate"><span class="pre">QuantumKernel</span></code> where for statevector simulator
 all circuits were constructed and transpiled at once, leading to high memory
@@ -1944,9 +2026,9 @@ to the computed weights.</p></li>
 </section>
 </section>
 <section id="release-notes-0-2-0">
-<span id="id31"></span><h2>0.2.0<a class="headerlink" href="#release-notes-0-2-0" title="Link to this heading">¶</a></h2>
+<span id="id37"></span><h2>0.2.0<a class="headerlink" href="#release-notes-0-2-0" title="Link to this heading">¶</a></h2>
 <section id="release-notes-0-2-0-new-features">
-<span id="id32"></span><h3>New Features<a class="headerlink" href="#release-notes-0-2-0-new-features" title="Link to this heading">¶</a></h3>
+<span id="id38"></span><h3>New Features<a class="headerlink" href="#release-notes-0-2-0-new-features" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>A base class <code class="docutils literal notranslate"><span class="pre">TrainableModel</span></code> is introduced for machine learning models. This class follows
 Scikit-Learn principles and makes the quantum machine learning compatible with classical
@@ -1989,7 +2071,7 @@ to the score methods.</p></li>
 </ul>
 </section>
 <section id="release-notes-0-2-0-deprecation-notes">
-<span id="id33"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-2-0-deprecation-notes" title="Link to this heading">¶</a></h3>
+<span id="id39"></span><h3>Deprecation Notes<a class="headerlink" href="#release-notes-0-2-0-deprecation-notes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>The valid values passed to the loss argument of the <code class="docutils literal notranslate"><span class="pre">TrainableModel</span></code> constructor were partially
 deprecated (i.e. <code class="docutils literal notranslate"><span class="pre">loss='l1'</span></code> is replaced with <code class="docutils literal notranslate"><span class="pre">loss='absolute_error'</span></code> and <code class="docutils literal notranslate"><span class="pre">loss='l2'</span></code> is 
@@ -2006,7 +2088,7 @@ layers expose <code class="docutils literal notranslate"><span class="pre">weigh
 </ul>
 </section>
 <section id="release-notes-0-2-0-bug-fixes">
-<span id="id34"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-2-0-bug-fixes" title="Link to this heading">¶</a></h3>
+<span id="id40"></span><h3>Bug Fixes<a class="headerlink" href="#release-notes-0-2-0-bug-fixes" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>This fixes the exception that occurs when no <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> argument is
 passed to <code class="docutils literal notranslate"><span class="pre">NeuralNetworkClassifier</span></code> and <code class="docutils literal notranslate"><span class="pre">NeuralNetworkRegressor</span></code>.</p></li>
@@ -2046,14 +2128,14 @@ output shape is determined from the first operator in the <code class="docutils 
     </div>
 <div class="related-pages">
           
-          <a class="prev-page" href="stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">
+          <a class="prev-page" href="stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">SVCLoss</div>
+                <div class="title">HuberLoss</div>
                 
               </div>
             </a>
@@ -2061,7 +2143,7 @@ output shape is determined from the first operator in the <code class="docutils 
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -2088,12 +2170,18 @@ output shape is determined from the first operator in the <code class="docutils 
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Release Notes</a><ul>
-<li><a class="reference internal" href="#release-notes-0-9-0">0.9.0</a><ul>
-<li><a class="reference internal" href="#prelude">Prelude</a></li>
+<li><a class="reference internal" href="#release-notes-0-9-1">0.9.1</a><ul>
 <li><a class="reference internal" href="#new-features">New Features</a></li>
-<li><a class="reference internal" href="#upgrade-notes">Upgrade Notes</a></li>
 <li><a class="reference internal" href="#deprecation-notes">Deprecation Notes</a></li>
 <li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#release-notes-0-9-0">0.9.0</a><ul>
+<li><a class="reference internal" href="#prelude">Prelude</a></li>
+<li><a class="reference internal" href="#release-notes-0-9-0-new-features">New Features</a></li>
+<li><a class="reference internal" href="#upgrade-notes">Upgrade Notes</a></li>
+<li><a class="reference internal" href="#release-notes-0-9-0-deprecation-notes">Deprecation Notes</a></li>
+<li><a class="reference internal" href="#release-notes-0-9-0-bug-fixes">Bug Fixes</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#release-notes-0-8-0">0.8.0</a><ul>
@@ -2157,7 +2245,7 @@ output shape is determined from the first operator in the <code class="docutils 
   </div>
 </div><script src="_static/jquery.js?v=5d32c60e"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="_static/documentation_options.js?v=9dc39874"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>

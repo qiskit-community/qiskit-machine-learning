@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.gsls - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.gsls - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.gsls</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2018, 2024.</span>
+<span class="c1"># (C) Copyright IBM 2018, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,7 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Line search with Gaussian-smoothed samples on a sphere.&quot;&quot;&quot;</span>
+<span class="sd">"""Line search with Gaussian-smoothed samples on a sphere."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -486,7 +492,7 @@
 <div class="viewcode-block" id="GSLS">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GSLS.html#qiskit_machine_learning.optimizers.GSLS">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GSLS</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gaussian-smoothed Line Search.</span>
+<span class="w">    </span><span class="sd">"""Gaussian-smoothed Line Search.</span>
 
 <span class="sd">    An implementation of the line search algorithm described in</span>
 <span class="sd">    https://arxiv.org/pdf/1905.01332.pdf, using gradient approximation</span>
@@ -497,20 +503,20 @@
 <span class="sd">        This component has some function that is normally random. If you want to reproduce behavior</span>
 <span class="sd">        then you should set the random number generator seed in the algorithm_globals</span>
 <span class="sd">        (``qiskit_machine_learning.utils.algorithm_globals.random_seed = seed``).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_OPTIONS</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;maxiter&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;max_eval&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;disp&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sampling_radius&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sample_size_factor&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;initial_step_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;min_step_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;step_size_multiplier&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;armijo_parameter&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;min_gradient_norm&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;max_failed_rejection_sampling&quot;</span><span class="p">,</span>
+        <span class="s2">"maxiter"</span><span class="p">,</span>
+        <span class="s2">"max_eval"</span><span class="p">,</span>
+        <span class="s2">"disp"</span><span class="p">,</span>
+        <span class="s2">"sampling_radius"</span><span class="p">,</span>
+        <span class="s2">"sample_size_factor"</span><span class="p">,</span>
+        <span class="s2">"initial_step_size"</span><span class="p">,</span>
+        <span class="s2">"min_step_size"</span><span class="p">,</span>
+        <span class="s2">"step_size_multiplier"</span><span class="p">,</span>
+        <span class="s2">"armijo_parameter"</span><span class="p">,</span>
+        <span class="s2">"min_gradient_norm"</span><span class="p">,</span>
+        <span class="s2">"max_failed_rejection_sampling"</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="c1"># pylint: disable=too-many-positional-arguments</span>
@@ -529,7 +535,7 @@
         <span class="n">min_gradient_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span>
         <span class="n">max_failed_rejection_sampling</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            maxiter: Maximum number of iterations.</span>
 <span class="sd">            max_eval: Maximum number of evaluations.</span>
@@ -546,7 +552,7 @@
 <span class="sd">            min_gradient_norm: If the gradient norm is below this threshold, the algorithm stops.</span>
 <span class="sd">            max_failed_rejection_sampling: Maximum number of attempts to sample points within</span>
 <span class="sd">                bounds.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_OPTIONS</span><span class="p">:</span>
@@ -555,15 +561,15 @@
 <div class="viewcode-block" id="GSLS.get_support_level">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.GSLS.html#qiskit_machine_learning.optimizers.GSLS.get_support_level">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return support level dictionary.</span>
+<span class="w">        </span><span class="sd">"""Return support level dictionary.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A dictionary containing the support levels for different options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
-            <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">supported</span><span class="p">,</span>
-            <span class="s2">&quot;initial_point&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
+            <span class="s2">"gradient"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
+            <span class="s2">"bounds"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">supported</span><span class="p">,</span>
+            <span class="s2">"initial_point"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
@@ -611,7 +617,7 @@
         <span class="n">var_lb</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">var_ub</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the line search optimization.</span>
+<span class="w">        </span><span class="sd">"""Run the line search optimization.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            n: Dimension of the problem.</span>
@@ -629,13 +635,13 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the number of dimensions mismatches the size of the initial point or</span>
 <span class="sd">                the length of the lower or upper bound.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial_point</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Size of the initial point mismatches the number of dimensions.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Size of the initial point mismatches the number of dimensions."</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_lb</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Length of the lower bound mismatches the number of dimensions.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Length of the lower bound mismatches the number of dimensions."</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_ub</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Length of the upper bound mismatches the number of dimensions.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Length of the upper bound mismatches the number of dimensions."</span><span class="p">)</span>
 
         <span class="c1"># Initialize counters and data</span>
         <span class="n">iter_count</span> <span class="o">=</span> <span class="mi">0</span>
@@ -643,19 +649,19 @@
         <span class="n">prev_iter_successful</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">prev_directions</span><span class="p">,</span> <span class="n">prev_sample_set_x</span><span class="p">,</span> <span class="n">prev_sample_set_y</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="n">consecutive_fail_iter</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;initial_step_size&quot;</span><span class="p">]</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"initial_step_size"</span><span class="p">]</span>
         <span class="n">grad_norm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-        <span class="n">sample_set_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;sample_size_factor&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">))</span>
+        <span class="n">sample_set_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"sample_size_factor"</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">))</span>
 
         <span class="c1"># Initial point</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">initial_point</span>
         <span class="n">x_value</span> <span class="o">=</span> <span class="n">obj_fun</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">n_evals</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">while</span> <span class="n">iter_count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;maxiter&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">n_evals</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;max_eval&quot;</span><span class="p">]:</span>
+        <span class="k">while</span> <span class="n">iter_count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"maxiter"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">n_evals</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"max_eval"</span><span class="p">]:</span>
             <span class="c1"># Determine set of sample points</span>
             <span class="n">directions</span><span class="p">,</span> <span class="n">sample_set_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_set</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">var_lb</span><span class="p">,</span> <span class="n">var_ub</span><span class="p">,</span> <span class="n">sample_set_size</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">n_evals</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample_set_x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;max_eval&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">n_evals</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample_set_x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"max_eval"</span><span class="p">]:</span>
                 <span class="c1"># The evaluation budget is too small to allow for</span>
                 <span class="c1"># another full iteration; we therefore exit now</span>
                 <span class="k">break</span>
@@ -679,18 +685,18 @@
             <span class="n">n_evals</span> <span class="o">+=</span> <span class="mi">1</span>
 
             <span class="c1"># Print information</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;disp&quot;</span><span class="p">]:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iter </span><span class="si">{</span><span class="n">iter_count</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Point </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> obj </span><span class="si">{</span><span class="n">x_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient </span><span class="si">{</span><span class="n">grad</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Grad norm </span><span class="si">{</span><span class="n">grad_norm</span><span class="si">}</span><span class="s2"> new_x_value </span><span class="si">{</span><span class="n">new_x_value</span><span class="si">}</span><span class="s2"> step_size </span><span class="si">{</span><span class="n">alpha</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Direction </span><span class="si">{</span><span class="n">directions</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"disp"</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Iter </span><span class="si">{</span><span class="n">iter_count</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Point </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> obj </span><span class="si">{</span><span class="n">x_value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Gradient </span><span class="si">{</span><span class="n">grad</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Grad norm </span><span class="si">{</span><span class="n">grad_norm</span><span class="si">}</span><span class="s2"> new_x_value </span><span class="si">{</span><span class="n">new_x_value</span><span class="si">}</span><span class="s2"> step_size </span><span class="si">{</span><span class="n">alpha</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Direction </span><span class="si">{</span><span class="n">directions</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="c1"># Test Armijo condition for sufficient decrease</span>
-            <span class="k">if</span> <span class="n">new_x_value</span> <span class="o">&lt;=</span> <span class="n">x_value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;armijo_parameter&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">grad_norm</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_x_value</span> <span class="o">&lt;=</span> <span class="n">x_value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"armijo_parameter"</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">grad_norm</span><span class="p">:</span>
                 <span class="c1"># Accept point</span>
                 <span class="n">x</span><span class="p">,</span> <span class="n">x_value</span> <span class="o">=</span> <span class="n">new_x</span><span class="p">,</span> <span class="n">new_x_value</span>
-                <span class="n">alpha</span> <span class="o">/=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;step_size_multiplier&quot;</span><span class="p">]</span>
+                <span class="n">alpha</span> <span class="o">/=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"step_size_multiplier"</span><span class="p">]</span>
                 <span class="n">prev_iter_successful</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">consecutive_fail_iter</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -700,7 +706,7 @@
                 <span class="n">prev_sample_set_y</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Do not accept point</span>
-                <span class="n">alpha</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;step_size_multiplier&quot;</span><span class="p">]</span>
+                <span class="n">alpha</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"step_size_multiplier"</span><span class="p">]</span>
                 <span class="n">prev_iter_successful</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">consecutive_fail_iter</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -712,8 +718,8 @@
 
             <span class="c1"># Check termination criterion</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">grad_norm</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;min_gradient_norm&quot;</span><span class="p">]</span>
-                <span class="ow">or</span> <span class="n">alpha</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;min_step_size&quot;</span><span class="p">]</span>
+                <span class="n">grad_norm</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"min_gradient_norm"</span><span class="p">]</span>
+                <span class="ow">or</span> <span class="n">alpha</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"min_step_size"</span><span class="p">]</span>
             <span class="p">):</span>
                 <span class="k">break</span>
 
@@ -725,9 +731,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">sample_points</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">num_points</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sample ``num_points`` points around ``x`` on the ``n``-sphere of specified radius.</span>
+<span class="w">        </span><span class="sd">"""Sample ``num_points`` points around ``x`` on the ``n``-sphere of specified radius.</span>
 
-<span class="sd">        The radius of the sphere is ``self._options[&#39;sampling_radius&#39;]``.</span>
+<span class="sd">        The radius of the sphere is ``self._options['sampling_radius']``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            n: Dimension of the problem.</span>
@@ -736,11 +742,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A tuple containing the sampling points and the directions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">normal_samples</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">num_points</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
         <span class="n">row_norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">normal_samples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">directions</span> <span class="o">=</span> <span class="n">normal_samples</span> <span class="o">/</span> <span class="n">row_norms</span>
-        <span class="n">points</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;sampling_radius&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"sampling_radius"</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span>
 
         <span class="k">return</span> <span class="n">points</span><span class="p">,</span> <span class="n">directions</span></div>
 
@@ -751,7 +757,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">sample_set</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">var_lb</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">var_ub</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">num_points</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct sample set of given size.</span>
+<span class="w">        </span><span class="sd">"""Construct sample set of given size.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            n: Dimension of the problem.</span>
@@ -768,14 +774,14 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            RuntimeError: If not enough samples could be generated within the bounds.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Generate points uniformly on the sphere</span>
         <span class="n">points</span><span class="p">,</span> <span class="n">directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_points</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
 
         <span class="c1"># Check bounds</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">points</span> <span class="o">&gt;=</span> <span class="n">var_lb</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">points</span> <span class="o">&lt;=</span> <span class="n">var_ub</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="c1"># If all points are within bounds, return them</span>
-            <span class="k">return</span> <span class="n">directions</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;sampling_radius&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">directions</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"sampling_radius"</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Otherwise we perform rejection sampling until we have</span>
             <span class="c1"># enough points that satisfy the bounds</span>
@@ -785,7 +791,7 @@
 
             <span class="k">while</span> <span class="p">(</span>
                 <span class="nb">len</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_points</span>
-                <span class="ow">and</span> <span class="n">num_trials</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;max_failed_rejection_sampling&quot;</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="n">num_trials</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"max_failed_rejection_sampling"</span><span class="p">]</span>
             <span class="p">):</span>
                 <span class="c1"># Generate points uniformly on the sphere</span>
                 <span class="n">points</span><span class="p">,</span> <span class="n">directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_points</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
@@ -803,7 +809,7 @@
                 <span class="n">points</span><span class="p">,</span> <span class="n">directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_points</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
                 <span class="n">to_be_flipped</span> <span class="o">=</span> <span class="p">(</span><span class="n">points</span> <span class="o">&lt;</span> <span class="n">var_lb</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">points</span> <span class="o">&gt;</span> <span class="n">var_ub</span><span class="p">)</span>
                 <span class="n">directions</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">to_be_flipped</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="n">points</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;sampling_radius&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span>
+                <span class="n">points</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"sampling_radius"</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span>
                 <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">points</span> <span class="o">&gt;=</span> <span class="n">var_lb</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">points</span> <span class="o">&lt;=</span> <span class="n">var_ub</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span>
                     <span class="mi">0</span>
                 <span class="p">]</span>
@@ -812,12 +818,12 @@
             <span class="c1"># If we still do not have enough sampling points, we have failed.</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_points</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="s2">&quot;Could not generate enough samples within bounds; try smaller radius.&quot;</span>
+                    <span class="s2">"Could not generate enough samples within bounds; try smaller radius."</span>
                 <span class="p">)</span>
 
             <span class="k">return</span> <span class="p">(</span>
                 <span class="n">accepted</span><span class="p">[:</span><span class="n">num_points</span><span class="p">],</span>
-                <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;sampling_radius&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">accepted</span><span class="p">[:</span><span class="n">num_points</span><span class="p">],</span>
+                <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"sampling_radius"</span><span class="p">]</span> <span class="o">*</span> <span class="n">accepted</span><span class="p">[:</span><span class="n">num_points</span><span class="p">],</span>
             <span class="p">)</span></div>
 
 
@@ -832,7 +838,7 @@
         <span class="n">sample_set_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">sample_set_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct gradient approximation from given sample.</span>
+<span class="w">        </span><span class="sd">"""Construct gradient approximation from given sample.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            n: Dimension of the problem.</span>
@@ -844,13 +850,13 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Gradient approximation at x, as a 1D array.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">ffd</span> <span class="o">=</span> <span class="n">sample_set_y</span> <span class="o">-</span> <span class="n">x_value</span>
         <span class="n">gradient</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
             <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample_set_y</span><span class="p">)</span>
             <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
-                <span class="n">ffd</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample_set_y</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">&quot;sampling_radius&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span><span class="p">,</span> <span class="mi">0</span>
+                <span class="n">ffd</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sample_set_y</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="s2">"sampling_radius"</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span><span class="p">,</span> <span class="mi">0</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">gradient</span></div>
@@ -880,7 +886,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -902,7 +908,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

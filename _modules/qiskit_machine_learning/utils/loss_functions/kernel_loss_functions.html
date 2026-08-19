@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.utils.loss_functions.kernel_loss_functions - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.utils.loss_functions.kernel_loss_functions - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.utils.loss_functions.kernel_loss_functions</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2021, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2021, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,13 +476,13 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Kernel Loss utilities&quot;&quot;&quot;</span>
+<span class="sd">"""Kernel Loss utilities"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.svm</span><span class="w"> </span><span class="kn">import</span> <span class="n">SVC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.svm</span><span class="w"> </span><span class="kn">import</span> <span class="n">SVC</span><span class="p">,</span> <span class="n">SVR</span>
 
 <span class="c1"># Prevent circular dependencies caused from type checking</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainableKernel</span>
@@ -485,12 +491,12 @@
 <div class="viewcode-block" id="KernelLoss">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.KernelLoss.html#qiskit_machine_learning.utils.loss_functions.KernelLoss">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">KernelLoss</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract base class for computing the loss of a kernel function.</span>
 <span class="sd">    Unlike many loss functions, which only take into account the labels and predictions</span>
 <span class="sd">    of a model, kernel loss functions may be a function of internal model parameters or</span>
 <span class="sd">    quantities that are generated during training.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -499,9 +505,9 @@
         <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method calls the ``evaluate`` method. This is a convenient method to compute loss.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">,</span> <span class="n">quantum_kernel</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
 
 <div class="viewcode-block" id="KernelLoss.evaluate">
@@ -514,7 +520,7 @@
         <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        An abstract method for evaluating the loss of a kernel function on a labeled dataset.</span>
 
 <span class="sd">        Args:</span>
@@ -526,7 +532,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A loss value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 </div>
 
@@ -535,7 +541,7 @@
 <div class="viewcode-block" id="SVCLoss">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html#qiskit_machine_learning.utils.loss_functions.SVCLoss">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SVCLoss</span><span class="p">(</span><span class="n">KernelLoss</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    This class provides a kernel loss function for classification tasks by fitting an ``SVC`` model</span>
 <span class="sd">    from scikit-learn. Given training samples, :math:`x_{i}`, with binary labels, :math:`y_{i}`,</span>
 <span class="sd">    and a kernel, :math:`K_{θ}`, parameterized by values, :math:`θ`, the loss is defined as:</span>
@@ -553,14 +559,14 @@
 <span class="sd">    generalization error for a given parameterization.</span>
 
 <span class="sd">    See https://arxiv.org/abs/2105.03406 for further details.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            **kwargs: Arbitrary keyword arguments to pass to SVC constructor within</span>
 <span class="sd">                      SVCLoss evaluation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
 <div class="viewcode-block" id="SVCLoss.evaluate">
@@ -579,7 +585,7 @@
         <span class="n">kmatrix</span> <span class="o">=</span> <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 
         <span class="c1"># Train a quantum support vector classifier</span>
-        <span class="n">svc</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">&quot;precomputed&quot;</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">svc</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">"precomputed"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">svc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">kmatrix</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
 
         <span class="c1"># Get dual coefficients</span>
@@ -593,6 +599,226 @@
 
         <span class="c1"># Calculate loss</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dual_coefs</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">dual_coefs</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">kmatrix</span> <span class="o">@</span> <span class="n">dual_coefs</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">loss</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SVRLoss">
+<a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html#qiskit_machine_learning.utils.loss_functions.SVRLoss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SVRLoss</span><span class="p">(</span><span class="n">KernelLoss</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">    This class provides a kernel loss function for regression tasks by fitting an ``SVR`` model</span>
+<span class="sd">    from scikit-learn. Given training samples, :math:`x_{i}`, with labels, :math:`y_{i}`,</span>
+<span class="sd">    and a kernel, :math:`K_{θ}`, parameterized by values, :math:`θ`, the loss is defined as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        SVRLoss = -0.5 \sum_{i,j} \beta_i \beta_j K_θ(x_i, x_j)</span>
+<span class="sd">                  - \epsilon \sum_{i} |\beta_i| + \sum_{i} y_i \beta_i</span>
+
+<span class="sd">    where :math:`\beta_i = \alpha_i - \alpha_i^*` are the optimal Lagrange multipliers found by</span>
+<span class="sd">    solving the standard SVR quadratic program. Note that the hyper-parameters ``C`` and</span>
+<span class="sd">    ``epsilon`` can be specified through the keyword args.</span>
+
+<span class="sd">    Minimizing this loss over the parameters, :math:`θ`, of the kernel is equivalent to minimizing</span>
+<span class="sd">    the optimized dual objective of the SVR, which is a proxy for the primal objective</span>
+<span class="sd">    (a combination of the model complexity and the training error).</span>
+
+<span class="sd">    See https://arxiv.org/abs/2105.03406 for further details on kernel training (though it focuses</span>
+<span class="sd">    on classification, the principle applies to regression).</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Arbitrary keyword arguments to pass to SVR constructor within</span>
+<span class="sd">                      SVRLoss evaluation.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+<div class="viewcode-block" id="SVRLoss.evaluate">
+<a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html#qiskit_machine_learning.utils.loss_functions.SVRLoss.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">TrainableKernel</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="c1"># Bind training parameters</span>
+        <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">assign_training_parameters</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">)</span>
+
+        <span class="c1"># Get estimated kernel matrix</span>
+        <span class="n">kmatrix</span> <span class="o">=</span> <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+        <span class="c1"># Train a quantum support vector regressor</span>
+        <span class="n">svr</span> <span class="o">=</span> <span class="n">SVR</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">"precomputed"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">svr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">kmatrix</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+        <span class="c1"># Get dual coefficients (alpha_i - alpha_i^*)</span>
+        <span class="n">dual_coefs</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">dual_coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Get support vectors</span>
+        <span class="n">support_vecs</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">support_</span>
+
+        <span class="c1"># Get epsilon</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">epsilon</span>
+
+        <span class="c1"># Prune kernel matrix of non-support-vector entries</span>
+        <span class="n">kmatrix_support</span> <span class="o">=</span> <span class="n">kmatrix</span><span class="p">[</span><span class="n">support_vecs</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">support_vecs</span><span class="p">]</span>
+
+        <span class="c1"># Calculate loss (dual objective)</span>
+        <span class="c1"># L = -0.5 * beta^T * K * beta - epsilon * sum|beta| + y^T * beta</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">dual_coefs</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">kmatrix_support</span> <span class="o">@</span> <span class="n">dual_coefs</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dual_coefs</span><span class="p">))</span>
+            <span class="o">+</span> <span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">support_vecs</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">dual_coefs</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">loss</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MSRLoss">
+<a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html#qiskit_machine_learning.utils.loss_functions.MSRLoss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSRLoss</span><span class="p">(</span><span class="n">KernelLoss</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This class provides a simple mean squared regression loss function by fitting an ``SVR`` model</span>
+<span class="sd">    from scikit-learn and computing the mean squared error on the training set.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Arbitrary keyword arguments to pass to SVR constructor within</span>
+<span class="sd">                      MSRLoss evaluation.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+<div class="viewcode-block" id="MSRLoss.evaluate">
+<a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html#qiskit_machine_learning.utils.loss_functions.MSRLoss.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">TrainableKernel</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="c1"># Bind training parameters</span>
+        <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">assign_training_parameters</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">)</span>
+
+        <span class="c1"># Get estimated kernel matrix</span>
+        <span class="n">kmatrix</span> <span class="o">=</span> <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+        <span class="c1"># Train a quantum support vector regressor</span>
+        <span class="n">svr</span> <span class="o">=</span> <span class="n">SVR</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">"precomputed"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">svr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">kmatrix</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+        <span class="c1"># Predict on training data</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">kmatrix</span><span class="p">)</span>
+
+        <span class="c1"># Calculate mean squared error</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">predictions</span> <span class="o">-</span> <span class="n">labels</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">loss</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MARLoss">
+<a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html#qiskit_machine_learning.utils.loss_functions.MARLoss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MARLoss</span><span class="p">(</span><span class="n">KernelLoss</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This class provides a mean absolute regression loss function by fitting an ``SVR`` model</span>
+<span class="sd">    from scikit-learn and computing the mean absolute error on the training set.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: Arbitrary keyword arguments to pass to SVR constructor within</span>
+<span class="sd">                      MARLoss evaluation.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+<div class="viewcode-block" id="MARLoss.evaluate">
+<a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html#qiskit_machine_learning.utils.loss_functions.MARLoss.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">TrainableKernel</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="c1"># Bind training parameters</span>
+        <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">assign_training_parameters</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">)</span>
+
+        <span class="c1"># Get estimated kernel matrix</span>
+        <span class="n">kmatrix</span> <span class="o">=</span> <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+        <span class="c1"># Train a quantum support vector regressor</span>
+        <span class="n">svr</span> <span class="o">=</span> <span class="n">SVR</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">"precomputed"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">svr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">kmatrix</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+        <span class="c1"># Predict on training data</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">kmatrix</span><span class="p">)</span>
+
+        <span class="c1"># Calculate mean absolute error</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">predictions</span> <span class="o">-</span> <span class="n">labels</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">loss</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HuberLoss">
+<a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html#qiskit_machine_learning.utils.loss_functions.HuberLoss">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HuberLoss</span><span class="p">(</span><span class="n">KernelLoss</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This class provides a Huber loss function for regression. It is robust to outliers by</span>
+<span class="sd">    using a combination of squared error for small errors and absolute error for large errors.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Args:</span>
+<span class="sd">            delta: The threshold at which to change from squared to linear loss.</span>
+<span class="sd">            **kwargs: Arbitrary keyword arguments to pass to SVR constructor.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+<div class="viewcode-block" id="HuberLoss.evaluate">
+<a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html#qiskit_machine_learning.utils.loss_functions.HuberLoss.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">TrainableKernel</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="c1"># Bind training parameters</span>
+        <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">assign_training_parameters</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">)</span>
+
+        <span class="c1"># Get estimated kernel matrix</span>
+        <span class="n">kmatrix</span> <span class="o">=</span> <span class="n">quantum_kernel</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+        <span class="c1"># Train a quantum support vector regressor</span>
+        <span class="n">svr</span> <span class="o">=</span> <span class="n">SVR</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s2">"precomputed"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">svr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">kmatrix</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+        <span class="c1"># Predict on training data</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">kmatrix</span><span class="p">)</span>
+
+        <span class="c1"># Calculate Huber loss</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">predictions</span> <span class="o">-</span> <span class="n">labels</span>
+        <span class="n">abs_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+        <span class="n">quadratic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">abs_error</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
+        <span class="n">linear</span> <span class="o">=</span> <span class="n">abs_error</span> <span class="o">-</span> <span class="n">quadratic</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">quadratic</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">*</span> <span class="n">linear</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">loss</span></div>
 </div>
@@ -621,7 +847,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -643,7 +869,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

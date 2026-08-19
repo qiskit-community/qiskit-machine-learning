@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.neural_networks.estimator_qnn - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.neural_networks.estimator_qnn - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.neural_networks.estimator_qnn</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,11 +476,10 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Estimator quantum neural network class&quot;&quot;&quot;</span>
+<span class="sd">"""Estimator quantum neural network class"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
@@ -494,13 +499,11 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.neural_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetwork</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
 
 <div class="viewcode-block" id="EstimatorQNN">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#qiskit_machine_learning.neural_networks.EstimatorQNN">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EstimatorQNN</span><span class="p">(</span><span class="n">NeuralNetwork</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A neural network implementation based on the Estimator primitive.</span>
+<span class="w">    </span><span class="sd">"""A neural network implementation based on the Estimator primitive.</span>
 
 <span class="sd">    The ``EstimatorQNN`` is a neural network that takes in a parametrized quantum circuit</span>
 <span class="sd">    with designated parameters for input data and/or weights, an optional observable(s) and outputs</span>
@@ -559,10 +562,10 @@
 
 <span class="sd">    Attributes:</span>
 
-<span class="sd">        estimator (BaseEstimator): The estimator primitive used to compute the neural network&#39;s results.</span>
+<span class="sd">        estimator (BaseEstimator): The estimator primitive used to compute the neural network's results.</span>
 <span class="sd">        gradient (BaseEstimatorGradient): The estimator gradient to be used for the backward</span>
 <span class="sd">            pass.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -577,10 +580,10 @@
         <span class="n">default_precision</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.015625</span><span class="p">,</span>
         <span class="n">pass_manager</span><span class="p">:</span> <span class="n">BasePassManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            circuit: The quantum circuit to represent the neural network.</span>
-<span class="sd">            estimator: The estimator used to compute neural network&#39;s results.</span>
+<span class="sd">            estimator: The estimator used to compute neural network's results.</span>
 <span class="sd">                If ``None``, a default instance of the reference estimator,</span>
 <span class="sd">                :class:`~qiskit_machine_learning.primitives.Estimator`, will be used.</span>
 <span class="sd">            observables: The observables for outputs of the neural network. If ``None``,</span>
@@ -602,20 +605,20 @@
 <span class="sd">                Defaults to ``None``, as some primitives do not need transpiled circuits.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: Invalid parameter values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">estimator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">estimator</span> <span class="o">=</span> <span class="n">Estimator</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">&quot;_input_qubit_count&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">"_input_qubit_count"</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">_input_qubit_count</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pass_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">circuit</span> <span class="o">=</span> <span class="n">pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">&quot;_input_qubit_count&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">"_input_qubit_count"</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">_input_qubit_count</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span>
@@ -624,7 +627,7 @@
 
         <span class="k">if</span> <span class="n">observables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">observables</span> <span class="o">=</span> <span class="n">SparsePauliOp</span><span class="o">.</span><span class="n">from_sparse_list</span><span class="p">(</span>
-                <span class="p">[(</span><span class="s2">&quot;Z&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">),</span> <span class="mi">1</span><span class="p">)],</span>
+                <span class="p">[(</span><span class="s2">"Z"</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">),</span> <span class="mi">1</span><span class="p">)],</span>
                 <span class="n">num_qubits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -638,11 +641,6 @@
 
         <span class="c1"># set gradient</span>
         <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">pass_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;No gradient function provided, creating a gradient function.&quot;</span>
-                    <span class="s2">&quot; If your Estimator requires transpilation, please provide a pass manager.&quot;</span>
-                <span class="p">)</span>
             <span class="n">gradient</span> <span class="o">=</span> <span class="n">ParamShiftEstimatorGradient</span><span class="p">(</span>
                 <span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="n">pass_manager</span><span class="o">=</span><span class="n">pass_manager</span>
             <span class="p">)</span>
@@ -662,48 +660,48 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">circuit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantumCircuit</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The quantum circuit representing the neural network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The quantum circuit representing the neural network."""</span>
         <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_org_circuit</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">observables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">BaseOperator</span><span class="p">]</span> <span class="o">|</span> <span class="n">BaseOperator</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the underlying observables of this QNN.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the underlying observables of this QNN."""</span>
         <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_observables</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">input_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The parameters that correspond to the input data of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The parameters that correspond to the input data of the network."""</span>
         <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_params</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weight_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The parameters that correspond to the trainable weights.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The parameters that correspond to the trainable weights."""</span>
         <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_weight_params</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">input_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns whether gradients with respect to input data are computed by this neural network</span>
-<span class="sd">        in the ``backward`` method or not. By default, such gradients are not computed.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns whether gradients with respect to input data are computed by this neural network</span>
+<span class="sd">        in the ``backward`` method or not. By default, such gradients are not computed."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_gradients</span>
 
     <span class="nd">@input_gradients</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">input_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_gradients</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Turn on/off computation of gradients with respect to input data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Turn on/off computation of gradients with respect to input data."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_gradients</span> <span class="o">=</span> <span class="n">input_gradients</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">default_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the default precision&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the default precision"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_precision</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_forward_postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Post-processing during forward pass of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Post-processing during forward pass of the network."""</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_forward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the neural network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Forward pass of the neural network."""</span>
         <span class="n">parameter_values_</span><span class="p">,</span> <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_forward</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
         <span class="c1"># Prepare circuit-observable-parameter tuples (PUBs)</span>
@@ -719,7 +717,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_backward_postprocess</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">EstimatorGradientResult</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Post-processing during backward pass of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Post-processing during backward pass of the network."""</span>
         <span class="n">num_observables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_gradients</span><span class="p">:</span>
             <span class="n">input_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">num_observables</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_inputs</span><span class="p">))</span>
@@ -743,7 +741,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_backward</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Backward pass of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Backward pass of the network."""</span>
         <span class="c1"># prepare parameters in the required format</span>
         <span class="n">parameter_values</span><span class="p">,</span> <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_forward</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
@@ -771,7 +769,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">results</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimator job failed. </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+                    <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Estimator job failed. </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
                 <span class="n">input_grad</span><span class="p">,</span> <span class="n">weights_grad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backward_postprocess</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
 
@@ -801,7 +799,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -823,7 +821,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.aqgd - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.aqgd - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.aqgd</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2019, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2019, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,7 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Analytical Quantum Gradient Descent (AQGD) optimizer.&quot;&quot;&quot;</span>
+<span class="sd">"""Analytical Quantum Gradient Descent (AQGD) optimizer."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -489,7 +495,7 @@
 <div class="viewcode-block" id="AQGD">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.AQGD.html#qiskit_machine_learning.optimizers.AQGD">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AQGD</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analytic Quantum Gradient Descent (AQGD) with Epochs optimizer.</span>
+<span class="w">    </span><span class="sd">"""Analytic Quantum Gradient Descent (AQGD) with Epochs optimizer.</span>
 <span class="sd">    Performs gradient descent optimization with a momentum term, analytic gradients,</span>
 <span class="sd">    and customized step length schedule for parameterized quantum gates, i.e.</span>
 <span class="sd">    Pauli Rotations. See, for example:</span>
@@ -504,12 +510,12 @@
 
 <span class="sd">    for further details on analytic gradients of parameterized quantum gates.</span>
 
-<span class="sd">    Gradients are computed &quot;analytically&quot; using the quantum circuit when evaluating</span>
+<span class="sd">    Gradients are computed "analytically" using the quantum circuit when evaluating</span>
 <span class="sd">    the objective function.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">_OPTIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;maxiter&quot;</span><span class="p">,</span> <span class="s2">&quot;eta&quot;</span><span class="p">,</span> <span class="s2">&quot;tol&quot;</span><span class="p">,</span> <span class="s2">&quot;disp&quot;</span><span class="p">,</span> <span class="s2">&quot;momentum&quot;</span><span class="p">,</span> <span class="s2">&quot;param_tol&quot;</span><span class="p">,</span> <span class="s2">&quot;averaging&quot;</span><span class="p">]</span>
+    <span class="n">_OPTIONS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"maxiter"</span><span class="p">,</span> <span class="s2">"eta"</span><span class="p">,</span> <span class="s2">"tol"</span><span class="p">,</span> <span class="s2">"disp"</span><span class="p">,</span> <span class="s2">"momentum"</span><span class="p">,</span> <span class="s2">"param_tol"</span><span class="p">,</span> <span class="s2">"averaging"</span><span class="p">]</span>
 
     <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -522,7 +528,7 @@
         <span class="n">averaging</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">max_evals_grouped</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Performs Analytical Quantum Gradient Descent (AQGD) with Epochs.</span>
 
 <span class="sd">        Args:</span>
@@ -541,7 +547,7 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            AlgorithmError: If the length of ``maxiter``, `momentum``, and ``eta`` is not the same.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">maxiter</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">maxiter</span> <span class="o">=</span> <span class="p">[</span><span class="n">maxiter</span><span class="p">]</span>
@@ -551,11 +557,11 @@
             <span class="n">momentum</span> <span class="o">=</span> <span class="p">[</span><span class="n">momentum</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">maxiter</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eta</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">maxiter</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">momentum</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AlgorithmError</span><span class="p">(</span>
-                <span class="s2">&quot;AQGD input parameter length mismatch. Parameters `maxiter`, &quot;</span>
-                <span class="s2">&quot;`eta`, and `momentum` must have the same length.&quot;</span>
+                <span class="s2">"AQGD input parameter length mismatch. Parameters `maxiter`, "</span>
+                <span class="s2">"`eta`, and `momentum` must have the same length."</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">momentum</span><span class="p">:</span>
-            <span class="n">validate_range_exclusive_max</span><span class="p">(</span><span class="s2">&quot;momentum&quot;</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">validate_range_exclusive_max</span><span class="p">(</span><span class="s2">"momentum"</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_eta</span> <span class="o">=</span> <span class="n">eta</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maxiter</span> <span class="o">=</span> <span class="n">maxiter</span>
@@ -575,34 +581,34 @@
 <div class="viewcode-block" id="AQGD.get_support_level">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.AQGD.html#qiskit_machine_learning.optimizers.AQGD.get_support_level">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OptimizerSupportLevel</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Support level dictionary</span>
+<span class="w">        </span><span class="sd">"""Support level dictionary</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[str, int]: gradient, bounds and initial point</span>
 <span class="sd">                            support information that is ignored/required.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
-            <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
-            <span class="s2">&quot;initial_point&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
+            <span class="s2">"gradient"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
+            <span class="s2">"bounds"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
+            <span class="s2">"initial_point"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxiter</span><span class="p">,</span>
-            <span class="s2">&quot;eta&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eta</span><span class="p">,</span>
-            <span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momenta_coeff</span><span class="p">,</span>
-            <span class="s2">&quot;param_tol&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_tol</span><span class="p">,</span>
-            <span class="s2">&quot;tol&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span><span class="p">,</span>
-            <span class="s2">&quot;averaging&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_averaging</span><span class="p">,</span>
+            <span class="s2">"maxiter"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxiter</span><span class="p">,</span>
+            <span class="s2">"eta"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eta</span><span class="p">,</span>
+            <span class="s2">"momentum"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momenta_coeff</span><span class="p">,</span>
+            <span class="s2">"param_tol"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_tol</span><span class="p">,</span>
+            <span class="s2">"tol"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tol</span><span class="p">,</span>
+            <span class="s2">"averaging"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_averaging</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_objective_fn_and_gradient</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Callable</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Obtains the objective function value for params and the analytical quantum derivatives of</span>
 <span class="sd">        the objective function with respect to each parameter. Requires</span>
 <span class="sd">        2*(number parameters) + 1 objective evaluations</span>
@@ -613,7 +619,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Tuple containing the objective value and array of gradients for the given parameter set.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
         <span class="n">param_sets_to_eval</span> <span class="o">=</span> <span class="n">params</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
             <span class="p">(</span>
@@ -654,7 +660,7 @@
         <span class="n">step_size</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">momentum_coeff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates full parameter array based on a step that is a convex</span>
 <span class="sd">        combination of the gradient and previous momentum</span>
 
@@ -668,7 +674,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Tuple of the updated parameter and momentum vectors respectively.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Momentum update:</span>
         <span class="c1"># Convex combination of previous momentum and current gradient estimate</span>
         <span class="n">mnew</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_coeff</span><span class="p">)</span> <span class="o">*</span> <span class="n">gradient</span> <span class="o">+</span> <span class="n">momentum_coeff</span> <span class="o">*</span> <span class="n">mprev</span>
@@ -676,7 +682,7 @@
         <span class="k">return</span> <span class="n">params</span><span class="p">,</span> <span class="n">mnew</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_converged_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Tests convergence based on the change in a moving windowed average of past objective values</span>
 
 <span class="sd">        Args:</span>
@@ -686,9 +692,9 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Bool indicating whether or not the optimization has converged.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># If we haven&#39;t reached the required window length,</span>
-        <span class="c1"># append the current value, but we haven&#39;t converged</span>
+<span class="sd">        """</span>
+        <span class="c1"># If we haven't reached the required window length,</span>
+        <span class="c1"># append the current value, but we haven't converged</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_loss</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">window_size</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_prev_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objval</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -700,8 +706,8 @@
         <span class="c1"># Calculate previous windowed average</span>
         <span class="c1"># and current windowed average of objective values</span>
         <span class="n">prev_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_loss</span><span class="p">[:</span><span class="n">window_size</span><span class="p">])</span>
-        <span class="n">curr_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_loss</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_avg_objval</span> <span class="o">=</span> <span class="n">curr_avg</span>  <span class="c1"># type: ignore[assignment]</span>
+        <span class="n">curr_avg</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_loss</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_avg_objval</span> <span class="o">=</span> <span class="n">curr_avg</span>
 
         <span class="c1"># Update window of objective values</span>
         <span class="c1"># (Remove earliest value)</span>
@@ -709,12 +715,12 @@
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">prev_avg</span> <span class="o">-</span> <span class="n">curr_avg</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
             <span class="c1"># converged</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Previous obj avg: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">Curr obj avg: </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">prev_avg</span><span class="p">,</span> <span class="n">curr_avg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Previous obj avg: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">Curr obj avg: </span><span class="si">%f</span><span class="s2">"</span><span class="p">,</span> <span class="n">prev_avg</span><span class="p">,</span> <span class="n">curr_avg</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_converged_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Tests convergence based on change in parameter</span>
 
 <span class="sd">        Args:</span>
@@ -723,7 +729,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Bool indicating whether or not the optimization has converged</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prev_param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_prev_param</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -732,12 +738,12 @@
         <span class="n">p_change</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_param</span> <span class="o">-</span> <span class="n">parameter</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">p_change</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
             <span class="c1"># converged</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Change in parameters (</span><span class="si">%f</span><span class="s2"> norm): </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">p_change</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Change in parameters (</span><span class="si">%f</span><span class="s2"> norm): </span><span class="si">%f</span><span class="s2">"</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">p_change</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_converged_alt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Tests convergence from norm of windowed average of gradients</span>
 
 <span class="sd">        Args:</span>
@@ -747,9 +753,9 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Bool indicating whether or not the optimization has converged</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># If we haven&#39;t reached the required window length,</span>
-        <span class="c1"># append the current value, but we haven&#39;t converged</span>
+<span class="sd">        """</span>
+        <span class="c1"># If we haven't reached the required window length,</span>
+        <span class="c1"># append the current value, but we haven't converged</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prev_grad</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">window_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_prev_grad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -768,7 +774,7 @@
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">avg_grad</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
             <span class="c1"># converged</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Avg. grad. norm: </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">avg_grad</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Avg. grad. norm: </span><span class="si">%f</span><span class="s2">"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">avg_grad</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
@@ -791,11 +797,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_eval_count</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># function evaluations</span>
 
         <span class="n">iter_count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Initial Params: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Initial Params: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="n">epoch</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">eta</span><span class="p">,</span> <span class="n">mom_coeff</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momenta_coeff</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Epoch: </span><span class="si">%4d</span><span class="s2"> | Stepsize: </span><span class="si">%6.4f</span><span class="s2"> | Momentum: </span><span class="si">%6.4f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">mom_coeff</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Epoch: </span><span class="si">%4d</span><span class="s2"> | Stepsize: </span><span class="si">%6.4f</span><span class="s2"> | Momentum: </span><span class="si">%6.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">mom_coeff</span><span class="p">)</span>
 
             <span class="n">sum_max_iters</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_maxiter</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
             <span class="k">while</span> <span class="n">iter_count</span> <span class="o">&lt;</span> <span class="n">sum_max_iters</span><span class="p">:</span>
@@ -814,7 +820,7 @@
                     <span class="n">gradient</span> <span class="o">=</span> <span class="n">jac</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>  <span class="c1"># type: ignore[assignment]</span>
 
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot; Iter: </span><span class="si">%4d</span><span class="s2"> | Obj: </span><span class="si">%11.6f</span><span class="s2"> | Grad Norm: </span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">" Iter: </span><span class="si">%4d</span><span class="s2"> | Obj: </span><span class="si">%11.6f</span><span class="s2"> | Grad Norm: </span><span class="si">%f</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">iter_count</span><span class="p">,</span>
                     <span class="n">objval</span><span class="p">,</span>
                     <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
@@ -867,7 +873,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -889,7 +895,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.gradients.base.base_estimator_gradient - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.gradients.base.base_estimator_gradient - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.gradients.base.base_estimator_gradient</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,9 +476,9 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Abstract base class of gradient for ``Estimator``.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -503,7 +509,7 @@
 <div class="viewcode-block" id="BaseEstimatorGradient">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.gradients.BaseEstimatorGradient.html#qiskit_machine_learning.gradients.BaseEstimatorGradient">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseEstimatorGradient</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for an ``EstimatorGradient`` to compute the gradients of the expectation value.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for an ``EstimatorGradient`` to compute the gradients of the expectation value."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -512,12 +518,12 @@
         <span class="n">derivative_type</span><span class="p">:</span> <span class="n">DerivativeType</span> <span class="o">=</span> <span class="n">DerivativeType</span><span class="o">.</span><span class="n">REAL</span><span class="p">,</span>
         <span class="n">pass_manager</span><span class="p">:</span> <span class="n">BasePassManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            estimator: The estimator used to compute the gradients.</span>
 <span class="sd">            options: Primitive backend runtime options used for circuit execution.</span>
-<span class="sd">                The order of priority is: options in ``run`` method &gt; gradient&#39;s</span>
-<span class="sd">                default options &gt; primitive&#39;s default setting.</span>
+<span class="sd">                The order of priority is: options in ``run`` method &gt; gradient's</span>
+<span class="sd">                default options &gt; primitive's default setting.</span>
 <span class="sd">                Higher priority setting overrides lower priority setting</span>
 <span class="sd">            derivative_type: The type of derivative. Can be either ``DerivativeType.REAL``</span>
 <span class="sd">                ``DerivativeType.IMAG``, or ``DerivativeType.COMPLEX``.</span>
@@ -531,7 +537,7 @@
 <span class="sd">                finite difference.</span>
 <span class="sd">            pass_manager: The pass manager to transpile the circuits if necessary.</span>
 <span class="sd">            Defaults to ``None``, as some primitives do not need transpiled circuits.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_estimator</span><span class="p">:</span> <span class="n">BaseEstimatorV2</span> <span class="o">=</span> <span class="n">estimator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pass_manager</span> <span class="o">=</span> <span class="n">pass_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()</span>
@@ -546,11 +552,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">derivative_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DerivativeType</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the derivative type (real, imaginary or complex).</span>
+<span class="w">        </span><span class="sd">"""Return the derivative type (real, imaginary or complex).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The derivative type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_derivative_type</span>
 
 <div class="viewcode-block" id="BaseEstimatorGradient.run">
@@ -563,7 +569,7 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">options</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AlgorithmJob</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the job of the estimator gradient on the given circuits.</span>
+<span class="w">        </span><span class="sd">"""Run the job of the estimator gradient on the given circuits.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            circuits: The list of quantum circuits to compute the gradients.</span>
@@ -575,8 +581,8 @@
 <span class="sd">                each circuit are calculated. None in the sequence means that the gradients of all</span>
 <span class="sd">                parameters in the corresponding circuit are calculated.</span>
 <span class="sd">            options: Primitive backend runtime options used for circuit execution.</span>
-<span class="sd">                The order of priority is: options in ``run`` method &gt; gradient&#39;s</span>
-<span class="sd">                default options &gt; primitive&#39;s default setting.</span>
+<span class="sd">                The order of priority is: options in ``run`` method &gt; gradient's</span>
+<span class="sd">                default options &gt; primitive's default setting.</span>
 <span class="sd">                Higher priority setting overrides lower priority setting</span>
 
 <span class="sd">        Returns:</span>
@@ -587,7 +593,7 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: Invalid arguments are given.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">):</span>
             <span class="c1"># Allow a single circuit to be passed in.</span>
             <span class="n">circuits</span> <span class="o">=</span> <span class="p">(</span><span class="n">circuits</span><span class="p">,)</span>
@@ -609,7 +615,7 @@
         <span class="c1"># Validate the arguments.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_arguments</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">observables</span><span class="p">,</span> <span class="n">parameter_values</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
         <span class="c1"># The priority of run option is as follows:</span>
-        <span class="c1"># options in ``run`` method &gt; gradient&#39;s default options &gt; primitive&#39;s default setting.</span>
+        <span class="c1"># options in ``run`` method &gt; gradient's default options &gt; primitive's default setting.</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_options</span><span class="p">)</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">update_options</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="c1"># Run the job.</span>
@@ -629,7 +635,7 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]],</span>
         <span class="o">**</span><span class="n">options</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EstimatorGradientResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the estimator gradients on the given circuits.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Compute the estimator gradients on the given circuits."""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_preprocess</span><span class="p">(</span>
@@ -639,7 +645,7 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]],</span>
         <span class="n">supported_gates</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">QuantumCircuit</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Preprocess the gradient. This makes a gradient circuit for each circuit. The gradient</span>
+<span class="w">        </span><span class="sd">"""Preprocess the gradient. This makes a gradient circuit for each circuit. The gradient</span>
 <span class="sd">        circuit is a transpiled circuit by using the supported gates, and has unique parameters.</span>
 <span class="sd">        ``parameter_values`` and ``parameters`` are also updated to match the gradient circuit.</span>
 
@@ -653,7 +659,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            The list of gradient circuits, the list of parameter values, and the list of parameters.</span>
 <span class="sd">            parameter_values and parameters are updated to match the gradient circuit.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">translator</span> <span class="o">=</span> <span class="n">TranslateParameterizedGates</span><span class="p">(</span><span class="n">supported_gates</span><span class="p">)</span>
         <span class="n">g_circuits</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">QuantumCircuit</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">g_parameter_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -680,7 +686,7 @@
         <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EstimatorGradientResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Postprocess the gradients. This method computes the gradient of the original circuits</span>
+<span class="w">        </span><span class="sd">"""Postprocess the gradients. This method computes the gradient of the original circuits</span>
 <span class="sd">        by applying the chain rule to the gradient of the circuits with unique parameters.</span>
 
 <span class="sd">        Args:</span>
@@ -692,18 +698,18 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The gradients of the original circuits.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">gradients</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">parameter_values_</span><span class="p">,</span> <span class="n">parameters_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
             <span class="nb">zip</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">parameter_values</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parameters_</span><span class="p">))</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="s2">&quot;derivative_type&quot;</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-                <span class="ow">and</span> <span class="n">results</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;derivative_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DerivativeType</span><span class="o">.</span><span class="n">COMPLEX</span>
+                <span class="s2">"derivative_type"</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="n">results</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">"derivative_type"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DerivativeType</span><span class="o">.</span><span class="n">COMPLEX</span>
             <span class="p">):</span>
                 <span class="c1"># If the derivative type is complex, cast the gradient to complex.</span>
-                <span class="n">gradient</span> <span class="o">=</span> <span class="n">gradient</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">)</span>
+                <span class="n">gradient</span> <span class="o">=</span> <span class="n">gradient</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">)</span>
             <span class="n">gradient_circuit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_circuit_cache</span><span class="p">[</span><span class="n">circuit_cache_key</span><span class="p">(</span><span class="n">circuit</span><span class="p">)]</span>
             <span class="n">g_parameters</span> <span class="o">=</span> <span class="n">_make_gradient_parameters</span><span class="p">(</span><span class="n">gradient_circuit</span><span class="p">,</span> <span class="n">parameters_</span><span class="p">)</span>
             <span class="c1"># Make a map from the gradient parameter to the respective index in the gradient.</span>
@@ -728,7 +734,7 @@
                         <span class="o">*</span> <span class="n">results</span><span class="o">.</span><span class="n">gradients</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">g_parameter_indices</span><span class="p">[</span><span class="n">g_parameter</span><span class="p">]]</span>
                     <span class="p">)</span>
             <span class="n">gradients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span>
-            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">parameters_</span><span class="p">})</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters_</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">EstimatorGradientResult</span><span class="p">(</span>
             <span class="n">gradients</span><span class="o">=</span><span class="n">gradients</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">options</span>
         <span class="p">)</span>
@@ -740,7 +746,7 @@
         <span class="n">parameter_values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the arguments of the ``run`` method.</span>
+<span class="w">        </span><span class="sd">"""Validate the arguments of the ``run`` method.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            circuits: The list of quantum circuits to compute the gradients.</span>
@@ -751,84 +757,84 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: Invalid arguments are given.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The number of circuits (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;the number of parameter value sets (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="sa">f</span><span class="s2">"The number of circuits (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match "</span>
+                <span class="sa">f</span><span class="s2">"the number of parameter value sets (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">)</span><span class="si">}</span><span class="s2">)."</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">parameter_value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">parameter_values</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_parameters</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th circuit is not parameterised.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th circuit is not parameterised."</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameter_value</span><span class="p">)</span> <span class="o">!=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_parameters</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The number of values (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameter_value</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;the number of parameters (</span><span class="si">{</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_parameters</span><span class="si">}</span><span class="s2">) for the </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th circuit.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The number of values (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameter_value</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match "</span>
+                    <span class="sa">f</span><span class="s2">"the number of parameters (</span><span class="si">{</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_parameters</span><span class="si">}</span><span class="s2">) for the </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th circuit."</span>
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">observables</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The number of circuits (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;the number of observables (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">observables</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="sa">f</span><span class="s2">"The number of circuits (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match "</span>
+                <span class="sa">f</span><span class="s2">"the number of observables (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">observables</span><span class="p">)</span><span class="si">}</span><span class="s2">)."</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">observable</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">observables</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span> <span class="o">!=</span> <span class="n">observable</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The number of qubits of the </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th circuit (</span><span class="si">{</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">) does &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;not match the number of qubits of the </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th observable &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">observable</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">).&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The number of qubits of the </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th circuit (</span><span class="si">{</span><span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">) does "</span>
+                    <span class="sa">f</span><span class="s2">"not match the number of qubits of the </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th observable "</span>
+                    <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">observable</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">)."</span>
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The number of circuits (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;the number of the list of specified parameters (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="sa">f</span><span class="s2">"The number of circuits (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match "</span>
+                <span class="sa">f</span><span class="s2">"the number of the list of specified parameters (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span><span class="si">}</span><span class="s2">)."</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">parameters_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">parameters_</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">parameters</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th parameters contains parameters not present in the &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th circuit.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th parameters contains parameters not present in the "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-th circuit."</span>
                 <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Options</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the union of estimator options setting and gradient default options,</span>
-<span class="sd">        where, if the same field is set in both, the gradient&#39;s default options override</span>
-<span class="sd">        the primitive&#39;s default setting.</span>
+<span class="w">        </span><span class="sd">"""Return the union of estimator options setting and gradient default options,</span>
+<span class="sd">        where, if the same field is set in both, the gradient's default options override</span>
+<span class="sd">        the primitive's default setting.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The gradient default + estimator options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_local_options</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_options</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseEstimatorGradient.update_default_options">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.gradients.BaseEstimatorGradient.html#qiskit_machine_learning.gradients.BaseEstimatorGradient.update_default_options">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_default_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the gradient&#39;s default options setting.</span>
+<span class="w">        </span><span class="sd">"""Update the gradient's default options setting.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            **options: The fields to update the default options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_options</span><span class="o">.</span><span class="n">update_options</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_local_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">Options</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Options</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the union of the primitive&#39;s default setting,</span>
+<span class="w">        </span><span class="sd">"""Return the union of the primitive's default setting,</span>
 <span class="sd">        the gradient default options, and the options in the ``run`` method.</span>
-<span class="sd">        The order of priority is: options in ``run`` method &gt; gradient&#39;s</span>
-<span class="sd">                default options &gt; primitive&#39;s default setting.</span>
+<span class="sd">        The order of priority is: options in ``run`` method &gt; gradient's</span>
+<span class="sd">                default options &gt; primitive's default setting.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            options: The fields to update the options</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The gradient default + estimator + run options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_estimator</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
         <span class="n">opts</span><span class="o">.</span><span class="n">update_options</span><span class="p">(</span><span class="o">**</span><span class="n">options</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">opts</span></div>
@@ -857,7 +863,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -879,7 +885,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

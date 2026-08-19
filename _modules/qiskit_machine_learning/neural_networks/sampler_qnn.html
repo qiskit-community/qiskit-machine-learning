@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.neural_networks.sampler_qnn - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.neural_networks.sampler_qnn - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.neural_networks.sampler_qnn</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,7 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;A Neural Network implementation based on the Sampler primitive.&quot;&quot;&quot;</span>
+<span class="sd">"""A Neural Network implementation based on the Sampler primitive."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -504,9 +510,9 @@
 <span class="k">else</span><span class="p">:</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">SparseArray</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Empty SparseArray class</span>
+<span class="w">        </span><span class="sd">"""Empty SparseArray class</span>
 <span class="sd">        Replacement if sparse.SparseArray is not present.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">pass</span>
 
@@ -517,7 +523,7 @@
 <div class="viewcode-block" id="SamplerQNN">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html#qiskit_machine_learning.neural_networks.SamplerQNN">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SamplerQNN</span><span class="p">(</span><span class="n">NeuralNetwork</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A neural network implementation based on the Sampler primitive.</span>
+<span class="w">    </span><span class="sd">"""A neural network implementation based on the Sampler primitive.</span>
 
 <span class="sd">    The ``SamplerQNN`` is a neural network that takes in a parametrized quantum circuit</span>
 <span class="sd">    with designated parameters for input data and/or weights and translates the quasi-probabilities</span>
@@ -526,7 +532,7 @@
 <span class="sd">    a feature map, it provides input parameters for the network, and an ansatz (weight parameters).</span>
 
 <span class="sd">    The output can be set up in different formats, and an optional post-processing step</span>
-<span class="sd">    can be used to interpret or map the sampler&#39;s raw output in a particular context (e.g. mapping</span>
+<span class="sd">    can be used to interpret or map the sampler's raw output in a particular context (e.g. mapping</span>
 <span class="sd">    the resulting bitstring to match the number of classes) via an ``interpret`` function.</span>
 
 <span class="sd">    The ``output_shape`` parameter defines the shape of the output array after applying the</span>
@@ -559,7 +565,7 @@
 
 <span class="sd">        # Define a custom interpret function that calculates the parity of the bitstring</span>
 <span class="sd">        def parity(x):</span>
-<span class="sd">            return f&quot;{bin(x)}&quot;.count(&quot;1&quot;) % 2</span>
+<span class="sd">            return f"{bin(x)}".count("1") % 2</span>
 
 <span class="sd">        # Example 1: Using the qnn_circuit</span>
 <span class="sd">        # qnn_circuit automatically combines a feature map and an ansatz into a single circuit</span>
@@ -603,13 +609,13 @@
 
 <span class="sd">    Attributes:</span>
 
-<span class="sd">        sampler (BaseSampler): The sampler primitive used to compute the neural network&#39;s</span>
+<span class="sd">        sampler (BaseSampler): The sampler primitive used to compute the neural network's</span>
 <span class="sd">          results. If not provided, a default instance of the reference sampler defined by</span>
 <span class="sd">          :class:`~qiskit.primitives.Sampler` will be used.</span>
 <span class="sd">        gradient (BaseSamplerGradient): An optional sampler gradient used for the backward</span>
 <span class="sd">          pass. If not provided, a default instance of</span>
 <span class="sd">          :class:`~qiskit_machine_learning.gradients.ParamShiftSamplerGradient` will be used.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -625,11 +631,11 @@
         <span class="n">input_gradients</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">pass_manager</span><span class="p">:</span> <span class="n">BasePassManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            circuit: The parametrized quantum</span>
 <span class="sd">                circuit that generates the samples of this network.</span>
-<span class="sd">            sampler: The sampler primitive used to compute the neural network&#39;s results. If</span>
+<span class="sd">            sampler: The sampler primitive used to compute the neural network's results. If</span>
 <span class="sd">                ``None`` is given, a default instance of the reference sampler defined by</span>
 <span class="sd">                :class:`~qiskit_machine_learning.primitives.Sampler` will be used.</span>
 <span class="sd">            input_params: The parameters of the circuit corresponding to the input.</span>
@@ -652,20 +658,20 @@
 <span class="sd">                Defaults to ``None``, as some primitives do not need transpiled circuits.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: Invalid parameter values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Set primitive, provide default</span>
         <span class="k">if</span> <span class="n">sampler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sampler</span> <span class="o">=</span> <span class="n">Sampler</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="n">sampler</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">&quot;_input_qubit_count&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">"_input_qubit_count"</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">_input_qubit_count</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pass_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">circuit</span> <span class="o">=</span> <span class="n">pass_manager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">&quot;_input_qubit_count&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span> <span class="s2">"_input_qubit_count"</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">_input_qubit_count</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">num_qubits</span>
@@ -676,18 +682,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_weight_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">weight_params</span><span class="p">)</span> <span class="k">if</span> <span class="n">weight_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
-            <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="o">.</span><span class="n">require_now</span><span class="p">(</span><span class="s2">&quot;DOK&quot;</span><span class="p">)</span>
+            <span class="n">_optionals</span><span class="o">.</span><span class="n">HAS_SPARSE</span><span class="o">.</span><span class="n">require_now</span><span class="p">(</span><span class="s2">"DOK"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_interpret</span> <span class="o">=</span> <span class="n">interpret</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_interpret</span><span class="p">(</span><span class="n">interpret</span><span class="p">,</span> <span class="n">output_shape</span><span class="p">)</span>
 
         <span class="c1"># Set gradient</span>
         <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">pass_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;No gradient function provided, creating a gradient function.&quot;</span>
-                    <span class="s2">&quot; If your Sampler requires transpilation, please provide a pass manager.&quot;</span>
-                <span class="p">)</span>
             <span class="n">gradient</span> <span class="o">=</span> <span class="n">ParamShiftSamplerGradient</span><span class="p">(</span><span class="n">sampler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="p">,</span> <span class="n">pass_manager</span><span class="o">=</span><span class="n">pass_manager</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="n">gradient</span>
 
@@ -708,23 +709,23 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">circuit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantumCircuit</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the underlying quantum circuit.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the underlying quantum circuit."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_org_circuit</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">input_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list of input parameters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the list of input parameters."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_params</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weight_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the list of trainable weights parameters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the list of trainable weights parameters."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_params</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpret</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns interpret function to be used by the neural network. If it is not set in</span>
-<span class="sd">        the constructor or can not be implicitly derived, then ``None`` is returned.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns interpret function to be used by the neural network. If it is not set in</span>
+<span class="sd">        the constructor or can not be implicitly derived, then ``None`` is returned."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpret</span>
 
 <div class="viewcode-block" id="SamplerQNN.set_interpret">
@@ -734,7 +735,7 @@
         <span class="n">interpret</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">output_shape</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Change ``interpret`` and corresponding ``output_shape``.</span>
+<span class="w">        </span><span class="sd">"""Change ``interpret`` and corresponding ``output_shape``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            interpret: A callable that maps the measured integer to another unsigned integer or</span>
@@ -742,7 +743,7 @@
 <span class="sd">            output_shape: The output shape of the custom interpretation. It is ignored if no custom</span>
 <span class="sd">                interpret method is provided where the shape is taken to be</span>
 <span class="sd">                ``2^circuit.num_qubits``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># derive target values to be used in computations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_output_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_output_shape</span><span class="p">(</span><span class="n">interpret</span><span class="p">,</span> <span class="n">output_shape</span><span class="p">)</span>
@@ -754,11 +755,11 @@
         <span class="n">interpret</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">output_shape</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate and compute the output shape.</span>
+<span class="w">        </span><span class="sd">"""Validate and compute the output shape.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: If no output shape is given.</span>
 <span class="sd">            QiskitMachineLearningError: If an invalid ``sampler``provided.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># This definition is required by mypy</span>
         <span class="n">output_shape_</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span>
@@ -766,7 +767,7 @@
         <span class="k">if</span> <span class="n">interpret</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">output_shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="s2">&quot;No output shape given, but it&#39;s required when using custom interpret function.&quot;</span>
+                    <span class="s2">"No output shape given, but it's required when using custom interpret function."</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output_shape</span><span class="p">,</span> <span class="n">Integral</span><span class="p">):</span>
                 <span class="n">output_shape</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">output_shape</span><span class="p">)</span>
@@ -777,8 +778,8 @@
             <span class="k">if</span> <span class="n">output_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># Warn user that output_shape parameter will be ignored</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;No interpret function given, output_shape will be automatically &quot;</span>
-                    <span class="s2">&quot;determined as 2^num_virtual_qubits.&quot;</span>
+                    <span class="s2">"No interpret function given, output_shape will be automatically "</span>
+                    <span class="s2">"determined as 2^num_virtual_qubits."</span>
                 <span class="p">)</span>
             <span class="n">output_shape_</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">,)</span>
         <span class="k">return</span> <span class="n">output_shape_</span>
@@ -786,9 +787,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_postprocess</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">PrimitiveResult</span><span class="p">[</span><span class="n">SamplerPubResult</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">SparseArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Post-processing during forward pass of the network.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># allocate</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparse</span><span class="p">:</span>
@@ -801,20 +802,20 @@
         <span class="n">pub</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_key_to_int</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;helper: convert key to integer index robustly&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""helper: convert key to integer index robustly"""</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
                 <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="c1"># handle spaced bit strings if any</span>
-                <span class="n">s</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0X&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"0x"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"0X"</span><span class="p">):</span>
                     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0b&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;0B&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"0b"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"0B"</span><span class="p">):</span>
                     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
                 <span class="c1"># if looks like a binary string, treat as base-2</span>
-                <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">}:</span>
+                <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="s2">"0"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">}:</span>
                     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
                 <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>  <span class="c1"># decimal string</span>
 
@@ -826,13 +827,13 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">):</span>
             <span class="n">counts_i</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="c1"># new API</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pub</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;get_counts&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pub</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">"get_counts"</span><span class="p">):</span>
                 <span class="n">counts_i</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_counts</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="c1"># alternative field names some builds expose</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">counts_i</span> <span class="ow">is</span> <span class="kc">None</span>
-                <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pub</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;meas&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pub</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">meas</span><span class="p">,</span> <span class="s2">&quot;get_counts&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pub</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">"meas"</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pub</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">meas</span><span class="p">,</span> <span class="s2">"get_counts"</span><span class="p">)</span>
             <span class="p">):</span>
                 <span class="n">counts_i</span> <span class="o">=</span> <span class="n">pub</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">meas</span><span class="o">.</span><span class="n">get_counts</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
@@ -845,12 +846,27 @@
             <span class="k">if</span> <span class="n">total_shots</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># keys -&gt; ints, filter to valid range</span>
-            <span class="n">probs_i</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">counts_i</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">ki</span> <span class="o">=</span> <span class="n">_key_to_int</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">ki</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">:</span>
-                    <span class="n">probs_i</span><span class="p">[</span><span class="n">ki</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">total_shots</span>
+            <span class="c1"># marginalize to logical qubit subspace</span>
+            <span class="n">probs_i</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_org_circuit</span><span class="p">,</span> <span class="s2">"layout"</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_org_circuit</span><span class="o">.</span><span class="n">layout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># circuit was transpiled: use the layout to find</span>
+                <span class="c1"># where each logical qubit ended up physically</span>
+                <span class="n">physical_qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_org_circuit</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">final_index_layout</span><span class="p">(</span><span class="n">filter_ancillas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">counts_i</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">key_int</span> <span class="o">=</span> <span class="n">_key_to_int</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="c1"># extract only the bits at logical qubit positions</span>
+                    <span class="n">logical_bits</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">key_int</span> <span class="o">&gt;&gt;</span> <span class="n">q</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">physical_qubits</span><span class="p">)</span>
+                    <span class="c1"># reconstruct an integer in the logical qubit space</span>
+                    <span class="n">logical_key</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span> <span class="o">&lt;&lt;</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logical_bits</span><span class="p">))</span>
+                    <span class="c1"># accumulate probabilities (marginalize ancillas)</span>
+                    <span class="n">probs_i</span><span class="p">[</span><span class="n">logical_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">probs_i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">logical_key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">v</span> <span class="o">/</span> <span class="n">total_shots</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># no layout: circuit was not transpiled,</span>
+                <span class="c1"># keep original behavior</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">counts_i</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">key_int</span> <span class="o">=</span> <span class="n">_key_to_int</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">key_int</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">num_virtual_qubits</span><span class="p">:</span>
+                        <span class="n">probs_i</span><span class="p">[</span><span class="n">key_int</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">total_shots</span>
 
             <span class="c1"># map through interpret and write ONLY row i</span>
             <span class="k">for</span> <span class="n">k_int</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">probs_i</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -870,9 +886,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_postprocess_gradient</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">SamplerGradientResult</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">SparseArray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">SparseArray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Post-processing during backward pass of the network.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sparse</span><span class="p">:</span>
             <span class="c1"># pylint: disable=import-error</span>
@@ -938,16 +954,16 @@
         <span class="n">input_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">SparseArray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Forward pass of the network.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">parameter_values</span><span class="p">,</span> <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_forward</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
         <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">run</span><span class="p">([(</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit</span><span class="p">,</span> <span class="n">parameter_values</span><span class="p">[:</span><span class="n">num_samples</span><span class="p">])])</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sampler job failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sampler job failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_postprocess</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
@@ -956,7 +972,7 @@
         <span class="n">input_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">SparseArray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">SparseArray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Backward pass of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Backward pass of the network."""</span>
         <span class="c1"># prepare parameters in the required format</span>
         <span class="n">parameter_values</span><span class="p">,</span> <span class="n">num_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_forward</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
@@ -977,7 +993,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">results</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sampler job failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+                    <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sampler job failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
                 <span class="n">input_grad</span><span class="p">,</span> <span class="n">weights_grad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_postprocess_gradient</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
 
@@ -1007,7 +1023,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1029,7 +1045,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.umda - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.umda - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.umda</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2018, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2018, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,7 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Univariate Marginal Distribution Algorithm (Estimation-of-Distribution-Algorithm).&quot;&quot;&quot;</span>
+<span class="sd">"""Univariate Marginal Distribution Algorithm (Estimation-of-Distribution-Algorithm)."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -488,7 +494,7 @@
 <div class="viewcode-block" id="UMDA">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.UMDA.html#qiskit_machine_learning.optimizers.UMDA">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UMDA</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Continuous Univariate Marginal Distribution Algorithm (UMDA).</span>
+<span class="w">    </span><span class="sd">"""Continuous Univariate Marginal Distribution Algorithm (UMDA).</span>
 
 <span class="sd">    UMDA [1] is a specific type of Estimation of Distribution Algorithm (EDA) where new individuals</span>
 <span class="sd">    are sampled from univariate normal distributions and are updated in each iteration of the</span>
@@ -538,9 +544,9 @@
 <span class="sd">            from qiskit.quantum_info import Pauli</span>
 <span class="sd">            from qiskit.primitives import StatevectorSampler</span>
 
-<span class="sd">            X = Pauli(&quot;X&quot;)</span>
-<span class="sd">            I = Pauli(&quot;I&quot;)</span>
-<span class="sd">            Z = Pauli(&quot;Z&quot;)</span>
+<span class="sd">            X = Pauli("X")</span>
+<span class="sd">            I = Pauli("I")</span>
+<span class="sd">            Z = Pauli("Z")</span>
 
 <span class="sd">            H2_op = (-1.052373245772859 * I ^ I) + \</span>
 <span class="sd">            (0.39793742484318045 * I ^ Z) + \</span>
@@ -578,7 +584,7 @@
 
 <span class="sd">        [2]: Vicente P. Soloviev. Python package EDAspy.</span>
 <span class="sd">        https://github.com/VicentePerezSoloviev/EDAspy.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">ELITE_FACTOR</span> <span class="o">=</span> <span class="mf">0.4</span>
     <span class="n">STD_BOUND</span> <span class="o">=</span> <span class="mf">0.3</span>
@@ -590,7 +596,7 @@
         <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            maxiter: Maximum number of iterations.</span>
 <span class="sd">            size_gen: Population size of each generation.</span>
@@ -598,7 +604,7 @@
 <span class="sd">            callback: A callback function passed information in each iteration step. The</span>
 <span class="sd">                information is, in this order: the number of function evaluations, the parameters,</span>
 <span class="sd">                the best function value in this iteration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">size_gen</span> <span class="o">=</span> <span class="n">size_gen</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span>
@@ -630,9 +636,9 @@
 
     <span class="c1"># build a generation of size SIZE_GEN from prob vector</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_new_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a new generation sampled from the vector of probabilities.</span>
+<span class="w">        </span><span class="sd">"""Build a new generation sampled from the vector of probabilities.</span>
 <span class="sd">        Updates the generation pandas dataframe</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">gen</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_size_gen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_variables</span><span class="p">]</span>
@@ -643,23 +649,23 @@
 
     <span class="c1"># truncate the generation at alpha percent</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_truncation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Selection of the best individuals of the actual generation.</span>
+<span class="w">        </span><span class="sd">"""Selection of the best individuals of the actual generation.</span>
 <span class="sd">        Updates the generation by selecting the best individuals.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">best_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluations</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_truncation_length</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generation</span><span class="p">[</span><span class="n">best_indices</span><span class="p">,</span> <span class="p">:]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_evaluations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_evaluations</span><span class="p">,</span> <span class="n">best_indices</span><span class="p">)</span>
 
     <span class="c1"># check each individual of the generation</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objective_function</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the cost of each individual in the cost function implemented by the user.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check the cost of each individual in the cost function implemented by the user."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_evaluations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="n">objective_function</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generation</span><span class="p">)</span>
 
     <span class="c1"># update the probability vector</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;From the best individuals update the vector of normal distributions in order to the next</span>
+<span class="w">        </span><span class="sd">"""From the best individuals update the vector of normal distributions in order to the next</span>
 <span class="sd">        generation can sample from it. Update the vector of normal distributions</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_variables</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_vector</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_generation</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
@@ -732,12 +738,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">size_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the size of the generations (number of individuals per generation)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the size of the generations (number of individuals per generation)"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_gen</span>
 
     <span class="nd">@size_gen</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">size_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sets the size of the generations of the algorithm.</span>
 
 <span class="sd">        Args:</span>
@@ -745,19 +751,19 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If `value` is lower than 1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size of the generation should be greater than 0.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The size of the generation should be greater than 0."</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_size_gen</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">maxiter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the maximum number of iterations&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the maximum number of iterations"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxiter</span>
 
     <span class="nd">@maxiter</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">maxiter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sets the maximum number of iterations of the algorithm.</span>
 
 <span class="sd">        Args:</span>
@@ -765,21 +771,21 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If `value` is lower than 1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The maximum number of iterations should be greater than 0.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The maximum number of iterations should be greater than 0."</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_maxiter</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the alpha parameter value (percentage of population selected to update</span>
-<span class="sd">        probabilistic model)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the alpha parameter value (percentage of population selected to update</span>
+<span class="sd">        probabilistic model)"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span>
 
     <span class="nd">@alpha</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sets the alpha parameter (percentage of individuals selected to update the probabilistic</span>
 <span class="sd">        model)</span>
 
@@ -788,29 +794,29 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If `value` is lower than 0 or greater than 1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;alpha must be in the range (0, 1], value given was </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"alpha must be in the range (0, 1], value given was </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">,</span>
-            <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
-            <span class="s2">&quot;size_gen&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">size_gen</span><span class="p">,</span>
-            <span class="s2">&quot;callback&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span>
+            <span class="s2">"maxiter"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">,</span>
+            <span class="s2">"alpha"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="s2">"size_gen"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">size_gen</span><span class="p">,</span>
+            <span class="s2">"callback"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="UMDA.get_support_level">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.UMDA.html#qiskit_machine_learning.optimizers.UMDA.get_support_level">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the support level dictionary.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Get the support level dictionary."""</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
-            <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
-            <span class="s2">&quot;initial_point&quot;</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
+            <span class="s2">"gradient"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
+            <span class="s2">"bounds"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span><span class="p">,</span>
+            <span class="s2">"initial_point"</span><span class="p">:</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
         <span class="p">}</span></div>
 </div>
 
@@ -838,7 +844,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -860,7 +866,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

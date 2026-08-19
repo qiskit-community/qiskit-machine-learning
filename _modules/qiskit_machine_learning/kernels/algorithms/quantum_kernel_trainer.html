@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.kernels.algorithms.quantum_kernel_trainer - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.kernels.algorithms.quantum_kernel_trainer - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.kernels.algorithms.quantum_kernel_trainer</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2021, 2024.</span>
+<span class="c1"># (C) Copyright IBM 2021, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,25 +476,33 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Quantum Kernel Trainer&quot;&quot;&quot;</span>
+<span class="sd">"""Quantum Kernel Trainer"""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Type</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">...optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span><span class="p">,</span> <span class="n">SPSA</span><span class="p">,</span> <span class="n">Minimizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">algorithm_globals</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...variational_algorithm</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariationalResult</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">...utils.loss_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">KernelLoss</span><span class="p">,</span> <span class="n">SVCLoss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...utils.loss_functions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">KernelLoss</span><span class="p">,</span>
+    <span class="n">SVCLoss</span><span class="p">,</span>
+    <span class="n">SVRLoss</span><span class="p">,</span>
+    <span class="n">MSRLoss</span><span class="p">,</span>
+    <span class="n">MARLoss</span><span class="p">,</span>
+    <span class="n">HuberLoss</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainableKernel</span>
 
 
 <div class="viewcode-block" id="QuantumKernelTrainerResult">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult.html#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainerResult">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">QuantumKernelTrainerResult</span><span class="p">(</span><span class="n">VariationalResult</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quantum Kernel Trainer Result.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Quantum Kernel Trainer Result."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -496,7 +510,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">quantum_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainableKernel</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the optimized quantum kernel object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the optimized quantum kernel object."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quantum_kernel</span>
 
     <span class="nd">@quantum_kernel</span><span class="o">.</span><span class="n">setter</span>
@@ -508,7 +522,7 @@
 <div class="viewcode-block" id="QuantumKernelTrainer">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer.html#qiskit_machine_learning.kernels.algorithms.QuantumKernelTrainer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">QuantumKernelTrainer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Quantum Kernel Trainer.</span>
 <span class="sd">    This class provides utility to train quantum kernel feature map parameters.</span>
 
@@ -520,8 +534,8 @@
 <span class="sd">        qc = QuantumCircuit(2)</span>
 
 <span class="sd">        # Vectors of input and trainable user parameters</span>
-<span class="sd">        input_params = ParameterVector(&quot;x_par&quot;, 2)</span>
-<span class="sd">        training_params = ParameterVector(&quot;θ_par&quot;, 2)</span>
+<span class="sd">        input_params = ParameterVector("x_par", 2)</span>
+<span class="sd">        training_params = ParameterVector("θ_par", 2)</span>
 
 <span class="sd">        # Create an initial rotation layer of trainable parameters</span>
 <span class="sd">        for i, param in enumerate(training_params):</span>
@@ -548,7 +562,7 @@
 <span class="sd">                                        )</span>
 <span class="sd">        qkt_results = qk_trainer.fit(X_train, y_train)</span>
 <span class="sd">        optimized_kernel = qkt_results.quantum_kernel</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -557,15 +571,16 @@
         <span class="n">optimizer</span><span class="p">:</span> <span class="n">Optimizer</span> <span class="o">|</span> <span class="n">Minimizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">initial_point</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            quantum_kernel: a trainable quantum kernel to be trained. The</span>
 <span class="sd">                :attr:`~.TrainableKernel.parameter_values` will be modified in place after the training.</span>
-<span class="sd">            loss: A loss function available via string is &quot;svc_loss&quot; which is the same as</span>
-<span class="sd">                :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss`. If a string is</span>
-<span class="sd">                passed as the loss function, then the underlying</span>
-<span class="sd">                :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss` object will exhibit</span>
-<span class="sd">                default behavior.</span>
+<span class="sd">            loss: A loss function available via string is "svc_loss" which is the same as</span>
+<span class="sd">                :class:`~qiskit_machine_learning.utils.loss_functions.SVCLoss`. Other available</span>
+<span class="sd">                options are "svr_loss", "msr_loss", "mar_loss", and "huber_loss", corresponding to</span>
+<span class="sd">                their respective classes in :mod:`~qiskit_machine_learning.utils.loss_functions`.</span>
+<span class="sd">                If a string is passed as the loss function, then the underlying loss object will</span>
+<span class="sd">                exhibit default behavior.</span>
 <span class="sd">            optimizer: An instance of :class:`~qiskit_machine_learning.optimizers.Optimizer` or a</span>
 <span class="sd">                callable to be used in training. Refer to</span>
 <span class="sd">                :class:`~qiskit_machine_learning.optimizers.Minimizer` for more information on the</span>
@@ -576,7 +591,7 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: unknown loss function.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Class fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_quantum_kernel</span> <span class="o">=</span> <span class="n">quantum_kernel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point</span> <span class="o">=</span> <span class="n">initial_point</span>
@@ -588,22 +603,22 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">quantum_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainableKernel</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the quantum kernel object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the quantum kernel object."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quantum_kernel</span>
 
     <span class="nd">@quantum_kernel</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">quantum_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantum_kernel</span><span class="p">:</span> <span class="n">TrainableKernel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the quantum kernel.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the quantum kernel."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_quantum_kernel</span> <span class="o">=</span> <span class="n">quantum_kernel</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KernelLoss</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the loss object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the loss object."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span>
 
     <span class="nd">@loss</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">KernelLoss</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Set the loss.</span>
 
 <span class="sd">        Args:</span>
@@ -611,29 +626,29 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: Unknown loss function</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_loss</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optimizer</span> <span class="o">|</span> <span class="n">Minimizer</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an optimizer to be used in training.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return an optimizer to be used in training."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span>
 
     <span class="nd">@optimizer</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span> <span class="n">Optimizer</span> <span class="o">|</span> <span class="n">Minimizer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the optimizer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the optimizer."""</span>
         <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">optimizer</span> <span class="o">=</span> <span class="n">SPSA</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">initial_point</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return initial point&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return initial point"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point</span>
 
     <span class="nd">@initial_point</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">initial_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_point</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the initial point&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the initial point"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point</span> <span class="o">=</span> <span class="n">initial_point</span>
 
 <div class="viewcode-block" id="QuantumKernelTrainer.fit">
@@ -643,7 +658,7 @@
         <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantumKernelTrainerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Train the QuantumKernel by minimizing loss over the kernel parameters. The input</span>
 <span class="sd">        quantum kernel will be altered.</span>
 
@@ -657,11 +672,11 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: No trainable user parameters specified in quantum kernel</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Number of parameters to tune</span>
         <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_quantum_kernel</span><span class="o">.</span><span class="n">training_parameters</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">num_params</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Quantum kernel cannot be fit because there are no user parameters specified.&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Quantum kernel cannot be fit because there are no user parameters specified."</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="c1"># Randomly initialize the initial point if one was not passed</span>
@@ -699,7 +714,7 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">KernelLoss</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal setter.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Internal setter."""</span>
         <span class="k">if</span> <span class="n">loss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">SVCLoss</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -708,11 +723,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span> <span class="o">=</span> <span class="n">loss</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_str_to_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KernelLoss</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function which maps strings to default KernelLoss objects.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">loss_str</span> <span class="o">==</span> <span class="s2">&quot;svc_loss&quot;</span><span class="p">:</span>
-            <span class="n">loss_obj</span> <span class="o">=</span> <span class="n">SVCLoss</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown loss </span><span class="si">{</span><span class="n">loss_str</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Function which maps strings to default KernelLoss objects."""</span>
+        <span class="n">string_to_loss_map</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">KernelLoss</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"svc_loss"</span><span class="p">:</span> <span class="n">SVCLoss</span><span class="p">,</span>
+            <span class="s2">"svr_loss"</span><span class="p">:</span> <span class="n">SVRLoss</span><span class="p">,</span>
+            <span class="s2">"msr_loss"</span><span class="p">:</span> <span class="n">MSRLoss</span><span class="p">,</span>
+            <span class="s2">"mar_loss"</span><span class="p">:</span> <span class="n">MARLoss</span><span class="p">,</span>
+            <span class="s2">"huber_loss"</span><span class="p">:</span> <span class="n">HuberLoss</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">loss_class</span> <span class="o">=</span> <span class="n">string_to_loss_map</span><span class="p">[</span><span class="n">loss_str</span><span class="p">]</span>
+            <span class="n">loss_obj</span> <span class="o">=</span> <span class="n">loss_class</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">unknown_loss</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown loss </span><span class="si">{</span><span class="n">unknown_loss</span><span class="si">}</span><span class="s2">!"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">unknown_loss</span>
 
         <span class="k">return</span> <span class="n">loss_obj</span></div>
 
@@ -740,7 +763,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -762,7 +785,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.neural_networks.effective_dimension - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.neural_networks.effective_dimension - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.neural_networks.effective_dimension</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2022, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2022, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -469,7 +475,7 @@
 <span class="c1"># Any modifications or derivative works of this code must retain this</span>
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
-<span class="sd">&quot;&quot;&quot;An implementation of the effective dimension algorithm.&quot;&quot;&quot;</span>
+<span class="sd">"""An implementation of the effective dimension algorithm."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -489,7 +495,7 @@
 <div class="viewcode-block" id="EffectiveDimension">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EffectiveDimension</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class computes the global effective dimension for a Qiskit</span>
 <span class="sd">    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`</span>
 <span class="sd">    following the definition used in [1].</span>
@@ -497,7 +503,7 @@
 <span class="sd">        **References**</span>
 <span class="sd">        [1]: Abbas et al., The power of quantum neural networks.</span>
 <span class="sd">        `The power of QNNs &lt;https://arxiv.org/pdf/2011.00027.pdf&gt;`__.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -505,7 +511,7 @@
         <span class="n">weight_samples</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">input_samples</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            qnn: A Qiskit :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`,</span>
 <span class="sd">                with a specific dimension ``(num_weights)`` that will determine the shape of the</span>
@@ -521,7 +527,7 @@
 <span class="sd">                ``(num_input_samples, qnn_input_size)``, or an ``int`` to indicate the number of</span>
 <span class="sd">                input sets to sample randomly from a normal distribution. By default,</span>
 <span class="sd">                ``input_samples = 1``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># Store arguments</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">0.25</span><span class="p">])</span>
@@ -541,12 +547,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns network weight samples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns network weight samples."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span>
 
     <span class="nd">@weight_samples</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight_samples</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets network weight samples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets network weight samples."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight_samples</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="c1"># random sampling from uniform distribution</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
@@ -557,9 +563,9 @@
             <span class="n">weight_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weight_samples</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weight_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">weight_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">num_weights</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The Effective Dimension class expects&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; a weight_samples array of shape (M, qnn.num_weights).&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; Got </span><span class="si">{</span><span class="n">weight_samples</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The Effective Dimension class expects"</span>
+                    <span class="sa">f</span><span class="s2">" a weight_samples array of shape (M, qnn.num_weights)."</span>
+                    <span class="sa">f</span><span class="s2">" Got </span><span class="si">{</span><span class="n">weight_samples</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span> <span class="o">=</span> <span class="n">weight_samples</span>
 
@@ -567,12 +573,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">input_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns network input samples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns network input samples."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_samples</span>
 
     <span class="nd">@input_samples</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">input_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_samples</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets network input samples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets network input samples."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_samples</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="c1"># random sampling from normal distribution</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_samples</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
@@ -583,9 +589,9 @@
             <span class="n">input_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">input_samples</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">input_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">num_inputs</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The Effective Dimension class expects&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; an input sample array of shape (N, qnn.num_inputs).&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; Got </span><span class="si">{</span><span class="n">input_samples</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The Effective Dimension class expects"</span>
+                    <span class="sa">f</span><span class="s2">" an input sample array of shape (N, qnn.num_inputs)."</span>
+                    <span class="sa">f</span><span class="s2">" Got </span><span class="si">{</span><span class="n">input_samples</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_input_samples</span> <span class="o">=</span> <span class="n">input_samples</span>
 
@@ -594,8 +600,8 @@
 <div class="viewcode-block" id="EffectiveDimension.run_monte_carlo">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension.run_monte_carlo">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run_monte_carlo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method computes the model&#39;s Monte Carlo sampling for a set of input samples and</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        This method computes the model's Monte Carlo sampling for a set of input samples and</span>
 <span class="sd">        weight samples.</span>
 
 <span class="sd">        Returns:</span>
@@ -603,7 +609,7 @@
 <span class="sd">                ``(num_input_samples * num_weight_samples, output_size, num_weights)``.</span>
 <span class="sd">             outputs: QNN output vector, result of forward passes, of shape</span>
 <span class="sd">                ``(num_input_samples * num_weight_samples, output_size)``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">grads</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_num_input_samples</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_weight_samples</span><span class="p">,</span>
@@ -630,7 +636,7 @@
             <span class="n">t_forward</span> <span class="o">=</span> <span class="n">t_after_forward</span> <span class="o">-</span> <span class="n">t_before_forward</span>
             <span class="n">t_backward</span> <span class="o">=</span> <span class="n">t_after_backward</span> <span class="o">-</span> <span class="n">t_after_forward</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;Weight sample: </span><span class="si">%d</span><span class="s2">, forward time: </span><span class="si">%.3f</span><span class="s2"> (s), backward time: </span><span class="si">%.3f</span><span class="s2"> (s)&quot;</span><span class="p">,</span>
+                <span class="s2">"Weight sample: </span><span class="si">%d</span><span class="s2">, forward time: </span><span class="si">%.3f</span><span class="s2"> (s), backward time: </span><span class="si">%.3f</span><span class="s2"> (s)"</span><span class="p">,</span>
                 <span class="n">i</span><span class="p">,</span>
                 <span class="n">t_forward</span><span class="p">,</span>
                 <span class="n">t_backward</span><span class="p">,</span>
@@ -653,20 +659,20 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_fisher_information</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">gradients</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">model_outputs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method computes the average Jacobian for every set of gradients and model output as</span>
 <span class="sd">        shown in Abbas et al.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            gradients: A numpy array, result of the neural network&#39;s backward pass, of</span>
+<span class="sd">            gradients: A numpy array, result of the neural network's backward pass, of</span>
 <span class="sd">                shape ``(num_input_samples * num_weight_samples, output_size, num_weights)``.</span>
-<span class="sd">            model_outputs: A numpy array, result of the neural networks&#39; forward pass,</span>
+<span class="sd">            model_outputs: A numpy array, result of the neural networks' forward pass,</span>
 <span class="sd">                of shape ``(num_input_samples * num_weight_samples, output_size)``.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            fisher: A numpy array of shape</span>
 <span class="sd">                ``(num_input_samples * num_weight_samples, num_weights, num_weights)``</span>
 <span class="sd">                with the average Jacobian  for every set of gradients and model output given.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">model_outputs</span><span class="o">.</span><span class="n">shape</span> <span class="o">&lt;</span> <span class="n">gradients</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="c1"># add dimension to model outputs for broadcasting</span>
@@ -675,10 +681,18 @@
         <span class="c1"># get grad-vectors (gradient_k/model_output_k)</span>
         <span class="c1"># multiply by sqrt(model_output) so that the outer product cross term is correct</span>
         <span class="c1"># after Einstein summation</span>
-        <span class="n">gradvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model_outputs</span><span class="p">)</span> <span class="o">*</span> <span class="n">gradients</span> <span class="o">/</span> <span class="n">model_outputs</span>
+        <span class="c1"># We clip to 0 and mask zero entries to avoid divide-by-zero warnings.</span>
+        <span class="n">model_outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">model_outputs</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">grad_vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+            <span class="n">gradients</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">model_outputs</span><span class="p">),</span>
+            <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">gradients</span><span class="p">),</span>
+            <span class="n">where</span><span class="o">=</span><span class="n">model_outputs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># compute the sum of matrices obtained from outer product of grad-vectors</span>
-        <span class="n">fisher_information</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,lji-&gt;ikl&quot;</span><span class="p">,</span> <span class="n">gradvectors</span><span class="p">,</span> <span class="n">gradvectors</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">fisher_information</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">"ijk,lji-&gt;ikl"</span><span class="p">,</span> <span class="n">grad_vectors</span><span class="p">,</span> <span class="n">grad_vectors</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">fisher_information</span></div>
 
@@ -686,7 +700,7 @@
 <div class="viewcode-block" id="EffectiveDimension.get_normalized_fisher">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.EffectiveDimension.html#qiskit_machine_learning.neural_networks.EffectiveDimension.get_normalized_fisher">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_normalized_fisher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalized_fisher</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method computes the normalized Fisher Information Matrix and extracts its trace.</span>
 
 <span class="sd">        Args:</span>
@@ -697,7 +711,7 @@
 <span class="sd">                ``(num_input_samples, num_weights, num_weights)``.</span>
 <span class="sd">             fisher_trace: The trace of the Fisher Information Matrix</span>
 <span class="sd">                (before normalizing).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># compute the trace with all normalized_fisher</span>
         <span class="n">fisher_trace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">normalized_fisher</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
@@ -757,7 +771,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_effective_dimension</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dataset_size</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method computes the effective dimension for a dataset of size ``dataset_size``. If an</span>
 <span class="sd">        array is passed, then effective dimension computed for each value in the array.</span>
 
@@ -766,7 +780,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">             effective_dim: array of effective dimensions for each dataset size in ``num_data``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># step 1: Monte Carlo sampling</span>
         <span class="n">grads</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_monte_carlo</span><span class="p">()</span>
@@ -788,7 +802,7 @@
 <div class="viewcode-block" id="LocalEffectiveDimension">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.neural_networks.LocalEffectiveDimension.html#qiskit_machine_learning.neural_networks.LocalEffectiveDimension">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LocalEffectiveDimension</span><span class="p">(</span><span class="n">EffectiveDimension</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class computes the local effective dimension for a Qiskit</span>
 <span class="sd">    :class:`~qiskit_machine_learning.neural_networks.NeuralNetwork`</span>
 <span class="sd">    following the definition used in [1].</span>
@@ -799,33 +813,33 @@
 <span class="sd">        **References**</span>
 <span class="sd">        [1]: Abbas et al., The power of quantum neural networks.</span>
 <span class="sd">        `The power of QNNs &lt;https://arxiv.org/pdf/2011.00027.pdf&gt;`__.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># override setter to enforce 1 set of parameters</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns network parameters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns network parameters."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span>
 
     <span class="nd">@weight_samples</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weight_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight_samples</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets network parameters.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets network parameters."""</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight_samples</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="c1"># random sampling from uniform distribution</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span> <span class="o">=</span> <span class="n">algorithm_globals</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
                 <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">num_weights</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># there is a weird mypy error if we keep the same variable name, so there&#39;s &#39;weights&#39;</span>
+            <span class="c1"># there is a weird mypy error if we keep the same variable name, so there's 'weights'</span>
             <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weight_samples</span><span class="p">)</span>
             <span class="c1"># additional check to accept 1D arrays</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">weight_samples</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">num_weights</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The Local Effective Dimension class expects&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; a weight_samples array of shape (1, qnn.num_weights) or (qnn.num_weights).&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; Got </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The Local Effective Dimension class expects"</span>
+                    <span class="sa">f</span><span class="s2">" a weight_samples array of shape (1, qnn.num_weights) or (qnn.num_weights)."</span>
+                    <span class="sa">f</span><span class="s2">" Got </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_weight_samples</span> <span class="o">=</span> <span class="n">weights</span>
 
@@ -855,7 +869,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -877,7 +891,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

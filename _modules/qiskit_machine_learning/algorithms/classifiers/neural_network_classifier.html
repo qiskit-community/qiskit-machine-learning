@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.algorithms.classifiers.neural_network_classifier - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.algorithms.classifiers.neural_network_classifier - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.algorithms.classifiers.neural_network_classifier</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2021, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2021, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -469,7 +475,7 @@
 <span class="c1"># Any modifications or derivative works of this code must retain this</span>
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
-<span class="sd">&quot;&quot;&quot;An implementation of quantum neural network classifier.&quot;&quot;&quot;</span>
+<span class="sd">"""An implementation of quantum neural network classifier."""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -499,23 +505,23 @@
 <div class="viewcode-block" id="NeuralNetworkClassifier">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NeuralNetworkClassifier</span><span class="p">(</span><span class="n">TrainableModel</span><span class="p">,</span> <span class="n">ClassifierMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implements a basic quantum neural network classifier. Implements Scikit-Learn compatible</span>
+<span class="w">    </span><span class="sd">"""Implements a basic quantum neural network classifier. Implements Scikit-Learn compatible</span>
 <span class="sd">    methods for classification and extends ``ClassifierMixin``.</span>
 <span class="sd">    See `Scikit-Learn &lt;https://scikit-learn.org&gt;`__ for more details.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">neural_network</span><span class="p">:</span> <span class="n">NeuralNetwork</span><span class="p">,</span>
-        <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Loss</span> <span class="o">=</span> <span class="s2">&quot;squared_error&quot;</span><span class="p">,</span>
+        <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Loss</span> <span class="o">=</span> <span class="s2">"squared_error"</span><span class="p">,</span>
         <span class="n">one_hot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">optimizer</span><span class="p">:</span> <span class="n">Optimizer</span> <span class="o">|</span> <span class="n">Minimizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">warm_start</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">initial_point</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            neural_network: An instance of a quantum neural network. If the neural network has a</span>
 <span class="sd">                one-dimensional output, i.e., `neural_network.output_shape=(1,)`, then it is</span>
@@ -528,12 +534,12 @@
 <span class="sd">                entry of the probability vector is considered as an individual sample and the loss</span>
 <span class="sd">                function is applied to the index and weighted with the corresponding probability.</span>
 <span class="sd">            loss: A target loss function to be used in training. Default is `squared_error`,</span>
-<span class="sd">                i.e. L2 loss. Can be given either as a string for &#39;absolute_error&#39; (i.e. L1 Loss),</span>
-<span class="sd">                &#39;squared_error&#39;, &#39;cross_entropy&#39;, or as a loss function</span>
+<span class="sd">                i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),</span>
+<span class="sd">                'squared_error', 'cross_entropy', or as a loss function</span>
 <span class="sd">                implementing the Loss interface.</span>
 <span class="sd">            one_hot: Determines in the case of a multi-dimensional result of the</span>
 <span class="sd">                neural_network how to interpret the result. If True it is interpreted as a single</span>
-<span class="sd">                one-hot-encoded sample (e.g. for &#39;CrossEntropy&#39; loss function), and if False</span>
+<span class="sd">                one-hot-encoded sample (e.g. for 'CrossEntropy' loss function), and if False</span>
 <span class="sd">                as a set of individual predictions with occurrence probabilities (the index would be</span>
 <span class="sd">                the prediction and the value the corresponding frequency, e.g. for absolute/squared</span>
 <span class="sd">                loss). In case of a one-dimensional categorical output, this option determines how</span>
@@ -544,14 +550,14 @@
 <span class="sd">                :class:`~qiskit_machine_learning.optimizers.SLSQP`.</span>
 <span class="sd">            warm_start: Use weights from previous fit to start next fit.</span>
 <span class="sd">            initial_point: Initial point for the optimizer to start from.</span>
-<span class="sd">            callback: a reference to a user&#39;s callback function that has two parameters and</span>
+<span class="sd">            callback: a reference to a user's callback function that has two parameters and</span>
 <span class="sd">                returns ``None``. The callback can access intermediate data during training.</span>
 <span class="sd">                On each iteration an optimizer invokes the callback and passes current weights</span>
 <span class="sd">                as an array and a computed value as a float of the objective function being</span>
 <span class="sd">                optimized. This allows to track how well optimization / training process is going on.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: unknown loss, invalid neural network</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">neural_network</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">warm_start</span><span class="p">,</span> <span class="n">initial_point</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_one_hot</span> <span class="o">=</span> <span class="n">one_hot</span>
         <span class="c1"># encodes the target data if categorical</span>
@@ -563,10 +569,10 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">num_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of classes found in the most recent fit.</span>
+<span class="w">        </span><span class="sd">"""The number of classes found in the most recent fit.</span>
 
 <span class="sd">        If called before :meth:`fit`, this will return ``None``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># For user checking and validation.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_classes</span>
 
@@ -578,7 +584,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minimize</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectiveFunction</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates an objective function that depends on the classification we want to solve.</span>
 
 <span class="sd">        Args:</span>
@@ -587,7 +593,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An instance of the objective function.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># mypy definition</span>
         <span class="n">function</span><span class="p">:</span> <span class="n">ObjectiveFunction</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span><span class="o">.</span><span class="n">output_shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
@@ -604,7 +610,7 @@
 <div class="viewcode-block" id="NeuralNetworkClassifier.predict">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier.predict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Perform classification on samples in X.</span>
 
 <span class="sd">        Args:</span>
@@ -625,7 +631,7 @@
 <span class="sd">                - If the :meth:`predict` method is called before the model has been fit.</span>
 <span class="sd">            ValueError:</span>
 <span class="sd">                - If the pre-computed kernel matrix has the wrong shape and/or dimension.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
@@ -652,7 +658,7 @@
 <div class="viewcode-block" id="NeuralNetworkClassifier.predict_proba">
 <a class="viewcode-back" href="../../../../stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier.predict_proba">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Extracts the predicted probabilities for each class based on the output of a neural</span>
 <span class="sd">        network.</span>
 
@@ -668,7 +674,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray: An array of shape ``(n_samples, n_classes)`` representing the predicted class</span>
 <span class="sd">                probabilities (in the range :math:`[0, 1]`) for each sample in ``X``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
         <span class="n">X</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
@@ -685,7 +691,7 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validates and transforms if required features and labels. If arrays are sparse, they are</span>
 <span class="sd">        converted to dense as the numpy math in the loss/objective functions does not work with</span>
 <span class="sd">        sparse. If one hot encoding is required, then labels are one hot encoded otherwise label</span>
@@ -698,7 +704,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A tuple with validated and transformed features and labels.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
             <span class="c1"># our math does not work with sparse arrays</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">spmatrix</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>  <span class="c1"># cast is required by mypy</span>
@@ -747,23 +753,23 @@
             <span class="k">return</span> <span class="n">y_hat</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_binary_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate binary encoded targets.</span>
+<span class="w">        </span><span class="sd">"""Validate binary encoded targets.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: If targets are invalid.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                <span class="s2">&quot;The shape of the targets does not match the shape of neural network output.&quot;</span>
+                <span class="s2">"The shape of the targets does not match the shape of neural network output."</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                <span class="s2">&quot;The target values appear to be multi-classified. &quot;</span>
-                <span class="s2">&quot;The neural network output shape is only suitable for binary classification.&quot;</span>
+                <span class="s2">"The target values appear to be multi-classified. "</span>
+                <span class="s2">"The neural network output shape is only suitable for binary classification."</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_one_hot_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">raise_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validate one-hot encoded labels. Ensure one-hot encoded data is valid and not multi-label.</span>
 
 <span class="sd">        Args:</span>
@@ -777,34 +783,34 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: If targets are invalid.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">raise_on_failure</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;One hot encoded targets must be of shape (num_samples, num_classes), &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;but found </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"One hot encoded targets must be of shape (num_samples, num_classes), "</span>
+                    <span class="sa">f</span><span class="s2">"but found </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">raise_on_failure</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="s2">&quot;Invalid one-hot targets. The targets must contain only 0&#39;s and 1&#39;s.&quot;</span>
+                    <span class="s2">"Invalid one-hot targets. The targets must contain only 0's and 1's."</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">raise_on_failure</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                    <span class="s2">&quot;The target values appear to be multi-labelled. &quot;</span>
-                    <span class="s2">&quot;Multi-label classification is not supported.&quot;</span>
+                    <span class="s2">"The target values appear to be multi-labelled. "</span>
+                    <span class="s2">"Multi-label classification is not supported."</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_num_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Infers the number of classes from the targets.</span>
+<span class="w">        </span><span class="sd">"""Infers the number of classes from the targets.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            y: The target values.</span>
@@ -815,7 +821,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The number of inferred classes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_one_hot</span><span class="p">:</span>
             <span class="n">num_classes</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -823,8 +829,8 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warm_start</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_classes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_classes</span> <span class="o">!=</span> <span class="n">num_classes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The number of classes (</span><span class="si">{</span><span class="n">num_classes</span><span class="si">}</span><span class="s2">) is different to the previous batch &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_classes</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="sa">f</span><span class="s2">"The number of classes (</span><span class="si">{</span><span class="n">num_classes</span><span class="si">}</span><span class="s2">) is different to the previous batch "</span>
+                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_classes</span><span class="si">}</span><span class="s2">)."</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">num_classes</span></div>
 
@@ -852,7 +858,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -874,7 +880,7 @@
   </div>
 </div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/thebelab-helper.js"></script>

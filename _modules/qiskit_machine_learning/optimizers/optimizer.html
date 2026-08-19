@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.optimizers.optimizer - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.optimizers.optimizer - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.optimizers.optimizer</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2018, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2018, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -470,7 +476,7 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Optimizer interface&quot;&quot;&quot;</span>
+<span class="sd">"""Optimizer interface"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -493,7 +499,7 @@
 <div class="viewcode-block" id="OptimizerResult">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.OptimizerResult.html#qiskit_machine_learning.optimizers.OptimizerResult">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OptimizerResult</span><span class="p">(</span><span class="n">AlgorithmResult</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The result of an optimization routine.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The result of an optimization routine."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -506,62 +512,62 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">POINT</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The final point of the minimization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The final point of the minimization."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span>
 
     <span class="nd">@x</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">POINT</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the final point of the minimization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the final point of the minimization."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">x</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fun</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The final value of the minimization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The final value of the minimization."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fun</span>
 
     <span class="nd">@fun</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the final value of the minimization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the final value of the minimization."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fun</span> <span class="o">=</span> <span class="n">fun</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">jac</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">POINT</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The final gradient of the minimization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The final gradient of the minimization."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jac</span>
 
     <span class="nd">@jac</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">jac</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jac</span><span class="p">:</span> <span class="n">POINT</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the final gradient of the minimization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the final gradient of the minimization."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_jac</span> <span class="o">=</span> <span class="n">jac</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nfev</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The total number of function evaluations.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The total number of function evaluations."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nfev</span>
 
     <span class="nd">@nfev</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nfev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nfev</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the total number of function evaluations.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the total number of function evaluations."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nfev</span> <span class="o">=</span> <span class="n">nfev</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">njev</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The total number of gradient evaluations.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The total number of gradient evaluations."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_njev</span>
 
     <span class="nd">@njev</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">njev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">njev</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the total number of gradient evaluations.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the total number of gradient evaluations."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_njev</span> <span class="o">=</span> <span class="n">njev</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The total number of iterations.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The total number of iterations."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nit</span>
 
     <span class="nd">@nit</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the total number of iterations.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the total number of iterations."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nit</span> <span class="o">=</span> <span class="n">nit</span></div>
 
 
@@ -569,9 +575,9 @@
 <div class="viewcode-block" id="Minimizer">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Minimizer.html#qiskit_machine_learning.optimizers.Minimizer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Minimizer</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Callable Protocol for minimizer.</span>
+<span class="w">    </span><span class="sd">"""Callable Protocol for minimizer.</span>
 
-<span class="sd">    This interface is based on `SciPy&#39;s optimize module</span>
+<span class="sd">    This interface is based on `SciPy's optimize module</span>
 <span class="sd">    &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html&gt;`__.</span>
 
 <span class="sd">     This protocol defines a callable taking the following parameters:</span>
@@ -586,8 +592,8 @@
 <span class="sd">             Parameters bounds for the optimization. Note that these might not be supported</span>
 <span class="sd">             by all optimizers.</span>
 
-<span class="sd">     and which returns a minimization result object (either SciPy&#39;s or Qiskit&#39;s).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">     and which returns a minimization result object (either SciPy's or Qiskit's).</span>
+<span class="sd">    """</span>
 
     <span class="c1"># pylint: disable=invalid-name</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
@@ -597,9 +603,9 @@
         <span class="n">jac</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">scipy</span><span class="o">.</span><span class="n">optimize</span><span class="o">.</span><span class="n">OptimizeResult</span> <span class="o">|</span> <span class="n">OptimizerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Minimize the objective function.</span>
+<span class="w">        </span><span class="sd">"""Minimize the objective function.</span>
 
-<span class="sd">        This interface is based on `SciPy&#39;s optimize module &lt;https://docs.scipy.org/doc</span>
+<span class="sd">        This interface is based on `SciPy's optimize module &lt;https://docs.scipy.org/doc</span>
 <span class="sd">        /scipy/reference/generated/scipy.optimize.minimize.html&gt;`__.</span>
 
 <span class="sd">        Args:</span>
@@ -610,14 +616,14 @@
 <span class="sd">                by all optimizers.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">             The minimization result object (either SciPy&#39;s or Qiskit&#39;s).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">             The minimization result object (either SciPy's or Qiskit's).</span>
+<span class="sd">        """</span>
         <span class="o">...</span>  <span class="c1"># pylint: disable=unnecessary-ellipsis</span></div>
 
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">OptimizerSupportLevel</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Support Level enum for features such as bounds, gradient and initial point&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Support Level enum for features such as bounds, gradient and initial point"""</span>
 
     <span class="c1"># pylint: disable=invalid-name</span>
     <span class="n">not_supported</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Does not support the corresponding parameter in optimize()</span>
@@ -629,18 +635,18 @@
 <div class="viewcode-block" id="Optimizer">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Optimizer</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for optimization algorithm.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for optimization algorithm."""</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize the optimization algorithm, setting the support</span>
 <span class="sd">        level for _gradient_support_level, _bound_support_level,</span>
 <span class="sd">        _initial_point_support_level, and empty options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_support_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_support_level</span><span class="p">()[</span><span class="s2">&quot;gradient&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_support_level</span><span class="p">()[</span><span class="s2">&quot;bounds&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_support_level</span><span class="p">()[</span><span class="s2">&quot;initial_point&quot;</span><span class="p">]</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_support_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_support_level</span><span class="p">()[</span><span class="s2">"gradient"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_support_level</span><span class="p">()[</span><span class="s2">"bounds"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_support_level</span><span class="p">()[</span><span class="s2">"initial_point"</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_evals_grouped</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -648,14 +654,14 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer.get_support_level">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return support level dictionary&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return support level dictionary"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
 <div class="viewcode-block" id="Optimizer.set_options">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer.set_options">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sets or updates values in the options dictionary.</span>
 
 <span class="sd">        The options dictionary may be used internally by a given optimizer to</span>
@@ -665,10 +671,10 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            kwargs (dict): options, given as name=value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;options: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"options: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">)</span></div>
 
 
     <span class="c1"># pylint: disable=invalid-name</span>
@@ -676,7 +682,7 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer.gradient_num_diff">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">gradient_num_diff</span><span class="p">(</span><span class="n">x_center</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">max_evals_grouped</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        We compute the gradient with the numeric differentiation in the parallel way,</span>
 <span class="sd">        around the point x_center.</span>
 
@@ -688,7 +694,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            grad: the gradient computed</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">max_evals_grouped</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># no batching by default</span>
             <span class="n">max_evals_grouped</span> <span class="o">=</span> <span class="mi">1</span>
 
@@ -733,7 +739,7 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer.wrap_function">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">wrap_function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Wrap the function to implicitly inject the args at the call of the function.</span>
 
 <span class="sd">        Args:</span>
@@ -741,7 +747,7 @@
 <span class="sd">            args (tuple): the args to be injected</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            function_wrapper: wrapper</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">function_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">wrapper_args</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">wrapper_args</span> <span class="o">+</span> <span class="n">args</span><span class="p">))</span>
@@ -751,21 +757,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">setting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return setting&quot;&quot;&quot;</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Optimizer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return setting"""</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Optimizer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;_&quot;</span><span class="p">:</span>
-                <span class="n">params</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;-- </span><span class="si">{</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">ret</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"_"</span><span class="p">:</span>
+                <span class="n">params</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"-- </span><span class="si">{</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">return</span> <span class="n">ret</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The optimizer settings in a dictionary format.</span>
+<span class="w">        </span><span class="sd">"""The optimizer settings in a dictionary format.</span>
 
 <span class="sd">        The settings can for instance be used for JSON-serialization (if all settings are</span>
-<span class="sd">        serializable, which e.g. doesn&#39;t hold per default for callables), such that the</span>
+<span class="sd">        serializable, which e.g. doesn't hold per default for callables), such that the</span>
 <span class="sd">        optimizer object can be reconstructed as</span>
 
 <span class="sd">        .. code-block::</span>
@@ -774,8 +780,8 @@
 <span class="sd">            # JSON serialize and send to another server</span>
 <span class="sd">            optimizer = OptimizerClass(**settings)</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The settings method is not implemented per default.&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"The settings method is not implemented per default."</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Optimizer.minimize">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer.minimize">[docs]</a>
@@ -787,7 +793,7 @@
         <span class="n">jac</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">POINT</span><span class="p">],</span> <span class="n">POINT</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">bounds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Minimize the scalar function.</span>
+<span class="w">        </span><span class="sd">"""Minimize the scalar function.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            fun: The scalar function to minimize.</span>
@@ -798,82 +804,82 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The result of the optimization, containing e.g. the result as attribute ``x``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">gradient_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns gradient support level&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns gradient support level"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_support_level</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_gradient_ignored</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is gradient ignored&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is gradient ignored"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_support_level</span> <span class="o">==</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_gradient_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is gradient supported&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is gradient supported"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_support_level</span> <span class="o">!=</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">not_supported</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_gradient_required</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is gradient required&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is gradient required"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gradient_support_level</span> <span class="o">==</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">bounds_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns bounds support level&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns bounds support level"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_level</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_bounds_ignored</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is bounds ignored&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is bounds ignored"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_level</span> <span class="o">==</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_bounds_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is bounds supported&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is bounds supported"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_level</span> <span class="o">!=</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">not_supported</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_bounds_required</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is bounds required&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is bounds required"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bounds_support_level</span> <span class="o">==</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">initial_point_support_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns initial point support level&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns initial point support level"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_initial_point_ignored</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is initial point ignored&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is initial point ignored"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span> <span class="o">==</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">ignored</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_initial_point_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is initial point supported&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is initial point supported"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span> <span class="o">!=</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">not_supported</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_initial_point_required</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns is initial point required&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns is initial point required"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point_support_level</span> <span class="o">==</span> <span class="n">OptimizerSupportLevel</span><span class="o">.</span><span class="n">required</span>
 
 <div class="viewcode-block" id="Optimizer.print_options">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer.print_options">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">print_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print algorithm-specific options.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Print algorithm-specific options."""</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">[</span><span class="n">name</span><span class="p">]))</span></div>
 
 
 <div class="viewcode-block" id="Optimizer.set_max_evals_grouped">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.optimizers.Optimizer.html#qiskit_machine_learning.optimizers.Optimizer.set_max_evals_grouped">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_max_evals_grouped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set max evals grouped&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set max evals grouped"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_evals_grouped</span> <span class="o">=</span> <span class="n">limit</span></div>
 </div>
 
@@ -901,7 +907,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -923,7 +929,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

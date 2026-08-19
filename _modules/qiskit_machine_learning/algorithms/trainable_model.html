@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.01.29 -->
-        <title>qiskit_machine_learning.algorithms.trainable_model - Qiskit Machine Learning 0.9.0</title>
+        <title>qiskit_machine_learning.algorithms.trainable_model - Qiskit Machine Learning 0.9.1</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=3ee1c6c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
@@ -202,7 +202,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.0</div></a>
+      <a href="../../../index.html"><div class="brand">Qiskit Machine Learning 0.9.1</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -229,7 +229,7 @@
     </div>
   </a>
   
-  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.0</span>
+  <span class="sidebar-brand-text">Qiskit Machine Learning 0.9.1</span>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -291,6 +291,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.datasets.html">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.datasets</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Datasets (qiskit_machine_learning.datasets)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.ad_hoc_data.html">ad_hoc_data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.entanglement_concentration_data.html">entanglement_concentration_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.datasets.phase_of_matter_data.html">phase_of_matter_data</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/qiskit_machine_learning.gradients.html">Gradients (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_machine_learning.gradients</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Gradients (qiskit_machine_learning.gradients)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -386,6 +387,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.L2Loss.html">L2Loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.CrossEntropyLoss.html">CrossEntropyLoss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVCLoss.html">SVCLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.SVRLoss.html">SVRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MSRLoss.html">MSRLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.MARLoss.html">MARLoss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../stubs/qiskit_machine_learning.utils.loss_functions.HuberLoss.html">HuberLoss</a></li>
 </ul>
 </li>
 </ul>
@@ -460,7 +465,8 @@
           <h1>Source code for qiskit_machine_learning.algorithms.trainable_model</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This code is part of a Qiskit project.</span>
 <span class="c1">#</span>
-<span class="c1"># (C) Copyright IBM 2021, 2025.</span>
+<span class="c1"># (C) Copyright IBM 2021, 2026.</span>
+<span class="c1"># (C) Copyright UKRI-STFC (Hartree Centre) 2024, 2026.</span>
 <span class="c1">#</span>
 <span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
 <span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
@@ -469,7 +475,8 @@
 <span class="c1"># Any modifications or derivative works of this code must retain this</span>
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
-<span class="sd">&quot;&quot;&quot;A base ML model with a Scikit-Learn like interface.&quot;&quot;&quot;</span>
+<span class="sd">"""A base ML model with a Scikit-Learn like interface."""</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
@@ -494,19 +501,19 @@
 <div class="viewcode-block" id="TrainableModel">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.TrainableModel.html#qiskit_machine_learning.algorithms.TrainableModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TrainableModel</span><span class="p">(</span><span class="n">SerializableModelMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for ML model that defines a scikit-learn-like interface for `Estimator` instances.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for ML model that defines a scikit-learn-like interface for `Estimator` instances."""</span>
 
     <span class="c1"># pylint: disable=too-many-positional-arguments</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">neural_network</span><span class="p">:</span> <span class="n">NeuralNetwork</span><span class="p">,</span>
-        <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Loss</span> <span class="o">=</span> <span class="s2">&quot;squared_error&quot;</span><span class="p">,</span>
+        <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Loss</span> <span class="o">=</span> <span class="s2">"squared_error"</span><span class="p">,</span>
         <span class="n">optimizer</span><span class="p">:</span> <span class="n">Optimizer</span> <span class="o">|</span> <span class="n">Minimizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">warm_start</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">initial_point</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            neural_network: An instance of a quantum neural network. If the neural network has a</span>
 <span class="sd">                one-dimensional output, i.e., `neural_network.output_shape=(1,)`, then it is</span>
@@ -519,8 +526,8 @@
 <span class="sd">                entry of the probability vector is considered as an individual sample and the loss</span>
 <span class="sd">                function is applied to the index and weighted with the corresponding probability.</span>
 <span class="sd">            loss: A target loss function to be used in training. Default is `squared_error`,</span>
-<span class="sd">                i.e. L2 loss. Can be given either as a string for &#39;absolute_error&#39; (i.e. L1 Loss),</span>
-<span class="sd">                &#39;squared_error&#39;, &#39;cross_entropy&#39;, or as a loss function</span>
+<span class="sd">                i.e. L2 loss. Can be given either as a string for 'absolute_error' (i.e. L1 Loss),</span>
+<span class="sd">                'squared_error', 'cross_entropy', or as a loss function</span>
 <span class="sd">                implementing the Loss interface.</span>
 <span class="sd">            optimizer: An instance of an optimizer or a callable to be used in training.</span>
 <span class="sd">                Refer to :class:`~qiskit_machine_learning.optimizers.Minimizer` for more information on</span>
@@ -528,33 +535,33 @@
 <span class="sd">                :class:`~qiskit_machine_learning.optimizers.SLSQP`.</span>
 <span class="sd">            warm_start: Use weights from previous fit to start next fit.</span>
 <span class="sd">            initial_point: Initial point for the optimizer to start from.</span>
-<span class="sd">            callback: A reference to a user&#39;s callback function that has two parameters and</span>
+<span class="sd">            callback: A reference to a user's callback function that has two parameters and</span>
 <span class="sd">                returns ``None``. The callback can access intermediate data during training.</span>
 <span class="sd">                On each iteration an optimizer invokes the callback and passes current weights</span>
 <span class="sd">                as an array and a computed value as a float of the objective function being</span>
 <span class="sd">                optimized. This allows to track how well optimization / training process is going on.</span>
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: unknown loss, invalid neural network</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span> <span class="o">=</span> <span class="n">neural_network</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neural_network</span><span class="o">.</span><span class="n">output_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="s2">&quot;Invalid neural network output shape!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="s2">"Invalid neural network output shape!"</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">Loss</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span> <span class="o">=</span> <span class="n">loss</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;absolute_error&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">loss</span> <span class="o">==</span> <span class="s2">"absolute_error"</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span> <span class="o">=</span> <span class="n">L1Loss</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;squared_error&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">loss</span> <span class="o">==</span> <span class="s2">"squared_error"</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span> <span class="o">=</span> <span class="n">L2Loss</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">loss</span> <span class="o">==</span> <span class="s2">&quot;cross_entropy&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">loss</span> <span class="o">==</span> <span class="s2">"cross_entropy"</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span> <span class="o">=</span> <span class="n">CrossEntropyLoss</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown loss </span><span class="si">{</span><span class="n">loss</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown loss </span><span class="si">{</span><span class="n">loss</span><span class="si">}</span><span class="s2">!"</span><span class="p">)</span>
 
         <span class="c1"># call the setter that has some additional checks</span>
         <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">SciPyOptimizer</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">&quot;callback&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="s2">"callback"</span><span class="p">):</span>
                 <span class="n">optimizer</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
 
@@ -565,89 +572,89 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">neural_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the underlying neural network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the underlying neural network."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neural_network</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the underlying neural network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the underlying neural network."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optimizer</span> <span class="o">|</span> <span class="n">Minimizer</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an optimizer to be used in training.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns an optimizer to be used in training."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span>
 
     <span class="nd">@optimizer</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span> <span class="n">Optimizer</span> <span class="o">|</span> <span class="n">Minimizer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the optimizer to use in training process.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets the optimizer to use in training process."""</span>
         <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">optimizer</span> <span class="o">=</span> <span class="n">SLSQP</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">warm_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the warm start flag.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the warm start flag."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warm_start</span>
 
     <span class="nd">@warm_start</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">warm_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">warm_start</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the warm start flag.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets the warm start flag."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_warm_start</span> <span class="o">=</span> <span class="n">warm_start</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">initial_point</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns current initial point&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns current initial point"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point</span>
 
     <span class="nd">@initial_point</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">initial_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_point</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the initial point&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets the initial point"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point</span> <span class="o">=</span> <span class="n">initial_point</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns trained weights as a numpy array. The weights can be also queried by calling</span>
+<span class="w">        </span><span class="sd">"""Returns trained weights as a numpy array. The weights can be also queried by calling</span>
 <span class="sd">        `model.fit_result.x`, but in this case their representation depends on the optimizer used.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: If the model has not been fit.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fit_result</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a resulting object from the optimization procedure. Please refer to the</span>
+<span class="w">        </span><span class="sd">"""Returns a resulting object from the optimization procedure. Please refer to the</span>
 <span class="sd">        documentation of the `OptimizerResult</span>
 <span class="sd">        &lt;https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.optimizers.OptimizerResult.html&gt;`_</span>
 <span class="sd">        class for more details.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: If the model has not been fit.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_result</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the callback.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the callback."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span>
 
     <span class="nd">@callback</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the callback.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the callback."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="o">=</span> <span class="n">callback</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="s2">&quot;The model has not been fitted yet&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">QiskitMachineLearningError</span><span class="p">(</span><span class="s2">"The model has not been fitted yet"</span><span class="p">)</span>
 
     <span class="c1"># pylint: disable=invalid-name</span>
 <div class="viewcode-block" id="TrainableModel.fit">
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.TrainableModel.html#qiskit_machine_learning.algorithms.TrainableModel.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainableModel</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fit the model to data matrix X and target(s) y.</span>
 
 <span class="sd">        Args:</span>
@@ -659,7 +666,7 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitMachineLearningError: In case of invalid data (e.g. incompatible with network)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warm_start</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_fit_result</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -676,7 +683,7 @@
 <a class="viewcode-back" href="../../../stubs/qiskit_machine_learning.algorithms.TrainableModel.html#qiskit_machine_learning.algorithms.TrainableModel.predict">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Predict using the network specified to the model.</span>
 
 <span class="sd">        Args:</span>
@@ -685,7 +692,7 @@
 <span class="sd">            QiskitMachineLearningError: Model needs to be fit to some training data first</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            The predicted classes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -694,7 +701,7 @@
     <span class="nd">@abstractmethod</span>
     <span class="c1"># pylint: disable=invalid-name</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sample_weight</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a score of this model given samples and true values for the samples. In case of</span>
 <span class="sd">        classification this should be mean accuracy, in case of regression the coefficient of</span>
 <span class="sd">        determination :math:`R^2` of the prediction.</span>
@@ -706,18 +713,18 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            a float score of the model.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_choose_initial_point</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Choose an initial point for the optimizer. If warm start is set and the model is</span>
+<span class="w">        </span><span class="sd">"""Choose an initial point for the optimizer. If warm start is set and the model is</span>
 <span class="sd">        already trained then use a fit result as an initial point. If initial point is passed,</span>
 <span class="sd">        then use this value, otherwise pick a random location.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An array as an initial point</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warm_start</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_result</span><span class="o">.</span><span class="n">x</span>  <span class="c1"># type: ignore[assignment]</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_point</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -728,7 +735,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">function</span><span class="p">:</span> <span class="n">ObjectiveFunction</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Wraps the given `ObjectiveFunction` to add callback calls, if `callback` is not None, along</span>
 <span class="sd">        with evaluating the objective value. Returned objective function is passed to</span>
 <span class="sd">        `Optimizer.minimize()`.</span>
@@ -737,7 +744,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Objective function to evaluate objective value and optionally invoke callback calls.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">function</span><span class="o">.</span><span class="n">objective</span>
 
@@ -750,7 +757,7 @@
         <span class="k">return</span> <span class="n">objective</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_minimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">ObjectiveFunction</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizerResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Minimizes the objective function.</span>
 
 <span class="sd">        Args:</span>
@@ -758,7 +765,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An optimization result.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">objective</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_objective</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
 
         <span class="n">initial_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_choose_initial_point</span><span class="p">()</span>
@@ -798,7 +805,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2018, 2025, Qiskit Machine Learning Development Team
+                Copyright &#169; 2018, 2026, Qiskit Machine Learning Development Team
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -820,7 +827,7 @@
   </div>
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-    <script src="../../../_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/thebelab-helper.js"></script>

@@ -1,0 +1,27 @@
+﻿
+
+MARLoss
+====================================================
+
+.. currentmodule:: qiskit_machine_learning.utils.loss_functions
+
+.. autoclass:: MARLoss
+   :show-inheritance:
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   
+
+   
+   
+
+   .. rubric:: Methods
+
+   
+   .. automethod:: MARLoss.evaluate
+
+   
+   
