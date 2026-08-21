@@ -105,7 +105,9 @@ class L1Loss(Loss):
         if len(predict.shape) <= 1:
             return np.abs(predict - target)
         else:
-            return np.linalg.norm(predict - target, ord=1, axis=tuple(range(1, len(predict.shape))))
+            diff = predict - target
+            diff = diff.reshape(diff.shape[0], -1)
+            return np.linalg.norm(diff, ord=1, axis=1)
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
         self._validate_shapes(predict, target)
@@ -129,7 +131,9 @@ class L2Loss(Loss):
         if len(predict.shape) <= 1:
             return (predict - target) ** 2
         else:
-            return np.linalg.norm(predict - target, axis=tuple(range(1, len(predict.shape)))) ** 2
+            diff = predict - target
+            diff = diff.reshape(diff.shape[0], -1)
+            return np.linalg.norm(diff, axis=1) ** 2
 
     def gradient(self, predict: np.ndarray, target: np.ndarray) -> np.ndarray:
         self._validate_shapes(predict, target)
