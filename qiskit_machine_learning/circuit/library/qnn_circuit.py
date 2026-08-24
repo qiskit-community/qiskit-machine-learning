@@ -21,7 +21,6 @@ from ...utils import derive_num_qubits_feature_map_ansatz
 
 
 def qnn_circuit(
-    num_qubits: int | None = None,
     feature_map: QuantumCircuit | None = None,
     ansatz: QuantumCircuit | None = None,
 ):
@@ -31,12 +30,11 @@ def qnn_circuit(
     use for inputs and weights as needed for a neural network, such as
     :class:`~qiskit-machine-learning.neural_networks.SamplerQNN`.
 
-    If only the number of qubits is provided the :meth:`~qiskit.circuit.library.real_amplitudes`
-    ansatz and the :meth:`~qiskit.circuit.library.zz_feature_map` feature map are used. If the
-    number of qubits is 1 the :meth:`~qiskit.circuit.library.z_feature_map` is used. If only a
-    feature map is provided, the :meth:`~qiskit.circuit.library.real_amplitudes` ansatz with the
-    corresponding number of qubits is used. If only an ansatz is provided the
+    If only a feature map is provided, the :meth:`~qiskit.circuit.library.real_amplitudes`
+    ansatz with the corresponding number of qubits is used. If only an ansatz is provided the
     :meth:`~qiskit.circuit.library.zz_feature_map` with the corresponding number of qubits is used.
+    For a single qubit, :meth:`~qiskit.circuit.library.z_feature_map` is used as the default feature
+    map.
 
     At least one parameter has to be provided. If a feature map and an ansatz is provided, the
     number of qubits must be the same.
@@ -45,8 +43,9 @@ def qnn_circuit(
 
     .. code-block:: python
 
+        from qiskit.circuit.library import zz_feature_map
         from qiskit_machine_learning.circuit.library import qnn_circuit
-        qnn_qc, fm_params, anz_params = qnn_circuit(2)
+        qnn_qc, fm_params, anz_params = qnn_circuit(feature_map=zz_feature_map(2))
         qnn_qc.draw(fold=60)
         #      ┌───┐┌─────────────┐     »
         # q_0: ┤ H ├┤ P(2.0*x[0]) ├──■──»
@@ -81,29 +80,13 @@ def qnn_circuit(
         #                ParameterVectorElement(θ[4]), ParameterVectorElement(θ[5]),
         #                ParameterVectorElement(θ[6]), ParameterVectorElement(θ[7])])
 
-    Although all arguments to qnn_circuit default to None at least one must be provided,
-    to determine the number of qubits from.
-
-    If more than one is passed:
-
-    1) If num_qubits is provided the feature map and/or ansatz circuits supplied must be the
-    same number of qubits.
-
-    2) If num_qubits is not provided the feature_map and ansatz must be set to the same number
-    of qubits.
-
     Args:
-        num_qubits:  Number of qubits, a positive integer. Optional if feature_map or ansatz is
-                     provided, otherwise required. If not provided num_qubits defaults from the
-                     sizes of feature_map and/or ansatz.
-        feature_map: A feature map. Optional if num_qubits or ansatz is provided, otherwise
-                     required. If not provided defaults to
-                     :meth:`~qiskit.circuit.library.zz_feature_map` or
-                     :meth:`~qiskit.circuit.library.z_feature_map` if num_qubits is determined
-                     to be 1.
-        ansatz:      An ansatz. Optional if num_qubits or feature_map is provided, otherwise
-                     required. If not provided defaults to
-                     :meth:`~qiskit.circuit.library.real_amplitudes`.
+        feature_map: A feature map. At least one of ``feature_map`` or ``ansatz`` must be
+            provided. If not provided defaults to
+            :meth:`~qiskit.circuit.library.zz_feature_map` or
+            :meth:`~qiskit.circuit.library.z_feature_map` for a single qubit.
+        ansatz: An ansatz. At least one of ``feature_map`` or ``ansatz`` must be provided.
+            If not provided defaults to :meth:`~qiskit.circuit.library.real_amplitudes`.
 
     Returns:
         The composed feature map and ansatz circuit, the feature map parameters and the
@@ -111,12 +94,10 @@ def qnn_circuit(
 
     Raises:
         QiskitMachineLearningError: If a valid number of qubits cannot be derived from the \
-        provided input arguments.
+        provided input arguments, or if ``feature_map`` and ``ansatz`` have different numbers of \
+        qubits.
     """
-    # Check if circuit is constructed with valid configuration and set properties accordingly.
-    num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(
-        num_qubits, feature_map, ansatz
-    )
+    num_qubits, feature_map, ansatz = derive_num_qubits_feature_map_ansatz(feature_map, ansatz)
     qc = QuantumCircuit(num_qubits)
     qc.compose(feature_map, inplace=True)
     qc.compose(ansatz, inplace=True)

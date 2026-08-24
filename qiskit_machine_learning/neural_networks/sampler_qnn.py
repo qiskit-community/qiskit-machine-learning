@@ -102,7 +102,7 @@ class SamplerQNN(NeuralNetwork):
 
         # Example 1: Using the qnn_circuit
         # qnn_circuit automatically combines a feature map and an ansatz into a single circuit
-        qnn_qc, fm_params, anz_params = qnn_circuit(num_qubits)
+        qnn_qc, fm_params, anz_params = qnn_circuit(feature_map=zz_feature_map(num_qubits))
 
         qnn = SamplerQNN(
             circuit=qnn_qc,
