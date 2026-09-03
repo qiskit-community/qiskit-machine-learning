@@ -34,4 +34,4 @@ class AlgorithmJob(PrimitiveJob):
         Since the library has been migrated to Qiskit v2.1, it is no longer necessary to
         keep the :meth:``JobV1.submit()`` for the exception handling.
         """
-        super()._submit()
+        super().submit()
