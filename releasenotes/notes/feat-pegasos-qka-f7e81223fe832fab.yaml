@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Added the Pegasos quantum kernel alignment classifier, which extends the 
+    Pegasos quantum support vector classifier with quantum kernel alignment. 
+    PegasosQKA optimizes both the parameters of a trainable quantum kernel and 
+    the weights of the SVC during the same optimization loop.
+
+    Trainable quantum kernels now support evaluating trainable kernels with
+    independent left and right parameter values.

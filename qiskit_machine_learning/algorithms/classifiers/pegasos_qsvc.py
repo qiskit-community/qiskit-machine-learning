@@ -189,18 +189,29 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         for step in range(1, self._num_steps + 1):
             # for every step, a random index (determining a random datum) is fixed
             i = int(algorithm_globals.random.integers(0, len(y)))
-
-            value = self._compute_weighted_kernel_sum(i, X, training=True)
-
-            if (self._label_map[y[i]] * self.C / step) * value < 1:
-                # only way for a component of alpha to become non zero
-                self._alphas[i] = self._alphas.get(i, 0) + 1
+            self._update_step(i, X, y, step)
 
         self.fit_status_ = PegasosQSVC.FITTED
 
         logger.debug("Fit completed after %s", str(datetime.now() - t_0)[:-7])
 
         return self
+
+    def _update_step(self, index: int, X: np.ndarray, y: np.ndarray, step: int) -> None:
+        """
+        Implements an update step for the fit method.
+
+        Args:
+            index: Index of the selected training sample.
+            X: Training features.
+            y: Training labels.
+            step: Current training step.
+        """
+        value = self._compute_weighted_kernel_sum(index, X, training=True)
+
+        if (self._label_map[y[index]] * self.C / step) * value < 1:
+            # only way for a component of alpha to become non zero
+            self._alphas[index] = self._alphas.get(index, 0) + 1
 
     # pylint: disable=invalid-name
     def predict(self, X: np.ndarray) -> np.ndarray:
@@ -297,6 +308,28 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
 
         return values
 
+    def _evaluate_kernel(
+        self, x: np.ndarray, x_supp: np.ndarray, support_indices: list[int]
+    ) -> np.ndarray:
+        """
+        Evaluate the kernel function for a single data point and the support vectors.
+
+        Args:
+            x: Data point to evaluate.
+            x_supp: Support vectors.
+            support_indices: Training data indices corresponding to the support vectors x_supp.
+
+        Returns:
+            Kernel values between the data point and support vectors.
+        """
+
+        if not self._precomputed:
+            kernel = self._quantum_kernel.evaluate(x, x_supp) + self._kernel_offset
+        else:
+            kernel = x[support_indices]
+
+        return kernel
+
     def _compute_weighted_kernel_sum(self, index: int, X: np.ndarray, training: bool) -> float:
         """Helper function to compute the weighted sum over support vectors used for both training
         and prediction with the Pegasos algorithm.
@@ -319,11 +352,8 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
         # for prediction
         else:
             x_supp = self._x_train[support_indices]
-        if not self._precomputed:
-            # evaluate kernel function only for the fixed datum and the support vectors
-            kernel = self._quantum_kernel.evaluate(X[index], x_supp) + self._kernel_offset
-        else:
-            kernel = X[index, support_indices]
+
+        kernel = self._evaluate_kernel(X[index], x_supp, support_indices)
 
         # map the training labels of the support vectors to {-1,1}
         y = np.array(list(map(self._label_map.get, self._y_train[support_indices])))

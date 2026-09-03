@@ -193,6 +193,97 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
             with self.assertRaises(QiskitMachineLearningError):
                 _ = trainable_kernel_type(feature_map=None)
 
+    @idata(
+        itertools.product(
+            [TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel],
+            [
+                ([0.0, 0.0, 0.0], [[1.0, 0.03351197], [0.03351197, 1.0]]),
+                ([0.1, 0.531, 4.12], [[1.0, 0.082392], [0.082392, 1.0]]),
+            ],
+        )
+    )
+    @unpack
+    def test_evaluate_symmetric_with_parameters(self, trainable_kernel_type, params_solution):
+        """Test evaluation with explicitly provided training parameters."""
+        kernel = trainable_kernel_type(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+
+        kernel_matrix = kernel.evaluate(
+            self.sample_train,
+            x_parameters=params_solution[0],
+            y_parameters=params_solution[0],
+        )
+
+        np.testing.assert_allclose(kernel_matrix, params_solution[1], rtol=1e-7, atol=1e-7)
+
+    @idata(
+        itertools.product(
+            [TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel],
+            [
+                ([0.0, 0.0, 0.0], [[0.00569059], [0.07038205]]),
+                ([0.1, 0.531, 4.12], [[0.10568674], [0.122404]]),
+            ],
+        )
+    )
+    @unpack
+    def test_evaluate_asymmetric_with_parameters(self, trainable_kernel_type, params_solution):
+        """Test asymmetric evaluation with explicitly provided training parameters."""
+        kernel = trainable_kernel_type(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+
+        kernel_matrix = kernel.evaluate(
+            self.sample_train,
+            self.sample_test,
+            x_parameters=params_solution[0],
+            y_parameters=params_solution[0],
+        )
+
+        np.testing.assert_allclose(
+            kernel_matrix,
+            params_solution[1],
+            rtol=1e-7,
+            atol=1e-7,
+        )
+
+    @idata(
+        itertools.product(
+            [TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel],
+            [
+                ([0.0, 0.0, 0.0], [0.1, 0.531, 4.12]),
+                ([0.2, 0.4, 0.6], [0.7, 0.9, 1.1]),
+            ],
+        )
+    )
+    @unpack
+    def test_evaluate_different_parameters(self, trainable_kernel_type, parameters):
+        """Test kernel evaluation with different left and right training parameters."""
+        kernel = trainable_kernel_type(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+
+        x_parameters, y_parameters = parameters
+
+        kernel_xy = kernel.evaluate(
+            self.sample_train,
+            self.sample_train,
+            x_parameters=x_parameters,
+            y_parameters=y_parameters,
+        )
+
+        kernel_yx = kernel.evaluate(
+            self.sample_train,
+            self.sample_train,
+            x_parameters=y_parameters,
+            y_parameters=x_parameters,
+        )
+
+        np.testing.assert_allclose(kernel_xy, kernel_yx.T, rtol=1e-7, atol=1e-7)
+
 
 if __name__ == "__main__":
     unittest.main()

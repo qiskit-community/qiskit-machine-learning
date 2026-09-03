@@ -55,12 +55,8 @@ class TrainableKernel(BaseKernel, ABC):
         """
         Fix the training parameters to numerical values.
         """
-        if not isinstance(parameter_values, dict):
-            if len(parameter_values) != self._num_training_parameters:
-                raise ValueError(
-                    f"The number of given parameters is wrong: {len(parameter_values)}, "
-                    f"expected {self._num_training_parameters}."
-                )
+        if not isinstance(parameter_values, Mapping):
+            self._check_trainable_parameters(parameter_values)
             self._parameter_dict.update(
                 {
                     parameter: parameter_values[i]
@@ -98,24 +94,53 @@ class TrainableKernel(BaseKernel, ABC):
         """
         return len(self._training_parameters)
 
-    def _parameter_array(self, x_vec: np.ndarray) -> np.ndarray:
+    def _parameter_array(
+        self, x_vec: np.ndarray, x_parameters: np.ndarray | None = None
+    ) -> np.ndarray:
         """
         Combines the feature values and the trainable parameters into one array.
+
+        Args:
+            x_vec: Input feature values.
+            x_parameters: Training parameter values.
+
+        Returns:
+            The combined feature and training parameter values.
         """
-        self._check_trainable_parameters()
+
+        if x_parameters is None:
+            self._check_trainable_parameters()
+            parameter_dict = self._parameter_dict.copy()
+        else:
+            self._check_trainable_parameters(x_parameters)
+            parameter_dict = self._parameter_dict.copy()
+
+            for parameter, value in zip(self._training_parameters, x_parameters):
+                parameter_dict[parameter] = value
+
         full_array = np.zeros((x_vec.shape[0], self._num_features + self._num_training_parameters))
         for i, x in enumerate(x_vec):
-            self._parameter_dict.update(
+            parameter_dict.update(
                 {feature_param: x[j] for j, feature_param in enumerate(self._feature_parameters)}
             )
-            full_array[i, :] = list(self._parameter_dict.values())
+            full_array[i, :] = list(parameter_dict.values())
+
         return full_array
 
-    def _check_trainable_parameters(self) -> None:
-        for param in self._training_parameters:
-            if self._parameter_dict[param] is None:
-                raise QiskitMachineLearningError(
-                    f"Trainable parameter {param} has not been bound. Make sure to bind all"
-                    "trainable parameters to numerical values using `.assign_training_parameters()`"
-                    "before calling `.evaluate()`."
+    def _check_trainable_parameters(
+        self, parameter_values: Sequence[ParameterValueType] | np.ndarray | None = None
+    ) -> None:
+        if parameter_values is None:
+            for param in self._training_parameters:
+                if self._parameter_dict[param] is None:
+                    raise QiskitMachineLearningError(
+                        f"Trainable parameter {param} has not been bound. Make sure to bind all"
+                        "trainable parameters to numerical values using `.assign_training_parameters()`"
+                        "before calling `.evaluate()`."
+                    )
+        else:
+            if len(parameter_values) != self._num_training_parameters:
+                raise ValueError(
+                    f"The number of given parameters is wrong: {len(parameter_values)}, "
+                    f"expected {self._num_training_parameters}."
                 )

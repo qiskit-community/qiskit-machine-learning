@@ -37,11 +37,12 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
     map, which can be used to fine-tune the kernel.
 
     This kernel has trainable parameters :math:`\theta` that can be bound using training algorithms.
+    Different parameter values may be used for the left and right feature maps.
     The kernel entries are given as
 
     .. math::
 
-        K_{\theta}(x,y) = |\langle \phi_{\theta}(x) | \phi_{\theta}(y) \rangle|^2
+        K_{\theta_x,\theta_y}(x,y) = |\langle \phi_{\theta_x}(x) | \phi_{\theta_y}(y) \rangle|^2
     """
 
     def __init__(
@@ -102,16 +103,74 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
         self._parameter_dict = {parameter: None for parameter in self.feature_map.parameters}
 
     def _get_parameterization(
-        self, x_vec: np.ndarray, y_vec: np.ndarray
+        self,
+        x_vec: np.ndarray,
+        y_vec: np.ndarray,
+        x_parameters: np.ndarray | None = None,
+        y_parameters: np.ndarray | None = None,
     ) -> tuple[np.ndarray, np.ndarray, KernelIndices]:
-        new_x_vec = self._parameter_array(x_vec)
-        new_y_vec = self._parameter_array(y_vec)
+        new_x_vec = self._parameter_array(x_vec, x_parameters)
+        new_y_vec = self._parameter_array(y_vec, y_parameters)
 
         return super()._get_parameterization(new_x_vec, new_y_vec)
 
     def _get_symmetric_parameterization(
-        self, x_vec: np.ndarray
+        self, x_vec: np.ndarray, x_parameters: np.ndarray | None = None
     ) -> tuple[np.ndarray, np.ndarray, KernelIndices]:
-        new_x_vec = self._parameter_array(x_vec)
+        new_x_vec = self._parameter_array(x_vec, x_parameters)
 
         return super()._get_symmetric_parameterization(new_x_vec)
+
+    def evaluate(
+        self,
+        x_vec: np.ndarray,
+        y_vec: np.ndarray | None = None,
+        x_parameters: np.ndarray | None = None,
+        y_parameters: np.ndarray | None = None,
+    ) -> np.ndarray:
+        """
+        Evaluate the kernel matrix.
+
+        Args:
+            x_vec: Input data for the left feature map.
+            y_vec: Input data for the right feature map.
+            x_parameters: Training parameter values for the left feature map.
+            y_parameters: Training parameter values for the right feature map.
+
+        Returns:
+            The evaluated kernel matrix.
+        """
+        x_vec, y_vec = self._validate_input(x_vec, y_vec)
+
+        # determine if calculating self inner product
+        if y_vec is None:
+            y_vec = x_vec
+
+        x_parameter_values = self.parameter_values if x_parameters is None else x_parameters
+        y_parameter_values = self.parameter_values if y_parameters is None else y_parameters
+
+        is_symmetric = np.array_equal(x_vec, y_vec) and np.array_equal(
+            x_parameter_values, y_parameter_values
+        )
+
+        kernel_shape = (x_vec.shape[0], y_vec.shape[0])
+
+        if is_symmetric:
+            left_parameters, right_parameters, indices = self._get_symmetric_parameterization(
+                x_vec, x_parameters
+            )
+            kernel_matrix = self._get_symmetric_kernel_matrix(
+                kernel_shape, left_parameters, right_parameters, indices
+            )
+        else:
+            left_parameters, right_parameters, indices = self._get_parameterization(
+                x_vec, y_vec, x_parameters, y_parameters
+            )
+            kernel_matrix = self._get_kernel_matrix(
+                kernel_shape, left_parameters, right_parameters, indices
+            )
+
+        if is_symmetric and self._enforce_psd:
+            kernel_matrix = self._make_psd(kernel_matrix)
+
+        return kernel_matrix

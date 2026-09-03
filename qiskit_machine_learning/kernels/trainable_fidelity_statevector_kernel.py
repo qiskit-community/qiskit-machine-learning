@@ -37,11 +37,12 @@ class TrainableFidelityStatevectorKernel(TrainableKernel, FidelityStatevectorKer
     map, which can be used to fine-tune the kernel.
 
     This kernel has trainable parameters :math:`\theta` that can be bound using training algorithms.
+    Different parameter values may be used for the left and right feature maps.
     The kernel entries are given as
 
     .. math::
 
-        K_{\theta}(x,y) = |\langle \phi_{\theta}(x) | \phi_{\theta}(y) \rangle|^2
+        K_{\theta_x,\theta_y}(x,y) = |\langle \phi_{\theta_x}(x) | \phi_{\theta_y}(y) \rangle|^2
     """
 
     def __init__(
@@ -97,7 +98,57 @@ class TrainableFidelityStatevectorKernel(TrainableKernel, FidelityStatevectorKer
         ]
         self._parameter_dict = {parameter: None for parameter in self.feature_map.parameters}
 
-    def _evaluate(self, x_vec: np.ndarray, y_vec: np.ndarray, is_symmetric: bool):
-        new_x_vec = self._parameter_array(x_vec)
-        new_y_vec = self._parameter_array(y_vec)
+    def _evaluate(
+        self,
+        x_vec: np.ndarray,
+        y_vec: np.ndarray,
+        is_symmetric: bool,
+        x_parameters: np.ndarray | None = None,
+        y_parameters: np.ndarray | None = None,
+    ):
+        new_x_vec = self._parameter_array(x_vec, x_parameters)
+        new_y_vec = self._parameter_array(y_vec, y_parameters)
         return super()._evaluate(new_x_vec, new_y_vec, is_symmetric)
+
+    def evaluate(
+        self,
+        x_vec: np.ndarray,
+        y_vec: np.ndarray | None = None,
+        x_parameters: np.ndarray | None = None,
+        y_parameters: np.ndarray | None = None,
+    ) -> np.ndarray:
+        """
+        Evaluate the kernel matrix.
+
+        Args:
+            x_vec: Input data for the left feature map.
+            y_vec: Input data for the right feature map.
+            x_parameters: Training parameter values for the left feature map.
+            y_parameters: Training parameter values for the right feature map.
+
+        Returns:
+            The evaluated kernel matrix.
+        """
+        if self._auto_clear_cache:
+            self.clear_cache()
+
+        x_vec, y_vec = self._validate_input(x_vec, y_vec)
+
+        # determine if calculating self inner product
+        if y_vec is None:
+            y_vec = x_vec
+
+        x_parameter_values = self.parameter_values if x_parameters is None else x_parameters
+        y_parameter_values = self.parameter_values if y_parameters is None else y_parameters
+
+        is_symmetric = np.array_equal(x_vec, y_vec) and np.array_equal(
+            x_parameter_values, y_parameter_values
+        )
+
+        return self._evaluate(
+            x_vec,
+            y_vec,
+            is_symmetric,
+            x_parameters,
+            y_parameters,
+        )
