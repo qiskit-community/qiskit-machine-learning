@@ -118,6 +118,7 @@ datasets
 deepcopy
 denoising
 deriv
+deserialization
 deterministically
 diag
 dicts

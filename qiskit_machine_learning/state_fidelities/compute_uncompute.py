@@ -16,8 +16,10 @@ Compute-uncompute fidelity interface using primitives
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from copy import copy
+from collections.abc import Sequence
+
+from importlib.metadata import version
 
 from qiskit import QuantumCircuit
 from qiskit.primitives import BaseSamplerV2, PrimitiveResult, SamplerPubResult
@@ -193,6 +195,23 @@ class ComputeUncompute(BaseStateFidelity):
         try:
             result = job.result()
         except Exception as exc:
+            message = str(exc)
+
+            is_hardware = getattr(job, "backend", None) is not None
+
+            if (
+                "Cannot bind following parameters not present in expression" in message
+                and (2, 0, 0) <= tuple(map(int, version("qiskit").split("."))) < (2, 2, 0)
+                and is_hardware
+            ):
+                raise AlgorithmError(
+                    "Sampler job failed due to a circuit deserialization error. "
+                    "This could be caused by a known issue. "
+                    "Ensure no circuit parameters are named x_fidelity or y_fidelity. "
+                    "For more information: "
+                    "https://github.com/qiskit-community/qiskit-machine-learning/pull/1060."
+                ) from exc
+
             raise AlgorithmError("Sampler job failed!") from exc
 
         quasi_dists = _post_process_v2(result, num_virtual_qubits)

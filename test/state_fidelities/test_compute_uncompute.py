@@ -14,6 +14,7 @@
 """Tests for Fidelity."""
 
 import unittest
+from unittest.mock import Mock, patch
 from test import QiskitAlgorithmsTestCase
 
 import numpy as np
@@ -22,6 +23,7 @@ from qiskit.circuit.library import real_amplitudes
 
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
+from qiskit_machine_learning.exceptions import AlgorithmError
 
 
 class TestComputeUncompute(QiskitAlgorithmsTestCase):
@@ -216,6 +218,31 @@ class TestComputeUncompute(QiskitAlgorithmsTestCase):
         job = fidelity.run(circuit_1, circuit_2, self._left_params[0], self._right_params[0])
         result = job.result()
         np.testing.assert_allclose(result.fidelities, np.array([1.0]))
+
+    def test_job_failure_error_message(self):
+        """test job failure error message"""
+        cases = [
+            ("2.0.0", "Sampler job failed due to a circuit deserialization error"),
+            ("2.1.0", "Sampler job failed due to a circuit deserialization error"),
+            ("2.2.0", "Sampler job failed!"),
+        ]
+
+        job = Mock()
+        job.backend = Mock()
+        job.result.side_effect = Exception(
+            "Unable to retrieve job result. Error code 3211; Job not valid. "
+            "Circuit deserialization error. "
+            "Cannot bind following parameters not present in expression"
+        )
+
+        for qiskit_version, expected_msg in cases:
+            with self.subTest(qiskit_version=qiskit_version):
+                with patch(
+                    "qiskit_machine_learning.state_fidelities.compute_uncompute.version",
+                    return_value=qiskit_version,
+                ):
+                    with self.assertRaisesRegex(AlgorithmError, expected_msg):
+                        ComputeUncompute._call(job, False)
 
 
 if __name__ == "__main__":

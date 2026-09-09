@@ -184,9 +184,10 @@ class BaseStateFidelity(ABC):
 
                 # re-parametrize input circuits
                 # TODO: make smarter checks to avoid unnecessary re-parametrizations
-                parameters_1 = ParameterVector("x", circuit_1.num_parameters)
+
+                parameters_1 = ParameterVector("x_fidelity", circuit_1.num_parameters)
                 parametrized_circuit_1 = circuit_1.assign_parameters(parameters_1)
-                parameters_2 = ParameterVector("y", circuit_2.num_parameters)
+                parameters_2 = ParameterVector("y_fidelity", circuit_2.num_parameters)
                 parametrized_circuit_2 = circuit_2.assign_parameters(parameters_2)
 
                 circuit = self.create_fidelity_circuit(
