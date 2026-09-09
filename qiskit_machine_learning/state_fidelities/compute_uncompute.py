@@ -20,7 +20,6 @@ from copy import copy
 from collections.abc import Sequence
 
 from importlib.metadata import version
-from packaging.version import Version
 
 from qiskit import QuantumCircuit
 from qiskit.primitives import BaseSamplerV2, PrimitiveResult, SamplerPubResult
@@ -198,18 +197,17 @@ class ComputeUncompute(BaseStateFidelity):
         except Exception as exc:
             message = str(exc)
 
-            backend = job.backend()
-            is_hardware = backend is not None and not backend.configuration().simulator
+            is_hardware = getattr(job, "backend", None) is not None
 
             if (
                 "Cannot bind following parameters not present in expression" in message
-                and Version(version("qiskit")) < Version("2.2")
+                and (2, 0, 0) <= tuple(map(int, version("qiskit").split("."))) < (2, 2, 0)
                 and is_hardware
             ):
                 raise AlgorithmError(
                     "Sampler job failed due to a circuit deserialization error. "
-                    "This could be caused by known issue. "
-                    "Ensure no circuit paramters are named x_fidelity or y_fidelity. "
+                    "This could be caused by a known issue. "
+                    "Ensure no circuit parameters are named x_fidelity or y_fidelity. "
                     "For more information: "
                     "https://github.com/qiskit-community/qiskit-machine-learning/pull/1060."
                 ) from exc
