@@ -43,5 +43,6 @@ Helper circuits
 
 from .raw_feature_vector import raw_feature_vector
 from .qnn_circuit import qnn_circuit
+from .covariant_feature_map import CovariantFeatureMap
 
-__all__ = ["raw_feature_vector", "qnn_circuit"]
+__all__ = ["raw_feature_vector", "qnn_circuit", "covariant_feature_map"]
