@@ -492,7 +492,7 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
         )
 
         qnn_qc, feature_map_params, ansatz_params = qnn_circuit(
-            num_qubits=num_qubits, feature_map=feature_map, ansatz=ansatz
+            feature_map=feature_map, ansatz=ansatz
         )
         isa_qnn_qc = self.pass_manager.run(qnn_qc)
         estimator_qnn_qc = EstimatorQNN(

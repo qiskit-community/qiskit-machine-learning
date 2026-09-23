@@ -18,9 +18,11 @@ from test import QiskitMachineLearningTestCase
 import numpy as np
 from ddt import data, ddt
 from qiskit.circuit import Parameter, QuantumCircuit
+from qiskit.circuit.library import real_amplitudes, z_feature_map
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import EstimatorV2, Session
+from qiskit_machine_learning import QiskitMachineLearningError
 from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.algorithms import VQR
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
@@ -103,7 +105,7 @@ class TestVQR(QiskitMachineLearningTestCase):
 
     def test_properties(self):
         """Test properties of VQR."""
-        vqr = VQR(num_qubits=2)
+        vqr = VQR(feature_map=QuantumCircuit(2))
         self.assertIsNotNone(vqr.feature_map)
         self.assertIsInstance(vqr.feature_map, QuantumCircuit)
         self.assertEqual(vqr.feature_map.num_qubits, 2)
@@ -117,7 +119,7 @@ class TestVQR(QiskitMachineLearningTestCase):
     def test_incorrect_observable(self):
         """Test VQR with a wrong observable."""
         with self.assertRaises(ValueError):
-            _ = VQR(num_qubits=2, observable=QuantumCircuit(2))
+            _ = VQR(feature_map=QuantumCircuit(2), observable=QuantumCircuit(2))
 
     @data(
         # optimizer, has ansatz
@@ -181,6 +183,14 @@ class TestVQR(QiskitMachineLearningTestCase):
         # score
         score = regressor.score(self.X, self.y)
         self.assertGreater(score, 0.5)
+
+    def test_mismatched_feature_map_and_ansatz(self):
+        """Test VQR raises when feature map and ansatz have different numbers of qubits."""
+        with self.assertRaises(QiskitMachineLearningError):
+            _ = VQR(
+                feature_map=z_feature_map(1),
+                ansatz=real_amplitudes(2),
+            )
 
 
 if __name__ == "__main__":

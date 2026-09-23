@@ -36,7 +36,6 @@ from qiskit_machine_learning.exceptions import QiskitMachineLearningError
 from qiskit_machine_learning.optimizers import COBYLA
 from qiskit_machine_learning.utils import algorithm_globals
 
-NUM_QUBITS_LIST = [2, None]
 FEATURE_MAPS = ["zz_feature_map", None]
 ANSATZES = ["real_amplitudes", None]
 OPTIMIZERS = ["cobyla", None]
@@ -94,11 +93,9 @@ class TestVQC(QiskitMachineLearningTestCase):
         }
 
     # pylint: disable=too-many-positional-arguments
-    @idata(
-        itertools.product(NUM_QUBITS_LIST, FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS, SAMPLERS)
-    )
+    @idata(itertools.product(FEATURE_MAPS, ANSATZES, OPTIMIZERS, DATASETS, SAMPLERS))
     @unpack
-    def test_VQC(self, num_qubits, f_m, ans, opt, d_s, smplr):
+    def test_VQC(self, f_m, ans, opt, d_s, smplr):
         """
         Test VQC with binary and multiclass data using a range of quantum
         instances, numbers of qubits, feature maps, and optimizers.
@@ -108,10 +105,8 @@ class TestVQC(QiskitMachineLearningTestCase):
         else:
             pm = None
 
-        if num_qubits is None and f_m is None and ans is None:
-            self.skipTest(
-                "At least one of num_qubits, feature_map, or ansatz must be set by the user."
-            )
+        if f_m is None and ans is None:
+            self.skipTest("At least one of feature_map or ansatz must be set by the user.")
 
         feature_map = self.properties.get(f_m)
         optimizer = self.properties.get(opt)
@@ -130,7 +125,6 @@ class TestVQC(QiskitMachineLearningTestCase):
         initial_point = np.array([0.5] * ansatz.num_parameters) if ansatz is not None else None
 
         classifier = VQC(
-            num_qubits=num_qubits,
             feature_map=feature_map,
             ansatz=ansatz,
             optimizer=optimizer,
@@ -152,7 +146,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         Test VQC without an optimizer set.
         """
         classifier = VQC(
-            num_qubits=2,
+            feature_map=self.properties.get("zz_feature_map"),
             optimizer=None,
         )
         dataset = self.properties.get("binary")
@@ -231,7 +225,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         x = algorithm_globals.random.random((3, 2))
         y = np.asarray([[1, 1, 0], [1, 0, 1], [0, 1, 1]])
 
-        classifier = VQC(num_qubits=2)
+        classifier = VQC(feature_map=self.properties.get("zz_feature_map"))
         with self.assertRaises(QiskitMachineLearningError):
             classifier.fit(x, y)
 
@@ -243,7 +237,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         features1 = algorithm_globals.random.random((len(targets1), 2))
         features2 = algorithm_globals.random.random((len(targets2), 2))
 
-        classifier = VQC(num_qubits=2, warm_start=True)
+        classifier = VQC(feature_map=self.properties.get("zz_feature_map"), warm_start=True)
         classifier.fit(features1, targets1)
         with self.assertRaises(QiskitMachineLearningError):
             classifier.fit(features2, targets2)
@@ -252,7 +246,7 @@ class TestVQC(QiskitMachineLearningTestCase):
     def test_sparse_arrays(self, loss):
         """Tests VQC on sparse features and labels."""
 
-        classifier = VQC(num_qubits=2, loss=loss)
+        classifier = VQC(feature_map=self.properties.get("zz_feature_map"), loss=loss)
         x = scipy.sparse.csr_matrix([[0, 0], [1, 1]])
         y = scipy.sparse.csr_matrix([[1, 0], [0, 1]])
 
@@ -265,7 +259,7 @@ class TestVQC(QiskitMachineLearningTestCase):
         """Test VQC on categorical labels."""
 
         classifier = VQC(
-            num_qubits=2,
+            feature_map=self.properties.get("zz_feature_map"),
             optimizer=COBYLA(25),
         )
         dataset = self.properties.get("no_one_hot")
@@ -281,26 +275,12 @@ class TestVQC(QiskitMachineLearningTestCase):
         predict = classifier.predict(features[0, :])
         self.assertIn(predict, ["A", "B"])
 
-    @unittest.skip("Skip for now")
-    def test_circuit_extensions(self):
-        """Test VQC when the number of qubits is different compared to the feature map/ansatz."""
-
-        # Note: This first part is using the deprecated BlueprintCircuit based classes to
-        # ensure the auto-adjust continues to work as expected until its gone/removed.
-        num_qubits = 2
-        classifier = VQC(
-            num_qubits=num_qubits,
-            feature_map=z_feature_map(1),
-            ansatz=real_amplitudes(1),
-        )
-        self.assertEqual(classifier.feature_map.num_qubits, num_qubits)
-        self.assertEqual(classifier.ansatz.num_qubits, num_qubits)
-
+    def test_mismatched_feature_map_and_ansatz(self):
+        """Test VQC raises when feature map and ansatz have different numbers of qubits."""
         with self.assertRaises(QiskitMachineLearningError):
             _ = VQC(
-                num_qubits=num_qubits,
                 feature_map=z_feature_map(1),
-                ansatz=real_amplitudes(1),
+                ansatz=real_amplitudes(2),
             )
 
 
