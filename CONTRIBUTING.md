@@ -294,9 +294,7 @@ can and will change on main as we introduce and refine new features.
 
 * `stable/*`:
 The stable branches are used to maintain the most recent released versions of
-qiskit-machine-learning. It contains the versions of the code corresponding to the minor
-version release in the branch name release for The API on these branches are
-stable and the only changes merged to it are bugfixes.
+qiskit-machine-learning. It contains the version of the code corresponding to the minor version release named in the branch. The API on these branches is stable and the only changes merged to it are bugfixes.
 
 ### Release Cycle
 

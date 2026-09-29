@@ -163,7 +163,7 @@ quantum machine learning from scratch, as well as understand the background and 
 Qiskit Machine Learning. The notebooks cover a variety of topics to build an understanding of parameterized
 circuits, data encoding, variational algorithms and more, with the ultimate goal of building and training quantum ML models 
 for supervised and unsupervised learning. 
-The Textbook notebooks are complementary to the tutorials of this library. These tutorials focus emphasize the algorithms, 
+The Textbook notebooks are complementary to the tutorials of this library. These tutorials emphasize the algorithms, 
 while the Textbook notebooks explain in more detail the underlying fundamental quantum information principles
 of quantum machine learning.
 
