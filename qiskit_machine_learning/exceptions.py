@@ -32,7 +32,7 @@ class QiskitMachineLearningWarning(UserWarning):
 
     def __str__(self):
         """Return the message."""
-        return repr(self.message)
+        return self.message
 
 
 class AlgorithmError(QiskitError):
