@@ -1,0 +1,7 @@
+other:
+  - |
+    The ``qiskit`` requirement is now capped at ``qiskit>=2.0,<3`` instead of
+    an unbounded ``qiskit>=2.0``. Qiskit follows semantic versioning, so a
+    future Qiskit 3.x release is not guaranteed to be compatible with this
+    package. The cap will be lifted once compatibility with Qiskit 3 has
+    been verified.
