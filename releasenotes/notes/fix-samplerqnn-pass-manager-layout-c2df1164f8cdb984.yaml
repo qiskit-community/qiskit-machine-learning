@@ -1,0 +1,15 @@
+---
+fixes:
+  - |
+    Fixed an issue in :class:`~qiskit_machine_learning.neural_networks.SamplerQNN`
+    where circuits transpiled with a device :class:`~qiskit.transpiler.PassManager`
+    had measured shots erroneously evaluated to 0 when physical qubit layout
+    indices were not ``[0, ..., n-1]``. Previously, ``_postprocess`` attempted
+    to extract measured bits by shifting raw count keys by physical qubit indices
+    (``key_int >> q``), whereas counts were indexed by classical bits.
+    Now, the mapping from logical qubits to their corresponding classical bits
+    is determined and used to extract the logical bitstring.
+    Additionally, when an unmeasured circuit is passed with a ``pass_manager``,
+    measurement instructions are added prior to transpilation so that only the
+    circuit's logical qubits are measured rather than all physical qubits on the backend.
+    See `#1076 <https://github.com/qiskit-community/qiskit-machine-learning/issues/1076>`_.
