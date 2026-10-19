@@ -543,3 +543,64 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
             f"be ~1.0. If significantly less, measurements are "
             f"being discarded instead of marginalized.",
         )
+
+        # Both |00> (index 0) and |11> (index 3) should have ~50% probability
+        self.assertAlmostEqual(result[0, 0], 0.5, delta=0.15)
+        self.assertAlmostEqual(result[0, 3], 0.5, delta=0.15)
+        self.assertAlmostEqual(result[0, 1], 0.0, delta=0.05)
+        self.assertAlmostEqual(result[0, 2], 0.0, delta=0.05)
+
+    def test_pass_manager_with_transpiled_layout(self):
+        """Test SamplerQNN with pass_manager and a non-trivial layout.
+
+        Regression test for https://github.com/qiskit-community/qiskit-machine-learning/issues/1076
+        """
+        x, w = Parameter("x"), Parameter("w")
+        qc = QuantumCircuit(2)
+        qc.x(0)
+        qc.ry(x, 1)
+        qc.rz(w, 1)
+        qc.measure_all()
+
+        pm = generate_preset_pass_manager(
+            backend=self.backend,
+            optimization_level=1,
+            initial_layout=[5, 7],
+        )
+
+        qnn = SamplerQNN(
+            circuit=qc,
+            sampler=SamplerV2(mode=self.backend),
+            input_params=[x],
+            weight_params=[w],
+            pass_manager=pm,
+            interpret=lambda k: k,
+            output_shape=4,
+        )
+
+        # Qubit 0 is in state |1>, so the measured state must be |01> (index 1)
+        res = qnn.forward([0.0], [0.0])
+        self.assertAlmostEqual(res[0, 1], 1.0, delta=0.05)
+        self.assertAlmostEqual(res[0, 0], 0.0, delta=0.05)
+
+        # Also test unmeasured circuit with pass_manager
+        qc_unmeasured = QuantumCircuit(2)
+        qc_unmeasured.x(0)
+        qc_unmeasured.ry(x, 1)
+        qc_unmeasured.rz(w, 1)
+
+        qnn_unmeasured = SamplerQNN(
+            circuit=qc_unmeasured,
+            sampler=SamplerV2(mode=self.backend),
+            input_params=[x],
+            weight_params=[w],
+            pass_manager=pm,
+            interpret=lambda k: k,
+            output_shape=4,
+        )
+
+        # Verify only logical qubits were measured, not all physical qubits on backend
+        self.assertEqual(len(qnn_unmeasured._circuit.clbits), 2)
+        res_unmeasured = qnn_unmeasured.forward([0.0], [0.0])
+        self.assertAlmostEqual(res_unmeasured[0, 1], 1.0, delta=0.05)
+        self.assertAlmostEqual(res_unmeasured[0, 0], 0.0, delta=0.05)

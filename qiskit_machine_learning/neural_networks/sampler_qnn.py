@@ -203,6 +203,9 @@ class SamplerQNN(NeuralNetwork):
             if pass_manager is None:
                 self.num_virtual_qubits = circuit.num_qubits
             else:
+                if len(circuit.clbits) == 0:
+                    circuit = circuit.copy()
+                    circuit.measure_all()
                 circuit = pass_manager.run(circuit)
                 if hasattr(circuit.layout, "_input_qubit_count"):
                     self.num_virtual_qubits = circuit.layout._input_qubit_count
@@ -239,6 +242,7 @@ class SamplerQNN(NeuralNetwork):
             circuit = circuit.copy()
             circuit.measure_all()
         self._circuit = self._reparameterize_circuit(circuit, input_params, weight_params)
+        self._logical_clbits = self._get_logical_clbits()
 
     @property
     def circuit(self) -> QuantumCircuit:
@@ -314,6 +318,30 @@ class SamplerQNN(NeuralNetwork):
             output_shape_ = (2**self.num_virtual_qubits,)
         return output_shape_
 
+    def _get_logical_clbits(self) -> list[int]:
+        """Determine which classical bit index corresponds to each logical/virtual qubit."""
+        circuit = self._circuit
+        meas_map: dict[int, int] = {}
+        for op in circuit.data:
+            if op.operation.name == "measure":
+                q_idx = circuit.find_bit(op.qubits[0]).index
+                c_idx = circuit.find_bit(op.clbits[0]).index
+                meas_map[q_idx] = c_idx
+
+        layout = getattr(self._circuit, "layout", None) or getattr(
+            self._org_circuit, "layout", None
+        )
+        if layout is not None:
+            physical_qubits = layout.final_index_layout(filter_ancillas=True)
+            clbits = [meas_map.get(p) for p in physical_qubits]
+            if all(c is not None for c in clbits):
+                return clbits  # type: ignore[return-value]
+
+        if meas_map:
+            return [meas_map.get(i, i) for i in range(self.num_virtual_qubits)]
+
+        return list(range(self.num_virtual_qubits))
+
     def _postprocess(
         self, num_samples: int, result: PrimitiveResult[SamplerPubResult]
     ) -> np.ndarray | SparseArray:
@@ -352,20 +380,38 @@ class SamplerQNN(NeuralNetwork):
             # last resort
             return int(k)
 
+        logical_clbits = getattr(self, "_logical_clbits", None)
+        if logical_clbits is None:
+            logical_clbits = self._get_logical_clbits()
+
         # SamplerV2: get per-parameter-set counts
         # Prefer pub.data.get_counts(i); fall back to alternatives if not available.
         for i in range(num_samples):
             counts_i = None
             # new API
             if hasattr(pub, "data") and hasattr(pub.data, "get_counts"):
-                counts_i = pub.data.get_counts(i)
+                counts_i = (
+                    pub.data.get_counts(i)
+                    if getattr(pub.data, "ndim", 0) > 0
+                    else pub.data.get_counts()
+                )
             # alternative field names some builds expose
             if (
                 counts_i is None
                 and hasattr(pub.data, "meas")
                 and hasattr(pub.data.meas, "get_counts")
             ):
-                counts_i = pub.data.meas.get_counts(i)
+                counts_i = (
+                    pub.data.meas.get_counts(i)
+                    if getattr(pub.data.meas, "ndim", 0) > 0
+                    else pub.data.meas.get_counts()
+                )
+            if counts_i is None and hasattr(pub.data, "c") and hasattr(pub.data.c, "get_counts"):
+                counts_i = (
+                    pub.data.c.get_counts(i)
+                    if getattr(pub.data.c, "ndim", 0) > 0
+                    else pub.data.c.get_counts()
+                )
 
             # absolute fallback (aggregated; avoids crash but will degrade accuracy)
             if counts_i is None:
@@ -378,25 +424,14 @@ class SamplerQNN(NeuralNetwork):
 
             # marginalize to logical qubit subspace
             probs_i: dict[int, float] = {}
-            if hasattr(self._org_circuit, "layout") and self._org_circuit.layout is not None:
-                # circuit was transpiled: use the layout to find
-                # where each logical qubit ended up physically
-                physical_qubits = self._org_circuit.layout.final_index_layout(filter_ancillas=True)
-                for k, v in counts_i.items():
-                    key_int = _key_to_int(k)
-                    # extract only the bits at logical qubit positions
-                    logical_bits = tuple((key_int >> q) & 1 for q in physical_qubits)
-                    # reconstruct an integer in the logical qubit space
-                    logical_key = sum(b << idx for idx, b in enumerate(logical_bits))
-                    # accumulate probabilities (marginalize ancillas)
-                    probs_i[logical_key] = probs_i.get(logical_key, 0) + v / total_shots
-            else:
-                # no layout: circuit was not transpiled,
-                # keep original behavior
-                for k, v in counts_i.items():
-                    key_int = _key_to_int(k)
-                    if key_int < 2**self.num_virtual_qubits:
-                        probs_i[key_int] = v / total_shots
+            for k, v in counts_i.items():
+                key_int = _key_to_int(k)
+                # extract only the bits at logical qubit positions
+                logical_bits = tuple((key_int >> c) & 1 for c in logical_clbits)
+                # reconstruct an integer in the logical qubit space
+                logical_key = sum(b << idx for idx, b in enumerate(logical_bits))
+                # accumulate probabilities (marginalize ancillas)
+                probs_i[logical_key] = probs_i.get(logical_key, 0) + v / total_shots
 
             # map through interpret and write ONLY row i
             for k_int, value in probs_i.items():
