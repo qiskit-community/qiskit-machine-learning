@@ -13,13 +13,10 @@
 
 """Pegasos Quantum Kernel Alignment algorithm."""
 
-from typing import Optional
-
 import numpy as np
 from ...kernels import TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel
 from ...optimizers.spsa import bernoulli_perturbation
 from .pegasos_qsvc import PegasosQSVC
-
 
 class PegasosQKA(PegasosQSVC):
     r"""
@@ -48,11 +45,11 @@ class PegasosQKA(PegasosQSVC):
         quantum_kernel: (
             TrainableFidelityQuantumKernel | TrainableFidelityStatevectorKernel | None
         ) = None,
-        C: float = 1000.0,
-                    num_steps: Optional[int] = None,
-        seed: Optional[int] = None,
+        C: float = 1.0,
+        num_steps: int = 1000,
+        seed: int | None = None,
         *,
-        initial_thetas: Optional[np.ndarray] = None,
+        initial_thetas: np.ndarray | None = None,
         learning_rate: float = 0.01,
         perturbations: float = 0.01,
     ) -> None:

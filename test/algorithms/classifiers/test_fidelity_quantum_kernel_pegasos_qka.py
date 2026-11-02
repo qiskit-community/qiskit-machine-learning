@@ -80,7 +80,7 @@ class TestPegasosQKA(QiskitMachineLearningTestCase):
     def test_qka(self):
         """Test PegasosQKA"""
 
-        pegasos_qka = PegasosQKA(quantum_kernel=self.qkernel, C=1000, num_steps=self.tau)
+        pegasos_qka = PegasosQKA(quantum_kernel=self.qkernel, C=1, num_steps=self.tau)
 
         pegasos_qka.fit(self.sample_train, self.label_train)
         score = pegasos_qka.score(self.sample_test, self.label_test)
@@ -96,7 +96,7 @@ class TestPegasosQKA(QiskitMachineLearningTestCase):
         with self.subTest("Default initial thetas"):
             pegasos_qka = PegasosQKA(
                 quantum_kernel=self.qkernel,
-                C=1000,
+                C=1,
                 num_steps=self.tau,
             )
 
@@ -110,7 +110,7 @@ class TestPegasosQKA(QiskitMachineLearningTestCase):
 
             pegasos_qka = PegasosQKA(
                 quantum_kernel=self.qkernel,
-                C=1000,
+                C=1,
                 num_steps=self.tau,
                 initial_thetas=initial_thetas,
             )
@@ -129,7 +129,7 @@ class TestPegasosQKA(QiskitMachineLearningTestCase):
 
         with self.subTest("PegasosQKA with TrainableFidelityQuantumKernel"):
 
-            pegasos_qka = PegasosQKA(quantum_kernel=self.qkernel, C=1000, num_steps=self.tau)
+            pegasos_qka = PegasosQKA(quantum_kernel=self.qkernel, C=1, num_steps=self.tau)
             self.assertIsInstance(pegasos_qka.quantum_kernel, TrainableFidelityQuantumKernel)
             self.assertEqual(
                 pegasos_qka.quantum_kernel.num_training_parameters,
