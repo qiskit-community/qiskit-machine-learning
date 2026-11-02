@@ -284,6 +284,25 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
 
         np.testing.assert_allclose(kernel_xy, kernel_yx.T, rtol=1e-7, atol=1e-7)
 
+    @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
+    def test_parameter_dict_values_unchanged(self, trainable_kernel_type):
+        """Test that evaluation does not modify stored training parameters."""
+        kernel = trainable_kernel_type(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+
+        initial = [0.1, 0.2, 0.3]
+        kernel.assign_training_parameters(initial)
+
+        kernel.evaluate(
+            self.sample_train,
+            x_parameters=[0.4, 0.5, 0.6],
+            y_parameters=[0.7, 0.8, 0.9],
+        )
+
+        np.testing.assert_array_equal(kernel.parameter_values, initial)   
+
 
 if __name__ == "__main__":
     unittest.main()
