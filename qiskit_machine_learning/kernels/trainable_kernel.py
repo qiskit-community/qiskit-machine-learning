@@ -146,9 +146,7 @@ class TrainableKernel(BaseKernel, ABC):
                 )
 
             for value in parameter_values:
-                if value is None or (
-                    isinstance(value, ParameterExpression) and value.parameters
-                ):
+                if value is None or (isinstance(value, ParameterExpression) and value.parameters):
                     raise QiskitMachineLearningError(
                         "Trainable parameters must be bound to numerical values. Make sure to bind all"
                         "trainable parameters to numerical values using `.assign_training_parameters()`"

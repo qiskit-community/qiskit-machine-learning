@@ -197,7 +197,6 @@ class PegasosQSVC(ClassifierMixin, SerializableModelMixin):
 
         return self
 
-
     def _update_step(self, index: int, X: np.ndarray, y: np.ndarray, step: int) -> None:
         """
         Implements an update step for the fit method.

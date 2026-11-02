@@ -121,7 +121,6 @@ class TrainableFidelityQuantumKernel(TrainableKernel, FidelityQuantumKernel):
 
         return super()._get_symmetric_parameterization(new_x_vec)
 
-
     def evaluate(
         self,
         x_vec: np.ndarray,

@@ -18,6 +18,7 @@ from ...kernels import TrainableFidelityQuantumKernel, TrainableFidelityStatevec
 from ...optimizers.spsa import bernoulli_perturbation
 from .pegasos_qsvc import PegasosQSVC
 
+
 class PegasosQKA(PegasosQSVC):
     r"""
     Extends the Pegasos Quantum Support Vector Classifier algorithm to perform quantum
@@ -57,7 +58,7 @@ class PegasosQKA(PegasosQSVC):
             quantum_kernel=quantum_kernel,
             C=C,
             num_steps=num_steps,
-                    seed=seed,
+            seed=seed,
         )
 
         if initial_thetas is None:

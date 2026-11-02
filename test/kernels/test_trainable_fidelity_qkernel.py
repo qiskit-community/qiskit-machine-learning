@@ -316,7 +316,7 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
             y_parameters=[0.7, 0.8, 0.9],
         )
 
-        np.testing.assert_array_equal(kernel.parameter_values, initial)   
+        np.testing.assert_array_equal(kernel.parameter_values, initial)
 
 
 if __name__ == "__main__":
