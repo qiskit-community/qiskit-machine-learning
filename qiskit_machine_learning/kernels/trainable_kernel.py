@@ -18,7 +18,7 @@ from abc import ABC
 from typing import Mapping, Sequence
 
 import numpy as np
-from qiskit.circuit import Parameter, ParameterVector
+from qiskit.circuit import Parameter, ParameterVector, ParameterExpression
 from qiskit.circuit.parameterexpression import ParameterValueType
 
 from .base_kernel import BaseKernel
@@ -144,3 +144,13 @@ class TrainableKernel(BaseKernel, ABC):
                     f"The number of given parameters is wrong: {len(parameter_values)}, "
                     f"expected {self._num_training_parameters}."
                 )
+
+            for value in parameter_values:
+                if value is None or (
+                    isinstance(value, ParameterExpression) and value.parameters
+                ):
+                    raise QiskitMachineLearningError(
+                        "Trainable parameters must be bound to numerical values. Make sure to bind all"
+                        "trainable parameters to numerical values using `.assign_training_parameters()`"
+                        "before calling `.evaluate()`."
+                    )

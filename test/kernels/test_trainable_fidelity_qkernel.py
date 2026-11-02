@@ -285,6 +285,21 @@ class TestPrimitivesTrainableQuantumKernelClassify(QiskitMachineLearningTestCase
         np.testing.assert_allclose(kernel_xy, kernel_yx.T, rtol=1e-7, atol=1e-7)
 
     @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
+    def test_unbound_parameters(self, trainable_kernel_type):
+        """Test that unbound parameters are rejected."""
+        kernel = trainable_kernel_type(
+            feature_map=self.feature_map,
+            training_parameters=self.training_parameters,
+        )
+
+        with self.assertRaises(QiskitMachineLearningError):
+            kernel.evaluate(
+                self.sample_train,
+                x_parameters=[0.1, 0.2, Parameter("test")],
+                y_parameters=[0.1, 0.2, 0.3],
+            )
+
+    @data(TrainableFidelityQuantumKernel, TrainableFidelityStatevectorKernel)
     def test_parameter_dict_values_unchanged(self, trainable_kernel_type):
         """Test that evaluation does not modify stored training parameters."""
         kernel = trainable_kernel_type(
