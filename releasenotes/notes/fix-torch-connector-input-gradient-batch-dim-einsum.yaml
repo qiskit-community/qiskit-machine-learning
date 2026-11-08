@@ -1,0 +1,9 @@
+---
+fixes:
+  - |
+    Fixed an issue in :class:`~qiskit_machine_learning.connectors.TorchConnector`
+    backward pass where input gradient evaluation on batched or multidimensional
+    inputs contracted the batch dimensions rather than the neural network output
+    dimensions. The internal Einstein summation signature generator now preserves
+    all batch axes and contracts all output dimensions across dense and sparse
+    evaluations.

@@ -88,16 +88,17 @@ else:
 CHAR_LIMIT = 26
 
 
-def _get_einsum_signature(n_dimensions: int, for_weights: bool = False) -> str:
+def _get_einsum_signature(n_dimensions: int, output_rank: int, for_weights: bool = False) -> str:
     """
     Generate an Einstein summation signature for a given number of dimensions and return type.
 
     Args:
         n_dimensions (int): The number of dimensions for the summation.
+        output_rank (int): The number of dimensions in the output shape of the neural network.
         for_weights (bool): If True, the return signature includes only the
             last index as the output. If False, the return signature includes
-            all input indices except the last one. Defaults to False.
-
+            all batch indices and the last (input) index, contracting all output axes.
+            Defaults to False.
 
     Returns:
         str: The Einstein summation signature.
@@ -116,7 +117,8 @@ def _get_einsum_signature(n_dimensions: int, for_weights: bool = False) -> str:
     if for_weights:
         return f"{trace[:-1]},{trace:s}->{trace[-1]}"
 
-    return f"{trace[:-1]},{trace:s}->{trace[0] + trace[2:]}"
+    batch_dim = n_dimensions - output_rank - 1
+    return f"{trace[:-1]},{trace:s}->{trace[:batch_dim] + trace[-1]}"
 
 
 @_optionals.HAS_TORCH.require_in_instance
@@ -216,7 +218,7 @@ class _TorchNNFunction(Function):
         """
         input_data, weights = ctx.saved_tensors
         neural_network = ctx.neural_network
-
+        output_rank = len(neural_network.output_shape)
         if input_data.shape[-1] != neural_network.num_inputs:
             raise QiskitMachineLearningError(
                 f"Invalid input dimension! Received {input_data.shape} and "
@@ -224,8 +226,10 @@ class _TorchNNFunction(Function):
             )
 
         # ensure same shape for single observations and batch mode
-        if len(grad_output.shape) == 1:
-            grad_output = grad_output.view(1, -1)
+        if len(input_data.shape) == 1:
+            grad_output = grad_output.unsqueeze(0)
+        if ctx.sparse:
+            grad_output = grad_output.coalesce()
 
         # evaluate QNN gradient
         input_grad, weights_grad = neural_network.backward(
@@ -252,11 +256,15 @@ class _TorchNNFunction(Function):
                     # Pytorch does not support sparse einsum, so we rely on Sparse.
                     # pylint: disable=no-member
                     n_dimension = max(grad_coo.ndim, input_grad.ndim)
-                    signature = _get_einsum_signature(n_dimension)
-                    input_grad = sparse.einsum(signature, grad_coo, input_grad)
+                    signature = _get_einsum_signature(n_dimension, output_rank=output_rank)
+                    input_grad = sparse.einsum(signature, grad_coo, input_grad).reshape(
+                        input_data.shape
+                    )
 
                     # return sparse gradients
-                    input_grad = torch.sparse_coo_tensor(input_grad.coords, input_grad.data)
+                    input_grad = torch.sparse_coo_tensor(
+                        input_grad.coords, input_grad.data, size=input_grad.shape
+                    )
                 else:
                     # this exception should never happen
                     raise RuntimeError(
@@ -271,7 +279,7 @@ class _TorchNNFunction(Function):
 
                 # same as above
                 n_dimension = max(grad_output.detach().cpu().ndim, input_grad.ndim)
-                signature = _get_einsum_signature(n_dimension)
+                signature = _get_einsum_signature(n_dimension, output_rank=output_rank)
                 input_grad = torch.einsum(signature, grad_output.detach().cpu(), input_grad)
 
             # place the resulting tensor to the device where they were stored
@@ -296,7 +304,9 @@ class _TorchNNFunction(Function):
                     # batch size.
                     # pylint: disable=no-member
                     n_dimension = max(grad_coo.ndim, weights_grad.ndim)
-                    signature = _get_einsum_signature(n_dimension, for_weights=True)
+                    signature = _get_einsum_signature(
+                        n_dimension, output_rank=output_rank, for_weights=True
+                    )
                     weights_grad = sparse.einsum(signature, grad_coo, weights_grad)
 
                     # return sparse gradients
@@ -313,7 +323,9 @@ class _TorchNNFunction(Function):
                 weights_grad = torch.as_tensor(weights_grad, dtype=torch.float)
                 # same as above
                 n_dimension = max(grad_output.detach().cpu().ndim, weights_grad.ndim)
-                signature = _get_einsum_signature(n_dimension, for_weights=True)
+                signature = _get_einsum_signature(
+                    n_dimension, output_rank=output_rank, for_weights=True
+                )
                 weights_grad = torch.einsum(signature, grad_output.detach().cpu(), weights_grad)
 
             # place the resulting tensor to the device where they were stored

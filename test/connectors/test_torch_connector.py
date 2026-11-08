@@ -29,7 +29,6 @@ from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.connectors.torch_connector import _TorchNNFunction
 from qiskit_machine_learning.primitives import QMLSampler as Sampler, QMLEstimator as Estimator
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
-from qiskit_machine_learning.connectors.torch_connector import _get_einsum_signature
 from qiskit_machine_learning.utils import algorithm_globals
 
 
@@ -393,38 +392,118 @@ class TestTorchConnector(TestTorch):
 
         return ConvolutionalLayer(input_channel, output_channel, num_qubits, num_weight, stride=1)
 
-    def test_get_einsum_signature(self):
-        """
-        Tests the functionality of `_get_einsum_signature` function.
-
-        This function is tested with valid inputs (e.g., `n_dimensions` = 3) and expected outputs.
-        It also covers error handling scenarios for invalid input arguments.
-
-        Error Handling Tests:
-        - Raises a RuntimeError when the character limit for signature generation is exceeded.
-
-        Additional Test Scenario:
-        - Tests `_get_einsum_signature` in the context of a convolutional layer based on Sampler QNN,
-          using a 4-D input tensor (batch, channel, height, width) to ensure compatibility.
-          This test mirrors Issue https://github.com/qiskit-community/qiskit-machine-learning/issues/716
-
-        Note: Backward test is run implicitly within the context of convolutional layer execution.
-
-        pylint disable=SPELLING
-        """
-        # Test raises for exceeding character limit
-        with self.assertRaises(RuntimeError):
-            _get_einsum_signature(30)
-
-        # Test with a convolutional layer based on Sampler QNN and 4-D input
-        # Refer to issue https://github.com/qiskit-community/qiskit-machine-learning/issues/716
+    @data(
+        ((1, 2, 1), [0.3, 1.1]),
+        ((1, 3, 1), [0.2, 0.7, 1.4]),
+    )
+    @unpack
+    def test_batched_input_gradients_analytic_estimator_qnn(self, input_shape, x_vals):
+        """Tests analytic input and weight gradient on EstimatorQNN with non-uniform loss."""
         import torch
+        from qiskit.circuit import Parameter
 
-        model = self._create_convolutional_layer(3, 1, 3, 3)
-        input_tensor = torch.rand((2, 3, 6, 6))
-        input_tensor.requires_grad = True
-        output_tensor = model.forward(input_tensor)
-        output_tensor = torch.sum(output_tensor)
+        qc = QuantumCircuit(1)
+        x_param = Parameter("x")
+        w_param = Parameter("w")
+        qc.ry(x_param, 0)
+        qc.rz(w_param, 0)
 
-        # Run `backward`, which calls `_get_einsum_signature`
-        output_tensor.backward()
+        observables = [SparsePauliOp.from_list([("Z", 1.0)]), SparsePauliOp.from_list([("X", 1.0)])]
+        estimator = Estimator(default_precision=0.0)
+        qnn = EstimatorQNN(
+            circuit=qc,
+            estimator=estimator,
+            observables=observables,
+            input_params=[x_param],
+            weight_params=[w_param],
+            input_gradients=True,
+        )
+
+        w_val = 0.4
+        model = TorchConnector(qnn, initial_weights=[w_val])
+
+        inputs = torch.tensor(
+            np.array(x_vals).reshape(input_shape), dtype=torch.float, requires_grad=True
+        )
+        outputs = model(inputs)
+        c0, c1 = 1.7, -0.6
+        loss = c0 * outputs[..., 0].sum() + c1 * outputs[..., 1].sum()
+        loss.backward()
+
+        # d(output0)/dx = -sin(x), d(output1)/dx = cos(x)*cos(w)
+        expected_input_grad = np.array(
+            [-c0 * np.sin(x) + c1 * np.cos(x) * np.cos(w_val) for x in x_vals]
+        ).reshape(input_shape)
+        np.testing.assert_allclose(
+            inputs.grad.detach().cpu().numpy(), expected_input_grad, atol=1e-5
+        )
+
+        # d(output0)/dw = 0, d(output1)/dw = -sin(x)*sin(w)
+        expected_weight_grad = np.array([sum(-c1 * np.sin(x) * np.sin(w_val) for x in x_vals)])
+        np.testing.assert_allclose(
+            model.weight.grad.detach().cpu().numpy(), expected_weight_grad, atol=1e-5
+        )
+
+    @data(
+        ((1,), [0.3], False),
+        ((1,), [0.3], True),
+        ((1, 2, 1), [0.3, 0.9], False),
+        ((1, 2, 1), [0.3, 0.9], True),
+    )
+    @unpack
+    def test_multidimensional_sampler_qnn_output_gradients(self, input_shape, x_vals, sparse):
+        """Tests analytic input and weight gradients on SamplerQNN with 2x2 output."""
+        import torch
+        from qiskit.circuit import Parameter
+
+        qc = QuantumCircuit(2)
+        x = Parameter("x")
+        w = Parameter("w")
+        qc.ry(x, 0)
+        qc.ry(w, 1)
+
+        def interpret_grid(val: int) -> tuple[int, int]:
+            return (val // 2, val % 2)
+
+        sampler = Sampler()  # exact deterministic mode
+        qnn = SamplerQNN(
+            circuit=qc,
+            sampler=sampler,
+            input_params=[x],
+            weight_params=[w],
+            sparse=sparse,
+            interpret=interpret_grid,
+            output_shape=(2, 2),
+            input_gradients=True,
+        )
+
+        w_val = 0.5
+        model = TorchConnector(qnn, initial_weights=[w_val], sparse=sparse)
+
+        inputs = torch.tensor(
+            np.array(x_vals).reshape(input_shape), dtype=torch.float, requires_grad=True
+        )
+        outputs = model(inputs)
+        if sparse:
+            outputs = outputs.to_dense()
+
+        weights_matrix = torch.tensor([[1.0, 2.0], [3.0, 4.0]], dtype=torch.float)
+        loss = (outputs * weights_matrix).sum()
+        loss.backward()
+
+        # With little-endian qubit order, loss = 1 + sin²(x/2) + 2 sin²(w/2).
+        expected_input_grad = (0.5 * np.sin(x_vals)).reshape(input_shape)
+        input_grad = inputs.grad
+        if sparse:
+            input_grad = input_grad.to_dense()
+        np.testing.assert_allclose(
+            input_grad.detach().cpu().numpy(), expected_input_grad, atol=1e-5
+        )
+
+        expected_weight_grad = np.array([len(x_vals) * np.sin(w_val)])
+        weight_grad = model.weight.grad
+        if sparse:
+            weight_grad = weight_grad.to_dense()
+        np.testing.assert_allclose(
+            weight_grad.detach().cpu().numpy(), expected_weight_grad, atol=1e-5
+        )
