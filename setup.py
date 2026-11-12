@@ -49,7 +49,7 @@ setuptools.setup(
     description="Qiskit Machine Learning: A library of quantum machine learning experiments",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/qiskit-community/qiskit-machine-learning",
+    url="https://github.com/stfc/qiskit-machine-learning",
     author="Qiskit Machine Learning Development Team",
     author_email="qiskit@us.ibm.com",
     license="Apache-2.0",
@@ -80,9 +80,9 @@ setuptools.setup(
         "sparse": ["sparse"],
     },
     project_urls={
-        "Bug Tracker": "https://github.com/qiskit-community/qiskit-machine-learning/issues",
-        "Documentation": "https://qiskit-community.github.io/qiskit-machine-learning/",
-        "Source Code": "https://github.com/qiskit-community/qiskit-machine-learning",
+        "Bug Tracker": "https://github.com/stfc/qiskit-machine-learning/issues",
+        "Documentation": "https://stfc.github.io/qiskit-machine-learning/",
+        "Source Code": "https://github.com/stfc/qiskit-machine-learning",
     },
     zip_safe=False,
 )
