@@ -88,7 +88,7 @@ from .objective_functions import (
     MultiClassObjectiveFunction,
     OneHotObjectiveFunction,
 )
-from .classifiers import QSVC, PegasosQSVC, VQC, NeuralNetworkClassifier
+from .classifiers import QSVC, PegasosQSVC, PegasosQKA, VQC, NeuralNetworkClassifier
 from .inference import QBayesian
 from .regressors import QSVR, VQR, NeuralNetworkRegressor
 
@@ -101,6 +101,7 @@ __all__ = [
     "OneHotObjectiveFunction",
     "QSVC",
     "PegasosQSVC",
+    "PegasosQKA",
     "NeuralNetworkClassifier",
     "VQC",
     "QSVR",
