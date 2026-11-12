@@ -1,0 +1,8 @@
+upgrade:
+  - |
+    Restricted the supported Qiskit dependency range to
+    ``qiskit>=2.0,<3``. This prevents installation with future
+    Qiskit major releases before compatibility has been verified.
+
+    Qiskit 2.x remains supported. The upper bound can be updated
+    after compatibility with Qiskit 3 has been established.
