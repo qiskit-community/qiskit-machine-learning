@@ -406,8 +406,8 @@ class TestEstimatorGradientRuntime(QiskitAlgorithmsTestCase):
         backend = GenericBackendV2(num_qubits=3, seed=123, noise_info=False)
         session = Session(backend=backend)
         simopts = SimulatorOptions(seed_simulator=123)
-        estopts = EstimatorOptions(simulator=simopts)
-        self.estimator = EstimatorV2(mode=session, options=estopts)
+        estim_opts = EstimatorOptions(seed_estimator=123, simulator=simopts)
+        self.estimator = EstimatorV2(mode=session, options=estim_opts)
         self.pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
         super().__init__(TestCase)
 

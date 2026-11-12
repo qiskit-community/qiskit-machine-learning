@@ -21,6 +21,7 @@ from qiskit.circuit import Parameter, QuantumCircuit
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import EstimatorV2, Session
+from qiskit_ibm_runtime.options import EstimatorOptions, SimulatorOptions
 from qiskit_machine_learning.primitives import QMLEstimator as Estimator
 from qiskit_machine_learning.algorithms import VQR
 from qiskit_machine_learning.optimizers import COBYLA, L_BFGS_B
@@ -146,7 +147,9 @@ class TestVQR(QiskitMachineLearningTestCase):
             seed=123,
         )
         session = Session(backend=backend)
-        _estimator = EstimatorV2(mode=session)
+        simopts = SimulatorOptions(seed_simulator=123)
+        estim_opts = EstimatorOptions(seed_estimator=123, simulator=simopts)
+        _estimator = EstimatorV2(mode=session, options=estim_opts)
         pass_manager = generate_preset_pass_manager(optimization_level=0, backend=backend)
 
         num_qubits = 1

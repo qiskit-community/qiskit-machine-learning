@@ -30,6 +30,7 @@ from qiskit.circuit.library import real_amplitudes, z_feature_map, zz_feature_ma
 from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import SamplerV2, Session
+from qiskit_ibm_runtime.options import SamplerOptions, SimulatorOptions
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 from qiskit_machine_learning.algorithms import VQC
 from qiskit_machine_learning.exceptions import QiskitMachineLearningError
@@ -81,6 +82,10 @@ class TestVQC(QiskitMachineLearningTestCase):
             seed=123,
         )
         self.session = Session(backend=self.backend)
+
+        simopts = SimulatorOptions(seed_simulator=123)
+        sampler_opts = SamplerOptions(default_shots=1e4, simulator=simopts)
+
         # We want string keys to ensure DDT-generated tests have meaningful names.
         self.properties = {
             "cobyla": COBYLA(maxiter=25),
@@ -89,7 +94,7 @@ class TestVQC(QiskitMachineLearningTestCase):
             "binary": _create_dataset(6, 2),
             "multiclass": _create_dataset(10, 3),
             "no_one_hot": _create_dataset(6, 2, one_hot=False),
-            "runtime_sampler": SamplerV2(mode=self.session, options={"default_shots": 10000}),
+            "runtime_sampler": SamplerV2(mode=self.session, options=sampler_opts),
             "QMLSampler": Sampler(),
         }
 

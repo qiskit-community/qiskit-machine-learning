@@ -29,7 +29,7 @@ from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 from qiskit_ibm_runtime import SamplerV2, Session
-
+from qiskit_ibm_runtime.options import SamplerOptions, SimulatorOptions
 from qiskit_machine_learning.primitives import QMLSampler as Sampler
 import qiskit_machine_learning.optionals as _optionals
 from qiskit_machine_learning.circuit.library import qnn_circuit
@@ -106,7 +106,9 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         self.sampler_shots = Sampler(default_shots=100, seed=42)
         self.backend = GenericBackendV2(num_qubits=8, seed=123, noise_info=False)
         self.session = Session(backend=self.backend)
-        self.sampler_v2 = SamplerV2(mode=self.session)
+        simopts = SimulatorOptions(seed_simulator=123)
+        self.sampler_opts = SamplerOptions(simulator=simopts)
+        self.sampler_v2 = SamplerV2(mode=self.session, options=self.sampler_opts)
         self.pass_manager = None
         self.array_type = {True: SparseArray, False: np.ndarray}
 
@@ -510,7 +512,7 @@ class TestSamplerQNN(QiskitMachineLearningTestCase):
         # bitstrings, like real hardware or SamplerV2
         qnn = SamplerQNN(
             circuit=transpiled,
-            sampler=SamplerV2(mode=self.backend),
+            sampler=SamplerV2(mode=self.backend, options=self.sampler_opts),
         )
 
         # Confirm the QNN sees 2 logical qubits, not 8

@@ -17,6 +17,7 @@
 import unittest
 from test import QiskitAlgorithmsTestCase
 from qiskit_ibm_runtime import SamplerV2, Session
+from qiskit_ibm_runtime.options import SamplerOptions, SimulatorOptions
 
 import numpy as np
 from ddt import data, ddt
@@ -553,7 +554,9 @@ class TestSamplerGradientRuntime(QiskitAlgorithmsTestCase):
     def __init__(self, TestCase):
         backend = GenericBackendV2(num_qubits=3, seed=123, noise_info=False)
         session = Session(backend=backend)
-        self.sampler = SamplerV2(mode=session)
+        simopts = SimulatorOptions(seed_simulator=123)
+        sampler_opts = SamplerOptions(simulator=simopts)
+        self.sampler = SamplerV2(mode=session, options=sampler_opts)
         self.pass_manager = generate_preset_pass_manager(optimization_level=1, backend=backend)
         super().__init__(TestCase)
 

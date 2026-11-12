@@ -23,6 +23,7 @@ from qiskit.providers.fake_provider import GenericBackendV2
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit_ibm_runtime import EstimatorV2, Session
+from qiskit_ibm_runtime.options import EstimatorOptions, SimulatorOptions
 from qiskit_machine_learning.circuit.library import qnn_circuit
 from qiskit_machine_learning.gradients import ParamShiftEstimatorGradient
 from qiskit_machine_learning.neural_networks.estimator_qnn import EstimatorQNN
@@ -187,7 +188,9 @@ class TestEstimatorQNNV2(QiskitMachineLearningTestCase):
         self,
         TestCase,
     ):
-        self.estimator = EstimatorV2(mode=self.session, options={"default_shots": 1e3})
+        simopts = SimulatorOptions(seed_simulator=123)
+        estim_opts = EstimatorOptions(default_shots=1e3, seed_estimator=123, simulator=simopts)
+        self.estimator = EstimatorV2(mode=self.session, options=estim_opts)
         self.pass_manager = generate_preset_pass_manager(backend=self.backend, optimization_level=0)
         self.gradient = ParamShiftEstimatorGradient(
             estimator=self.estimator, pass_manager=self.pass_manager
