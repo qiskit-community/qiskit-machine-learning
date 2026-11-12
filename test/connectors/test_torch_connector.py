@@ -33,6 +33,7 @@ from qiskit_machine_learning.connectors.torch_connector import _get_einsum_signa
 from qiskit_machine_learning.utils import algorithm_globals
 
 
+# pylint: disable=abstract-method
 @ddt
 class TestTorchConnector(TestTorch):
     """Torch Connector Tests."""

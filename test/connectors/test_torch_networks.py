@@ -27,6 +27,7 @@ from qiskit_machine_learning.connectors import TorchConnector
 from qiskit_machine_learning.utils import algorithm_globals
 
 
+# pylint: disable=abstract-method
 @ddt
 class TestTorchNetworks(TestTorch):
     """Base class for hybrid PyTorch network tests."""
