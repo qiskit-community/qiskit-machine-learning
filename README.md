@@ -1,15 +1,15 @@
 # Qiskit Machine Learning
 
-[![License](https://img.shields.io/github/license/qiskit-community/qiskit-machine-learning.svg?)](https://opensource.org/licenses/Apache-2.0) <!--- long-description-skip-begin -->
-[![Current Release](https://img.shields.io/github/release/qiskit-community/qiskit-machine-learning.svg?logo=Qiskit)](https://github.com/qiskit-community/qiskit-machine-learning/releases)
-[![Build Status](https://github.com/qiskit-community/qiskit-machine-learning/actions/workflows/main.yml/badge.svg)](https://github.com/qiskit-community/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)
-[![Coverage Status](https://coveralls.io/repos/github/qiskit-community/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/qiskit-community/qiskit-machine-learning?branch=main)
+[![License](https://img.shields.io/github/license/stfc/qiskit-machine-learning.svg?)](https://opensource.org/licenses/Apache-2.0) <!--- long-description-skip-begin -->
+[![Current Release](https://img.shields.io/github/release/stfc/qiskit-machine-learning.svg?logo=Qiskit)](https://github.com/stfc/qiskit-machine-learning/releases)
+[![Build Status](https://github.com/stfc/qiskit-machine-learning/actions/workflows/main.yml/badge.svg)](https://github.com/stfc/qiskit-machine-learning/actions?query=workflow%3A"Machine%20Learning%20Unit%20Tests"+branch%3Amain+event%3Apush)
+[![Coverage Status](https://coveralls.io/repos/github/stfc/qiskit-machine-learning/badge.svg?branch=main)](https://coveralls.io/github/stfc/qiskit-machine-learning?branch=main)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/qiskit-machine-learning)
 [![Monthly downloads](https://img.shields.io/pypi/dm/qiskit-machine-learning.svg)](https://pypi.org/project/qiskit-machine-learning/)
 [![Total downloads](https://static.pepy.tech/badge/qiskit-machine-learning)](https://pepy.tech/project/qiskit-machine-learning)
 [![Slack Organisation](https://img.shields.io/badge/slack-chat-blueviolet.svg?label=Qiskit%20Slack&logo=slack)](https://slack.qiskit.org)
 [![arXiv](https://img.shields.io/badge/arXiv-2505.17756-b31b1b.svg)](https://arxiv.org/abs/2505.17756)
-[![arXiv](https://img.shields.io/badge/GitHub%20Pages-Documentation-blue.svg)](https://qiskit-community.github.io/qiskit-machine-learning/)
+[![arXiv](https://img.shields.io/badge/GitHub%20Pages-Documentation-blue.svg)](https://stfc.github.io/qiskit-machine-learning/)
 
 <!--- long-description-skip-end -->
 
@@ -27,7 +27,7 @@ Technologies Facilities Council (STFC).
 > [!NOTE]
 > A description of the library structure, features, and domain-specific applications, can be found 
 > in a dedicated [![arXiv](https://img.shields.io/badge/arXiv-2505.17756-b31b1b.svg)](https://arxiv.org/abs/2505.17756)
-> paper. For more details on usage and the API, refer to the [![arXiv](https://img.shields.io/badge/Documentation-blue.svg)](https://qiskit-community.github.io/qiskit-machine-learning/).
+> paper. For more details on usage and the API, refer to the [![arXiv](https://img.shields.io/badge/Documentation-blue.svg)](https://stfc.github.io/qiskit-machine-learning/).
 
 The Qiskit Machine Learning framework aims to be:
 
@@ -43,10 +43,10 @@ The Qiskit Machine Learning framework aims to be:
 
 ### Kernel-based methods
 
-The [`FidelityQuantumKernel`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel) 
-class uses the [`Fidelity`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.state_fidelities.BaseStateFidelity.html) 
-algorithm. It computes kernel matrices for datasets and can be combined with a Quantum Support Vector Classifier ([`QSVC`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC)) 
-or a Quantum Support Vector Regressor ([`QSVR`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR)) 
+The [`FidelityQuantumKernel`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.QuantumKernel.html#qiskit_machine_learning.kernels.FidelityQuantumKernel) 
+class uses the [`Fidelity`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.state_fidelities.BaseStateFidelity.html) 
+algorithm. It computes kernel matrices for datasets and can be combined with a Quantum Support Vector Classifier ([`QSVC`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html#qiskit_machine_learning.algorithms.QSVC)) 
+or a Quantum Support Vector Regressor ([`QSVR`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html#qiskit_machine_learning.algorithms.QSVR)) 
 to solve classification or regression problems respectively. It is also compatible with classical kernel-based machine learning algorithms.
 
 
@@ -54,19 +54,19 @@ to solve classification or regression problems respectively. It is also compatib
 
 Qiskit Machine Learning defines a generic interface for neural networks, implemented by two core (derived) primitives:
 
-- **[`EstimatorQNN`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html):** Leverages the [`Estimator`](https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseEstimator) primitive, combining parametrized quantum circuits with quantum mechanical observables. The output is the expected value of the observable.
+- **[`EstimatorQNN`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html):** Leverages the [`Estimator`](https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseEstimator) primitive, combining parametrized quantum circuits with quantum mechanical observables. The output is the expected value of the observable.
   
-- **[`SamplerQNN`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html):** Leverages the [`Sampler`](https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseSampler) primitive, translating bit-string counts into the desired outputs.
+- **[`SamplerQNN`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html):** Leverages the [`Sampler`](https://quantum.cloud.ibm.com/docs/api/qiskit/1.4/qiskit.primitives.BaseSampler) primitive, translating bit-string counts into the desired outputs.
 
-To train and use neural networks, Qiskit Machine Learning provides learning algorithms such as the [`NeuralNetworkClassifier`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier) 
-and [`NeuralNetworkRegressor`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor). 
-Finally, built on these, the Variational Quantum Classifier ([`VQC`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC))
-and the Variational Quantum Regressor ([`VQR`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html#qiskit_machine_learning.algorithms.VQR))
+To train and use neural networks, Qiskit Machine Learning provides learning algorithms such as the [`NeuralNetworkClassifier`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html#qiskit_machine_learning.algorithms.NeuralNetworkClassifier) 
+and [`NeuralNetworkRegressor`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html#qiskit_machine_learning.algorithms.NeuralNetworkRegressor). 
+Finally, built on these, the Variational Quantum Classifier ([`VQC`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html#qiskit_machine_learning.algorithms.VQC))
+and the Variational Quantum Regressor ([`VQR`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html#qiskit_machine_learning.algorithms.VQR))
 take a _feature map_ and an _ansatz_ to construct the underlying QNN automatically using high-level syntax.
 
 ### Integration with PyTorch
 
-The [`TorchConnector`](https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector) 
+The [`TorchConnector`](https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.connectors.TorchConnector.html#qiskit_machine_learning.connectors.TorchConnector) 
 integrates QNNs with [PyTorch](https://pytorch.org). 
 Thanks to the gradient algorithms in Qiskit Machine Learning, this includes automatic differentiation. 
 The overall gradients computed by PyTorch during the backpropagation take into account quantum neural 
@@ -88,7 +88,7 @@ If you want to work instead on the very latest _work-in-progress_ versions of Qi
 either to try features ahead of
 their official release or if you want to contribute to the library, then you can install from source.
 For more details on how to do so and much more, follow the instructions in the
- [documentation](https://qiskit-community.github.io/qiskit-machine-learning/getting_started.html#installation).
+ [documentation](https://stfc.github.io/qiskit-machine-learning/getting_started.html#installation).
 
 ### Optional Installs
 
@@ -152,7 +152,7 @@ print(f"Testing accuracy: {score:0.2f}")
 ### More examples
 
 Learning materials can be found in the
-[Tutorials](https://qiskit-community.github.io/qiskit-machine-learning/tutorials/index.html) section
+[Tutorials](https://stfc.github.io/qiskit-machine-learning/tutorials/index.html) section
 of the documentation. These notebooks will walk you step by step through different tasks and are designed to be hackable,
 making them a great place to start.
 
@@ -172,11 +172,11 @@ of quantum machine learning.
 ## How can I contribute?
 
 If you'd like to contribute to Qiskit, please take a look at our
-[contribution guidelines](https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CONTRIBUTING.md).
-This project adheres to the Qiskit [code of conduct](https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md).
+[contribution guidelines](https://github.com/stfc/qiskit-machine-learning/blob/main/CONTRIBUTING.md).
+This project adheres to the Qiskit [code of conduct](https://github.com/stfc/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
 
-We use [GitHub issues](https://github.com/qiskit-community/qiskit-machine-learning/issues) for tracking requests and bugs. Please
+We use [GitHub issues](https://github.com/stfc/qiskit-machine-learning/issues) for tracking requests and bugs. Please
 [join the Qiskit Slack community](https://qisk.it/join-slack)
 and use the [`#qiskit-machine-learning`](https://qiskit.enterprise.slack.com/archives/C07JE3V55C1) 
 channel for discussions and short questions.
@@ -193,9 +193,9 @@ support the continued development and visibility of the library. The BibTeX cita
 Qiskit Machine Learning was inspired, authored and brought about by the collective work of a 
 team of researchers  and software engineers. This library continues to grow with the help and 
 work of 
-[many people](https://github.com/qiskit-community/qiskit-machine-learning/graphs/contributors), 
+[many people](https://github.com/stfc/qiskit-machine-learning/graphs/contributors), 
 who contribute to the project at different levels.
 
 ## License
 
-This project uses the [Apache License 2.0](https://github.com/qiskit-community/qiskit-machine-learning/blob/main/LICENSE.txt).
+This project uses the [Apache License 2.0](https://github.com/stfc/qiskit-machine-learning/blob/main/LICENSE.txt).

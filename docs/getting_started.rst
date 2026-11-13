@@ -57,7 +57,7 @@ See :ref:`optional_installs` for more information.
 
           .. code:: sh
 
-             git clone https://github.com/qiskit-community/qiskit-machine-learning.git
+             git clone https://github.com/stfc/qiskit-machine-learning.git
 
        2. Cloning the repository creates a local folder called ``qiskit-machine-learning``.
 
@@ -109,11 +109,11 @@ How can I contribute?
 =====================
 
 If you'd like to contribute to Qiskit, please take a look at our
-`contribution guidelines <https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CONTRIBUTING.md>`_.
-This project adheres to the Qiskit `code of conduct <https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md>`_.
+`contribution guidelines <https://github.com/stfc/qiskit-machine-learning/blob/main/CONTRIBUTING.md>`_.
+This project adheres to the Qiskit `code of conduct <https://github.com/stfc/qiskit-machine-learning/blob/main/CODE_OF_CONDUCT.md>`_.
 By participating, you are expected to uphold this code.
 
-We use `GitHub issues <https://github.com/qiskit-community/qiskit-machine-learning/issues>`_ for tracking requests and bugs. Please
+We use `GitHub issues <https://github.com/stfc/qiskit-machine-learning/issues>`_ for tracking requests and bugs. Please
 `join the Qiskit Slack community <https://qisk.it/join-slack>`_
 and use the `#qiskit-machine-learning <https://qiskit.enterprise.slack.com/archives/C07JE3V55C1>`_ 
 channel for discussions and short questions.

@@ -18,7 +18,7 @@ A description of the library structure, features, and domain-specific applicatio
 in a dedicated `ArXiv paper <https://arxiv.org/abs/2505.17756>`__. If you use Qiskit Machine Learning
 in your work, please cite this paper to support the continued development and
 visibility of the library. The **BibTeX citation handle** can be found in
-`this file <https://github.com/qiskit-community/qiskit-machine-learning/blob/main/CITATION.bib>`__.
+`this file <https://github.com/stfc/qiskit-machine-learning/blob/main/CITATION.bib>`__.
 
 The Qiskit Machine Learning framework aims to be:
 
@@ -90,7 +90,7 @@ Next Steps
     Tutorials <tutorials/index>
     API Reference <apidocs/qiskit_machine_learning>
     Release Notes <release_notes>
-    GitHub <https://github.com/qiskit-community/qiskit-machine-learning>
+    GitHub <https://github.com/stfc/qiskit-machine-learning>
 
 
 
