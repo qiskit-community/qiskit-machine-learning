@@ -37,7 +37,7 @@ such as those from `qiskit-ibm-runtime`.
 Please bear in mind that not all V2 primitives are directly supported. Should you require assistance, 
 please do not hesitate to reach out via our 
 `Slack channel <https://qiskit.enterprise.slack.com/archives/C07JE3V55C1>`__ or submit an issue on 
-`GitHub <https://github.com/qiskit-community/qiskit-machine-learning/issues>`__.
+`GitHub <https://github.com/stfc/qiskit-machine-learning/issues>`__.
 
 Usage of V2 primitives is as straightforward as using V1:
 
@@ -251,7 +251,7 @@ directly related to Qiskit Algorithms, please open a GitHub issue at
 `qiskit-algorithms <https://github.com/qiskit-community/qiskit-algorithms>`__.
 Should you want to include a Qiskit Algorithms functionality that has not been incorporated in Qiskit Machine
 Learning, please open a feature-request issue at 
-`qiskit-machine-learning <https://github.com/qiskit-community/qiskit-machine-learning>`__,
+`qiskit-machine-learning <https://github.com/stfc/qiskit-machine-learning>`__,
 
 explaining why this change would be useful for you and other users.
 

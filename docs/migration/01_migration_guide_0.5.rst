@@ -122,18 +122,18 @@ given to the ``fidelity``.
 A new hierarchy shown on the diagram introduces:
 
 -  A base and abstract class
-   `BaseKernel <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.BaseKernel.html>`__
+   `BaseKernel <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.BaseKernel.html>`__
    is introduced. All concrete implementation must inherit this class.
 -  A fidelity based quantum kernel
-   `FidelityQuantumKernel <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html>`__
+   `FidelityQuantumKernel <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.FidelityQuantumKernel.html>`__
    is added. This is a direct **replacement** of the previous quantum
    kernel implementation. The difference is that the new class takes a
    fidelity instance to estimate overlaps and construct kernel matrix.
 -  A new abstract class
-   `TrainableKernel <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.TrainableKernel.html>`__
+   `TrainableKernel <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.TrainableKernel.html>`__
    is introduced to generalize ability to train quantum kernels.
 -  A fidelity-based trainable quantum kernel
-   `TrainableFidelityQuantumKernel <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html>`__
+   `TrainableFidelityQuantumKernel <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.kernels.TrainableFidelityQuantumKernel.html>`__
    is introduced. This is a **replacement** of the previous quantum
    kernel if a trainable kernel is required. The trainer
    ``QuantumKernelTrainer``
@@ -149,8 +149,8 @@ removed after that. New, primitive-based quantum kernels should be used
 instead.
 
 The existing algorithms such as
-`QSVC <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html>`__,
-`QSVR <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html>`__
+`QSVC <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVC.html>`__,
+`QSVR <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.QSVR.html>`__
 and other kernel-based algorithms are updated and work with both
 implementations.
 
@@ -285,9 +285,9 @@ Changes in the quantum neural networks are not as dramatic as in quantum
 kernels. In addition, and as a replacement to the existing neural
 networks, two new networks are introduced. The new networks introduced
 are
-`SamplerQNN <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html>`__
+`SamplerQNN <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html>`__
 and
-`EstimatorQNN <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html>`__
+`EstimatorQNN <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html>`__
 which are detailed below and are replacements for the pre-existing
 ``CircuitQNN``,
 ``OpflowQNN``
@@ -299,13 +299,13 @@ SamplerQNN
 ~~~~~~~~~~
 
 A new `Sampler Quantum Neural
-Network <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html>`__
+Network <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html>`__
 leverages the sampler primitive, sampler gradients and is a **direct
 replacement** of
 ``CircuitQNN``.
 
 The new
-`SamplerQNN <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html>`__
+`SamplerQNN <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.SamplerQNN.html>`__
 exposes a similar interface to the existing
 ``CircuitQNN``,
 with a few differences. One is the ``quantum_instance`` parameter. This
@@ -320,11 +320,11 @@ as this information is not currently exposed by the sampler, and might
 correspond to future lower-level primitives.
 
 The existing training algorithms such as
-`VQC <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html>`__
+`VQC <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQC.html>`__
 that were based on
 ``CircuitQNN``,
 are updated to accept both implementations. The implementation of
-`NeuralNetworkClassifier <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html>`__
+`NeuralNetworkClassifier <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkClassifier.html>`__
 has not changed.
 
 The existing
@@ -474,13 +474,13 @@ EstimatorQNN
 ~~~~~~~~~~~~
 
 A new `Estimator quantum neural
-network <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html>`__
+network <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html>`__
 leverages the estimator primitive, estimator gradients and is a **direct
 replacement** of
 ``OpflowQNN``.
 
 The new
-`EstimatorQNN <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#>`__
+`EstimatorQNN <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html#>`__
 exposes a similar interface to the existing
 ``OpflowQNN``,
 with a few differences. One is the ``quantum_instance`` parameter. This
@@ -493,11 +493,11 @@ inputs; instead, this parameter expects an (optionally custom) primitive
 gradient.
 
 The existing training algorithms such as
-`VQR <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html>`__
+`VQR <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.VQR.html>`__
 that were based on the
 ``TwoLayerQNN``,
 are updated to accept both implementations. The implementation of
-`NeuralNetworkRegressor <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html>`__
+`NeuralNetworkRegressor <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.algorithms.NeuralNetworkRegressor.html>`__
 has not changed.
 
 The existing
@@ -661,7 +661,7 @@ deprecated or pending deprecation:
 
 -  ``TwoLayerQNN``
    is pending deprecation. Users should use
-   `EstimatorQNN <https://qiskit-community.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html>`__
+   `EstimatorQNN <https://stfc.github.io/qiskit-machine-learning/stubs/qiskit_machine_learning.neural_networks.EstimatorQNN.html>`__
    instead.
 -  The Distribution Learners package is deprecated fully. This package
    contains such classes as
